@@ -301,29 +301,31 @@ export default function App() {
             return { customer, avgMaterial, avgProduction, totalTarget, itemCount };
           });
 
-          // 주차별 누적 진도율 계산
-          const weekRanges = [
-            { label: '1주차', start: 0, end: 3 },
-            { label: '2주차', start: 0, end: 10 },
-            { label: '3주차', start: 0, end: 17 },
-            { label: '4주차', start: 0, end: 24 },
-            { label: '5주차', start: 0, end: 29 },
-          ];
+          // 주차별 누적 진도율 계산 (일요일 기준)
+          // 4월 2026: 1주차 4/1(수)~4/5(일), 2주차 4/6(월)~4/12(일), 3주차 4/13~4/19, 4주차 4/20~4/26, 5주차 4/27~4/30
+          // 근무일: 1주차 3일, 2주차 5일, 3주차 5일, 4주차 5일, 5주차 4일 = 총 22일
+          const workingDays = [3, 5, 5, 5, 4]; // 주차별 근무일수
+          const totalWorkingDays = workingDays.reduce((a, b) => a + b, 0); // 22
+          const weekLabels = ['1주차', '2주차', '3주차', '4주차', '5주차'];
+
+          // 1주차 실적 계산 (index 0~4: 4/1~4/5)
           const totalProductionTarget = products.reduce((s, p) => s + p.productionTarget, 0);
-          const weeklyChartData = weekRanges.map(week => {
-            let cumTarget = 0, cumArrival = 0, cumAchievement = 0;
-            products.forEach(p => {
-              for (let i = week.start; i <= week.end && i < p.daily.length; i++) {
-                cumTarget += p.daily[i].target;
-                cumArrival += p.daily[i].arrival;
-                cumAchievement += p.daily[i].achievement;
-              }
-            });
+          let week1Arrival = 0, week1Achievement = 0;
+          products.forEach(p => {
+            for (let i = 0; i <= 4 && i < p.daily.length; i++) {
+              week1Arrival += p.daily[i].arrival;
+              week1Achievement += p.daily[i].achievement;
+            }
+          });
+
+          const weeklyChartData = weekLabels.map((label, idx) => {
+            const cumDays = workingDays.slice(0, idx + 1).reduce((a, b) => a + b, 0);
+            const targetRate = Math.round((cumDays / totalWorkingDays) * 1000) / 10;
             return {
-              name: week.label,
-              목표: Math.round((cumTarget / totalProductionTarget) * 1000) / 10,
-              자재입고: Math.round((cumArrival / totalProductionTarget) * 1000) / 10,
-              생산실적: Math.round((cumAchievement / totalProductionTarget) * 1000) / 10,
+              name: label,
+              목표: targetRate,
+              자재입고: idx === 0 ? Math.round((week1Arrival / totalProductionTarget) * 1000) / 10 : undefined,
+              생산실적: idx === 0 ? Math.round((week1Achievement / totalProductionTarget) * 1000) / 10 : undefined,
             };
           });
 
