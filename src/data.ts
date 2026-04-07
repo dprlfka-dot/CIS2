@@ -1,4 +1,13 @@
-import { DashboardData } from "./types";
+import { DashboardData, DailyData } from "./types";
+
+const generateMonthlyDaily = (baseDays: DailyData[]): DailyData[] => {
+  const days: DailyData[] = [];
+  for (let d = 1; d <= 30; d++) {
+    const existing = baseDays.find(b => b.date === `4/${d}`);
+    days.push(existing || { date: `4/${d}`, target: 0, arrival: 0, achievement: 0 });
+  }
+  return days;
+};
 
 export const DASHBOARD_DATA: DashboardData = {
   title: "26.04월 대량발주품목 진도율 관리",
@@ -16,14 +25,14 @@ export const DASHBOARD_DATA: DashboardData = {
       materialProgress: 18,
       productionProgress: 18,
       status: "이상",
-      daily: [
+      daily: generateMonthlyDaily([
         { date: "4/1", target: 50, arrival: 200, achievement: 0 },
         { date: "4/2", target: 50, arrival: 0, achievement: 0 },
         { date: "4/3", target: 50, arrival: 0, achievement: 200 },
         { date: "4/4", target: 0, arrival: 0, achievement: 0 },
         { date: "4/5", target: 0, arrival: 0, achievement: 0 },
         { date: "4/6", target: 50, arrival: 0, achievement: 0 },
-      ]
+      ])
     },
     {
       customer: "APS",
@@ -37,14 +46,14 @@ export const DASHBOARD_DATA: DashboardData = {
       materialProgress: 50,
       productionProgress: 16,
       status: "이상",
-      daily: [
+      daily: generateMonthlyDaily([
         { date: "4/1", target: 3, arrival: 28, achievement: 0 },
         { date: "4/2", target: 3, arrival: 4, achievement: 0 },
         { date: "4/3", target: 3, arrival: 0, achievement: 10 },
         { date: "4/4", target: 0, arrival: 0, achievement: 0 },
         { date: "4/5", target: 0, arrival: 0, achievement: 0 },
         { date: "4/6", target: 3, arrival: 0, achievement: 0 },
-      ]
+      ])
     },
     {
       customer: "APS",
@@ -58,14 +67,14 @@ export const DASHBOARD_DATA: DashboardData = {
       materialProgress: 52,
       productionProgress: 4,
       status: "미달",
-      daily: [
+      daily: generateMonthlyDaily([
         { date: "4/1", target: 4, arrival: 50, achievement: 0 },
         { date: "4/2", target: 4, arrival: 0, achievement: 0 },
         { date: "4/3", target: 4, arrival: 0, achievement: 4 },
         { date: "4/4", target: 0, arrival: 0, achievement: 0 },
         { date: "4/5", target: 0, arrival: 0, achievement: 0 },
         { date: "4/6", target: 4, arrival: 0, achievement: 0 },
-      ]
+      ])
     },
     {
       customer: "APS",
@@ -79,14 +88,14 @@ export const DASHBOARD_DATA: DashboardData = {
       materialProgress: 24,
       productionProgress: 2,
       status: "미달",
-      daily: [
+      daily: generateMonthlyDaily([
         { date: "4/1", target: 3, arrival: 0, achievement: 0 },
         { date: "4/2", target: 3, arrival: 0, achievement: 0 },
         { date: "4/3", target: 3, arrival: 17, achievement: 2 },
         { date: "4/4", target: 0, arrival: 0, achievement: 0 },
         { date: "4/5", target: 0, arrival: 0, achievement: 0 },
         { date: "4/6", target: 3, arrival: 0, achievement: 0 },
-      ]
+      ])
     },
     {
       customer: "APS",
@@ -100,14 +109,14 @@ export const DASHBOARD_DATA: DashboardData = {
       materialProgress: 18,
       productionProgress: 0,
       status: "미달",
-      daily: [
+      daily: generateMonthlyDaily([
         { date: "4/1", target: 1, arrival: 5, achievement: 0 },
         { date: "4/2", target: 1, arrival: 0, achievement: 0 },
         { date: "4/3", target: 1, arrival: 0, achievement: 0 },
         { date: "4/4", target: 0, arrival: 0, achievement: 0 },
         { date: "4/5", target: 0, arrival: 0, achievement: 0 },
         { date: "4/6", target: 1, arrival: 0, achievement: 0 },
-      ]
+      ])
     },
     {
       customer: "DPD",
@@ -121,14 +130,14 @@ export const DASHBOARD_DATA: DashboardData = {
       materialProgress: 18,
       productionProgress: 0,
       status: "미달",
-      daily: [
+      daily: generateMonthlyDaily([
         { date: "4/1", target: 7, arrival: 28, achievement: 0 },
         { date: "4/2", target: 7, arrival: 0, achievement: 0 },
         { date: "4/3", target: 7, arrival: 0, achievement: 0 },
         { date: "4/4", target: 0, arrival: 0, achievement: 0 },
         { date: "4/5", target: 0, arrival: 0, achievement: 0 },
         { date: "4/6", target: 7, arrival: 0, achievement: 0 },
-      ]
+      ])
     },
     {
       customer: "DPD",
@@ -142,14 +151,14 @@ export const DASHBOARD_DATA: DashboardData = {
       materialProgress: 10,
       productionProgress: 10,
       status: "이상",
-      daily: [
+      daily: generateMonthlyDaily([
         { date: "4/1", target: 3, arrival: 0, achievement: 1 },
         { date: "4/2", target: 3, arrival: 0, achievement: 5 },
         { date: "4/3", target: 3, arrival: 6, achievement: 0 },
         { date: "4/4", target: 0, arrival: 0, achievement: 0 },
         { date: "4/5", target: 0, arrival: 0, achievement: 0 },
         { date: "4/6", target: 3, arrival: 0, achievement: 0 },
-      ]
+      ])
     },
     {
       customer: "DPD",
@@ -163,14 +172,14 @@ export const DASHBOARD_DATA: DashboardData = {
       materialProgress: 12,
       productionProgress: 8,
       status: "미달",
-      daily: [
+      daily: generateMonthlyDaily([
         { date: "4/1", target: 3, arrival: 0, achievement: 1 },
         { date: "4/2", target: 3, arrival: 7, achievement: 2 },
         { date: "4/3", target: 3, arrival: 0, achievement: 2 },
         { date: "4/4", target: 0, arrival: 0, achievement: 0 },
         { date: "4/5", target: 0, arrival: 0, achievement: 0 },
         { date: "4/6", target: 3, arrival: 0, achievement: 0 },
-      ]
+      ])
     },
     {
       customer: "DPD",
@@ -184,14 +193,14 @@ export const DASHBOARD_DATA: DashboardData = {
       materialProgress: 13,
       productionProgress: 5,
       status: "미달",
-      daily: [
+      daily: generateMonthlyDaily([
         { date: "4/1", target: 3, arrival: 2, achievement: 0 },
         { date: "4/2", target: 3, arrival: 3, achievement: 2 },
         { date: "4/3", target: 3, arrival: 3, achievement: 1 },
         { date: "4/4", target: 0, arrival: 0, achievement: 0 },
         { date: "4/5", target: 0, arrival: 0, achievement: 0 },
         { date: "4/6", target: 3, arrival: 0, achievement: 0 },
-      ]
+      ])
     },
     {
       customer: "IWD",
@@ -205,14 +214,14 @@ export const DASHBOARD_DATA: DashboardData = {
       materialProgress: 8,
       productionProgress: 34,
       status: "이상",
-      daily: [
+      daily: generateMonthlyDaily([
         { date: "4/1", target: 1, arrival: 1, achievement: 7 },
         { date: "4/2", target: 1, arrival: 0, achievement: 0 },
         { date: "4/3", target: 1, arrival: 2, achievement: 2 },
         { date: "4/4", target: 0, arrival: 0, achievement: 0 },
         { date: "4/5", target: 0, arrival: 0, achievement: 0 },
         { date: "4/6", target: 1, arrival: 0, achievement: 0 },
-      ]
+      ])
     },
     {
       customer: "OLV",
@@ -226,14 +235,14 @@ export const DASHBOARD_DATA: DashboardData = {
       materialProgress: 11,
       productionProgress: 23,
       status: "이상",
-      daily: [
+      daily: generateMonthlyDaily([
         { date: "4/1", target: 1, arrival: 3, achievement: 0 },
         { date: "4/2", target: 1, arrival: 0, achievement: 3 },
         { date: "4/3", target: 1, arrival: 0, achievement: 3 },
         { date: "4/4", target: 0, arrival: 0, achievement: 0 },
         { date: "4/5", target: 0, arrival: 0, achievement: 0 },
         { date: "4/6", target: 1, arrival: 0, achievement: 0 },
-      ]
+      ])
     },
     {
       customer: "SNT",
@@ -247,14 +256,14 @@ export const DASHBOARD_DATA: DashboardData = {
       materialProgress: 0,
       productionProgress: 13,
       status: "이상",
-      daily: [
+      daily: generateMonthlyDaily([
         { date: "4/1", target: 4, arrival: 0, achievement: 4 },
         { date: "4/2", target: 4, arrival: 0, achievement: 4 },
         { date: "4/3", target: 4, arrival: 0, achievement: 4 },
         { date: "4/4", target: 0, arrival: 0, achievement: 0 },
         { date: "4/5", target: 0, arrival: 0, achievement: 0 },
         { date: "4/6", target: 4, arrival: 0, achievement: 0 },
-      ]
+      ])
     }
   ]
 };

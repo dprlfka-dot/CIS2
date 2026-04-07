@@ -15,20 +15,6 @@ import {
   ArrowDownRight,
   Save
 } from 'lucide-react';
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer, 
-  Legend,
-  LineChart,
-  Line,
-  AreaChart,
-  Area
-} from 'recharts';
 import { motion, AnimatePresence } from 'motion/react';
 import { DASHBOARD_DATA } from './data';
 import { ProductData } from './types';
@@ -113,23 +99,6 @@ export default function App() {
     const avgProductionProgress = Math.round(products.reduce((acc, p) => acc + p.productionProgress, 0) / products.length);
 
     return { totalBacklog, totalTarget, avgMaterialProgress, avgProductionProgress };
-  }, [products]);
-
-  const chartData = useMemo(() => {
-    const dailyMap: Record<string, { date: string; target: number; arrival: number; achievement: number }> = {};
-
-    products.forEach(p => {
-      p.daily.forEach(d => {
-        if (!dailyMap[d.date]) {
-          dailyMap[d.date] = { date: d.date, target: 0, arrival: 0, achievement: 0 };
-        }
-        dailyMap[d.date].target += d.target;
-        dailyMap[d.date].arrival += d.arrival;
-        dailyMap[d.date].achievement += d.achievement;
-      });
-    });
-
-    return Object.values(dailyMap).sort((a, b) => a.date.localeCompare(b.date));
   }, [products]);
 
   const handleArrivalChange = useCallback((productCode: string, dayIndex: number, value: string) => {
@@ -236,89 +205,6 @@ export default function App() {
           />
         </div>
 
-        {/* Charts Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-1 bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-indigo-600" />
-                일별 생산 및 입고 추이
-              </h3>
-              <div className="flex gap-4 text-xs font-medium">
-                <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-indigo-500" /> 목표
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-amber-500" /> 입고
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-emerald-500" /> 실적
-                </div>
-              </div>
-            </div>
-            <div className="h-[300px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={chartData}>
-                  <defs>
-                    <linearGradient id="colorTarget" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#6366f1" stopOpacity={0.1}/>
-                      <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
-                    </linearGradient>
-                    <linearGradient id="colorArrival" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.1}/>
-                      <stop offset="95%" stopColor="#f59e0b" stopOpacity={0}/>
-                    </linearGradient>
-                    <linearGradient id="colorAchievement" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.1}/>
-                      <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                  <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} dy={10} />
-                  <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} />
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: '#fff', borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
-                  />
-                  <Area type="monotone" dataKey="target" stroke="#6366f1" fillOpacity={1} fill="url(#colorTarget)" strokeWidth={2} />
-                  <Area type="monotone" dataKey="arrival" stroke="#f59e0b" fillOpacity={1} fill="url(#colorArrival)" strokeWidth={2} />
-                  <Area type="monotone" dataKey="achievement" stroke="#10b981" fillOpacity={1} fill="url(#colorAchievement)" strokeWidth={2} />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          <div className="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-            <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
-              <AlertCircle className="w-5 h-5 text-rose-500" />
-              진도율 현황 요약
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-              {products.slice(0, 5).map((p, i) => (
-                <div key={i} className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="font-medium text-slate-700 truncate max-w-[280px]">{p.name}</span>
-                    <span className="font-bold text-indigo-600">{p.productionProgress}%</span>
-                  </div>
-                  <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                    <motion.div 
-                      initial={{ width: 0 }}
-                      animate={{ width: `${p.productionProgress}%` }}
-                      transition={{ duration: 1, delay: i * 0.1 }}
-                      className={cn(
-                        "h-full rounded-full",
-                        p.status === '이상' ? "bg-emerald-500" : "bg-rose-500"
-                      )}
-                    />
-                  </div>
-                </div>
-              ))}
-              <button className="w-full py-2 text-sm font-bold text-indigo-600 bg-indigo-50 rounded-xl hover:bg-indigo-100 transition-colors">
-                전체 현황 보기
-              </button>
-            </div>
-          </div>
-        </div>
-
         {/* Filters & Table */}
         <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
           <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row gap-4 justify-between items-center">
@@ -423,89 +309,69 @@ export default function App() {
                               exit={{ height: 0, opacity: 0 }}
                               className="overflow-hidden"
                             >
-                              <div className="py-6 border-t border-slate-100 grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                <div className="space-y-4">
-                                  <div className="flex items-center justify-between">
-                                    <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                                      <Calendar className="w-4 h-4 text-indigo-500" />
-                                      일별 상세 현황 (단위: 만개)
-                                    </h4>
-                                    <div className="flex items-center gap-2">
-                                      {saveStatus[product.code] === 'saved' && (
-                                        <span className="text-xs text-emerald-600 font-medium">저장 완료!</span>
+                              <div className="py-6 border-t border-slate-100 space-y-4">
+                                <div className="flex items-center justify-between">
+                                  <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                                    <Calendar className="w-4 h-4 text-indigo-500" />
+                                    일별 상세 현황 — 4월 (단위: 만개)
+                                  </h4>
+                                  <div className="flex items-center gap-2">
+                                    {saveStatus[product.code] === 'saved' && (
+                                      <span className="text-xs text-emerald-600 font-medium">저장 완료!</span>
+                                    )}
+                                    <button
+                                      onClick={(e) => { e.stopPropagation(); handleSave(product.code); }}
+                                      disabled={!editingArrivals[product.code]}
+                                      className={cn(
+                                        "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors",
+                                        editingArrivals[product.code]
+                                          ? "bg-indigo-600 text-white hover:bg-indigo-700"
+                                          : "bg-slate-200 text-slate-400 cursor-not-allowed"
                                       )}
-                                      <button
-                                        onClick={(e) => { e.stopPropagation(); handleSave(product.code); }}
-                                        disabled={!editingArrivals[product.code]}
-                                        className={cn(
-                                          "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors",
-                                          editingArrivals[product.code]
-                                            ? "bg-indigo-600 text-white hover:bg-indigo-700"
-                                            : "bg-slate-200 text-slate-400 cursor-not-allowed"
-                                        )}
-                                      >
-                                        <Save className="w-3.5 h-3.5" />
-                                        저장
-                                      </button>
-                                    </div>
-                                  </div>
-                                  <div className="bg-slate-50 rounded-xl p-4 overflow-x-auto">
-                                    <table className="w-full text-xs">
-                                      <thead>
-                                        <tr className="text-slate-400">
-                                          <th className="pb-2 text-left">구분</th>
-                                          {product.daily.map(d => <th key={d.date} className="pb-2 text-center">{d.date}</th>)}
-                                        </tr>
-                                      </thead>
-                                      <tbody className="divide-y divide-slate-200">
-                                        <tr>
-                                          <td className="py-2 font-medium text-slate-500">생산목표</td>
-                                          {product.daily.map((d, i) => <td key={i} className="py-2 text-center font-bold text-slate-700">{d.target || '-'}</td>)}
-                                        </tr>
-                                        <tr>
-                                          <td className="py-2 font-medium text-amber-600">자재입고</td>
-                                          {product.daily.map((d, i) => {
-                                            const editVal = editingArrivals[product.code]?.[i];
-                                            const displayVal = editVal !== undefined ? editVal : d.arrival;
-                                            return (
-                                              <td key={i} className="py-1 text-center">
-                                                <input
-                                                  type="number"
-                                                  min="0"
-                                                  value={displayVal}
-                                                  onClick={(e) => e.stopPropagation()}
-                                                  onChange={(e) => handleArrivalChange(product.code, i, e.target.value)}
-                                                  className="w-14 px-1 py-1 text-center text-xs font-bold text-amber-600 bg-white border border-amber-200 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-amber-400"
-                                                />
-                                              </td>
-                                            );
-                                          })}
-                                        </tr>
-                                        <tr>
-                                          <td className="py-2 font-medium text-slate-500">생산실적</td>
-                                          {product.daily.map((d, i) => <td key={i} className="py-2 text-center font-bold text-emerald-600">{d.achievement || '-'}</td>)}
-                                        </tr>
-                                      </tbody>
-                                    </table>
+                                    >
+                                      <Save className="w-3.5 h-3.5" />
+                                      저장
+                                    </button>
                                   </div>
                                 </div>
-                                <div className="space-y-4">
-                                  <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                                    <TrendingUp className="w-4 h-4 text-indigo-500" />
-                                    생산 진척도 시각화
-                                  </h4>
-                                  <div className="h-48 w-full bg-slate-50 rounded-xl p-4">
-                                    <ResponsiveContainer width="100%" height="100%">
-                                      <BarChart data={product.daily}>
-                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                                        <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{fontSize: 10}} />
-                                        <YAxis axisLine={false} tickLine={false} tick={{fontSize: 10}} />
-                                        <Tooltip />
-                                        <Bar dataKey="target" name="목표" fill="#6366f1" radius={[4, 4, 0, 0]} />
-                                        <Bar dataKey="achievement" name="실적" fill="#10b981" radius={[4, 4, 0, 0]} />
-                                      </BarChart>
-                                    </ResponsiveContainer>
-                                  </div>
+                                <div className="bg-slate-50 rounded-xl p-4 overflow-x-auto">
+                                  <table className="text-xs border-collapse">
+                                    <thead>
+                                      <tr className="text-slate-400">
+                                        <th className="pb-2 text-left sticky left-0 bg-slate-50 z-10 pr-3 min-w-[60px]">구분</th>
+                                        {product.daily.map(d => <th key={d.date} className="pb-2 text-center min-w-[44px] px-1">{d.date}</th>)}
+                                      </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-slate-200">
+                                      <tr>
+                                        <td className="py-2 font-medium text-slate-500 sticky left-0 bg-slate-50 z-10 pr-3">생산목표</td>
+                                        {product.daily.map((d, i) => <td key={i} className="py-2 text-center font-bold text-slate-700 px-1">{d.target || '-'}</td>)}
+                                      </tr>
+                                      <tr>
+                                        <td className="py-2 font-medium text-amber-600 sticky left-0 bg-slate-50 z-10 pr-3">자재입고</td>
+                                        {product.daily.map((d, i) => {
+                                          const editVal = editingArrivals[product.code]?.[i];
+                                          const displayVal = editVal !== undefined ? editVal : d.arrival;
+                                          return (
+                                            <td key={i} className="py-1 text-center px-1">
+                                              <input
+                                                type="number"
+                                                min="0"
+                                                value={displayVal}
+                                                onClick={(e) => e.stopPropagation()}
+                                                onChange={(e) => handleArrivalChange(product.code, i, e.target.value)}
+                                                className="w-12 px-0.5 py-1 text-center text-xs font-bold text-amber-600 bg-white border border-amber-200 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-amber-400"
+                                              />
+                                            </td>
+                                          );
+                                        })}
+                                      </tr>
+                                      <tr>
+                                        <td className="py-2 font-medium text-slate-500 sticky left-0 bg-slate-50 z-10 pr-3">생산실적</td>
+                                        {product.daily.map((d, i) => <td key={i} className="py-2 text-center font-bold text-emerald-600 px-1">{d.achievement || '-'}</td>)}
+                                      </tr>
+                                    </tbody>
+                                  </table>
                                 </div>
                               </div>
                             </motion.div>
