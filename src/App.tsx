@@ -203,9 +203,6 @@ export default function App() {
               <Calendar className="w-4 h-4" />
               기준일자: {DASHBOARD_DATA.baseDate}
             </div>
-            <div className="w-8 h-8 rounded-full bg-slate-200 border border-slate-300 flex items-center justify-center text-xs font-bold text-slate-600">
-              SCM
-            </div>
           </div>
         </div>
       </header>
