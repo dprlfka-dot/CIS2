@@ -445,7 +445,7 @@ export default function App() {
                   <th className="px-3 py-3 text-center whitespace-nowrap">수주잔량<span className="text-xs text-slate-400 font-medium ml-1">(만개)</span></th>
                   <th className="px-3 py-3 text-center whitespace-nowrap">월자재CAPA<span className="text-xs text-slate-400 font-medium ml-1">(만개)</span></th>
                   <th className="px-3 py-3 text-center whitespace-nowrap">월생산CAPA<span className="text-xs text-slate-400 font-medium ml-1">(만개)</span></th>
-                  <th className="px-3 py-3 text-center whitespace-nowrap">생산목표<span className="text-xs text-slate-400 font-medium ml-1">(만개)</span></th>
+                  <th className="px-3 py-3 text-center whitespace-nowrap">매출가능수량<span className="text-xs text-slate-400 font-medium ml-1">(만개)</span></th>
                   <th className="px-3 py-3 text-center whitespace-nowrap">자재진도율</th>
                   <th className="px-3 py-3 text-center whitespace-nowrap">생산진도율</th>
                   <th className="px-2 py-3 w-[30px]"></th>
