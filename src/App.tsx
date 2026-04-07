@@ -62,7 +62,14 @@ const StatusBadge = ({ status }: { status: '이상' | '미달' }) => (
   </span>
 );
 
+const DATA_VERSION = '2';
+
 const loadProducts = (): ProductData[] => {
+  const savedVersion = localStorage.getItem('scm_data_version');
+  if (savedVersion !== DATA_VERSION) {
+    localStorage.removeItem('scm_products');
+    localStorage.setItem('scm_data_version', DATA_VERSION);
+  }
   const saved = localStorage.getItem('scm_products');
   if (saved) {
     return JSON.parse(saved);
@@ -183,8 +190,7 @@ export default function App() {
               <LayoutDashboard className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-slate-900 leading-tight">SCM Dashboard</h1>
-              <p className="text-xs text-slate-500 font-medium">{DASHBOARD_DATA.title}</p>
+              <h1 className="text-lg font-bold text-slate-900 leading-tight">{DASHBOARD_DATA.title}</h1>
             </div>
           </div>
           <div className="flex items-center gap-4">
