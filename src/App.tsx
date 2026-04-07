@@ -1,18 +1,19 @@
-import React, { useState, useMemo } from 'react';
-import { 
-  LayoutDashboard, 
-  Package, 
-  Truck, 
-  Factory, 
-  AlertCircle, 
-  CheckCircle2, 
+import React, { useState, useMemo, useCallback } from 'react';
+import {
+  LayoutDashboard,
+  Package,
+  Truck,
+  Factory,
+  AlertCircle,
+  CheckCircle2,
   Search,
   Filter,
   ChevronRight,
   TrendingUp,
   Calendar,
   ArrowUpRight,
-  ArrowDownRight
+  ArrowDownRight,
+  Save
 } from 'lucide-react';
 import { 
   BarChart, 
@@ -75,39 +76,49 @@ const StatusBadge = ({ status }: { status: '이상' | '미달' }) => (
   </span>
 );
 
+const loadProducts = (): ProductData[] => {
+  const saved = localStorage.getItem('scm_products');
+  if (saved) {
+    return JSON.parse(saved);
+  }
+  return DASHBOARD_DATA.products.map(p => ({ ...p, daily: p.daily.map(d => ({ ...d })) }));
+};
+
 export default function App() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCustomer, setSelectedCustomer] = useState('All');
   const [selectedProduct, setSelectedProduct] = useState<ProductData | null>(null);
+  const [products, setProducts] = useState<ProductData[]>(loadProducts);
+  const [editingArrivals, setEditingArrivals] = useState<Record<string, number[]>>({});
+  const [saveStatus, setSaveStatus] = useState<Record<string, 'saved' | 'saving'>>({});
 
   const customers = useMemo(() => {
-    const list = Array.from(new Set(DASHBOARD_DATA.products.map(p => p.customer)));
+    const list = Array.from(new Set(products.map(p => p.customer)));
     return ['All', ...list];
-  }, []);
+  }, [products]);
 
   const filteredProducts = useMemo(() => {
-    return DASHBOARD_DATA.products.filter(p => {
-      const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    return products.filter(p => {
+      const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            p.code.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCustomer = selectedCustomer === 'All' || p.customer === selectedCustomer;
       return matchesSearch && matchesCustomer;
     });
-  }, [searchTerm, selectedCustomer]);
+  }, [searchTerm, selectedCustomer, products]);
 
   const stats = useMemo(() => {
-    const totalBacklog = DASHBOARD_DATA.products.reduce((acc, p) => acc + p.backlog, 0);
-    const totalTarget = DASHBOARD_DATA.products.reduce((acc, p) => acc + p.productionTarget, 0);
-    const avgMaterialProgress = Math.round(DASHBOARD_DATA.products.reduce((acc, p) => acc + p.materialProgress, 0) / DASHBOARD_DATA.products.length);
-    const avgProductionProgress = Math.round(DASHBOARD_DATA.products.reduce((acc, p) => acc + p.productionProgress, 0) / DASHBOARD_DATA.products.length);
-    
+    const totalBacklog = products.reduce((acc, p) => acc + p.backlog, 0);
+    const totalTarget = products.reduce((acc, p) => acc + p.productionTarget, 0);
+    const avgMaterialProgress = Math.round(products.reduce((acc, p) => acc + p.materialProgress, 0) / products.length);
+    const avgProductionProgress = Math.round(products.reduce((acc, p) => acc + p.productionProgress, 0) / products.length);
+
     return { totalBacklog, totalTarget, avgMaterialProgress, avgProductionProgress };
-  }, []);
+  }, [products]);
 
   const chartData = useMemo(() => {
-    // Aggregate daily data across all products
     const dailyMap: Record<string, { date: string; target: number; arrival: number; achievement: number }> = {};
-    
-    DASHBOARD_DATA.products.forEach(p => {
+
+    products.forEach(p => {
       p.daily.forEach(d => {
         if (!dailyMap[d.date]) {
           dailyMap[d.date] = { date: d.date, target: 0, arrival: 0, achievement: 0 };
@@ -119,7 +130,48 @@ export default function App() {
     });
 
     return Object.values(dailyMap).sort((a, b) => a.date.localeCompare(b.date));
-  }, []);
+  }, [products]);
+
+  const handleArrivalChange = useCallback((productCode: string, dayIndex: number, value: string) => {
+    const num = value === '' ? 0 : parseInt(value, 10);
+    if (isNaN(num)) return;
+    setEditingArrivals(prev => {
+      const current = prev[productCode] || products.find(p => p.code === productCode)!.daily.map(d => d.arrival);
+      const updated = [...current];
+      updated[dayIndex] = num;
+      return { ...prev, [productCode]: updated };
+    });
+  }, [products]);
+
+  const handleSave = useCallback((productCode: string) => {
+    const arrivals = editingArrivals[productCode];
+    if (!arrivals) return;
+
+    setSaveStatus(prev => ({ ...prev, [productCode]: 'saving' }));
+
+    setProducts(prev => {
+      const updated = prev.map(p => {
+        if (p.code !== productCode) return p;
+        const newDaily = p.daily.map((d, i) => ({ ...d, arrival: arrivals[i] }));
+        return { ...p, daily: newDaily };
+      });
+      localStorage.setItem('scm_products', JSON.stringify(updated));
+      return updated;
+    });
+
+    setEditingArrivals(prev => {
+      const next = { ...prev };
+      delete next[productCode];
+      return next;
+    });
+
+    setSaveStatus(prev => ({ ...prev, [productCode]: 'saved' }));
+    setTimeout(() => setSaveStatus(prev => {
+      const next = { ...prev };
+      delete next[productCode];
+      return next;
+    }), 2000);
+  }, [editingArrivals]);
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans pb-12">
@@ -241,7 +293,7 @@ export default function App() {
               진도율 현황 요약
             </h3>
             <div className="space-y-6">
-              {DASHBOARD_DATA.products.slice(0, 5).map((p, i) => (
+              {products.slice(0, 5).map((p, i) => (
                 <div key={i} className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="font-medium text-slate-700 truncate max-w-[180px]">{p.name}</span>
@@ -373,10 +425,30 @@ export default function App() {
                             >
                               <div className="py-6 border-t border-slate-100 grid grid-cols-1 lg:grid-cols-2 gap-8">
                                 <div className="space-y-4">
-                                  <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                                    <Calendar className="w-4 h-4 text-indigo-500" />
-                                    일별 상세 현황 (단위: 만개)
-                                  </h4>
+                                  <div className="flex items-center justify-between">
+                                    <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                                      <Calendar className="w-4 h-4 text-indigo-500" />
+                                      일별 상세 현황 (단위: 만개)
+                                    </h4>
+                                    <div className="flex items-center gap-2">
+                                      {saveStatus[product.code] === 'saved' && (
+                                        <span className="text-xs text-emerald-600 font-medium">저장 완료!</span>
+                                      )}
+                                      <button
+                                        onClick={(e) => { e.stopPropagation(); handleSave(product.code); }}
+                                        disabled={!editingArrivals[product.code]}
+                                        className={cn(
+                                          "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors",
+                                          editingArrivals[product.code]
+                                            ? "bg-indigo-600 text-white hover:bg-indigo-700"
+                                            : "bg-slate-200 text-slate-400 cursor-not-allowed"
+                                        )}
+                                      >
+                                        <Save className="w-3.5 h-3.5" />
+                                        저장
+                                      </button>
+                                    </div>
+                                  </div>
                                   <div className="bg-slate-50 rounded-xl p-4 overflow-x-auto">
                                     <table className="w-full text-xs">
                                       <thead>
@@ -391,8 +463,23 @@ export default function App() {
                                           {product.daily.map((d, i) => <td key={i} className="py-2 text-center font-bold text-slate-700">{d.target || '-'}</td>)}
                                         </tr>
                                         <tr>
-                                          <td className="py-2 font-medium text-slate-500">자재입고</td>
-                                          {product.daily.map((d, i) => <td key={i} className="py-2 text-center font-bold text-amber-600">{d.arrival || '-'}</td>)}
+                                          <td className="py-2 font-medium text-amber-600">자재입고</td>
+                                          {product.daily.map((d, i) => {
+                                            const editVal = editingArrivals[product.code]?.[i];
+                                            const displayVal = editVal !== undefined ? editVal : d.arrival;
+                                            return (
+                                              <td key={i} className="py-1 text-center">
+                                                <input
+                                                  type="number"
+                                                  min="0"
+                                                  value={displayVal}
+                                                  onClick={(e) => e.stopPropagation()}
+                                                  onChange={(e) => handleArrivalChange(product.code, i, e.target.value)}
+                                                  className="w-14 px-1 py-1 text-center text-xs font-bold text-amber-600 bg-white border border-amber-200 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-amber-400"
+                                                />
+                                              </td>
+                                            );
+                                          })}
                                         </tr>
                                         <tr>
                                           <td className="py-2 font-medium text-slate-500">생산실적</td>
