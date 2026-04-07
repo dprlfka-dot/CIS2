@@ -221,7 +221,7 @@ export default function App() {
           <div className="flex items-center gap-4">
             <div className="hidden sm:flex items-center gap-2 text-sm font-medium text-slate-500 bg-slate-100 px-3 py-1.5 rounded-full">
               <Calendar className="w-4 h-4" />
-              기준일자: {DASHBOARD_DATA.baseDate}
+              기준일자: {new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\. /g, '.').replace(/\.$/, '')}
             </div>
           </div>
         </div>
@@ -237,7 +237,7 @@ export default function App() {
                 <Package className="w-5 h-5 text-white" />
               </div>
               <div>
-                <p className="text-[10px] text-slate-400 font-medium">4/1 기준 수주잔량</p>
+                <p className="text-[10px] text-slate-400 font-medium">{`${new Date().getMonth() + 1}/${new Date().getDate()}`} 기준 수주잔량</p>
                 <p className="text-lg font-bold text-slate-900">{stats.totalBacklog.toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
               </div>
             </div>
@@ -362,42 +362,38 @@ export default function App() {
               </div>
             </div>
             {/* 금일 기준 목표 진도율 */}
-            <div className="flex items-center gap-3 px-4 py-2 bg-indigo-50 border border-indigo-200 rounded-xl">
-              <span className="text-xs font-bold text-indigo-700 whitespace-nowrap">금일 목표 진도율</span>
-              <div className="w-32 h-2.5 bg-indigo-100 rounded-full overflow-hidden">
-                <div className="h-full bg-indigo-500 rounded-full" style={{ width: `${Math.round((7 / 30) * 100)}%` }} />
-              </div>
-              <span className="text-xs font-bold text-indigo-600 whitespace-nowrap">{Math.round((7 / 30) * 100)}%</span>
-              <span className="text-[10px] text-slate-400 whitespace-nowrap">(4/7 기준, 7일/30일 경과)</span>
-            </div>
+            {(() => {
+              const today = new Date();
+              const dayOfMonth = today.getDate();
+              const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+              const progressPct = Math.round((dayOfMonth / daysInMonth) * 100);
+              return (
+                <div className="flex items-center gap-3 px-4 py-2 bg-indigo-50 border border-indigo-200 rounded-xl">
+                  <span className="text-xs font-bold text-indigo-700 whitespace-nowrap">금일 목표 진도율</span>
+                  <div className="w-32 h-2.5 bg-indigo-100 rounded-full overflow-hidden">
+                    <div className="h-full bg-indigo-500 rounded-full" style={{ width: `${progressPct}%` }} />
+                  </div>
+                  <span className="text-xs font-bold text-indigo-600 whitespace-nowrap">{progressPct}%</span>
+                  <span className="text-[10px] text-slate-400 whitespace-nowrap">({today.getMonth() + 1}/{dayOfMonth} 기준, {dayOfMonth}일/{daysInMonth}일 경과)</span>
+                </div>
+              );
+            })()}
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-slate-50/50 text-slate-600 text-[11px] font-bold tracking-wider whitespace-nowrap">
-                  <th className="px-3 py-4 text-center w-[60px]">고객사</th>
-                  <th className="px-3 py-4 text-center w-[120px]">품목코드</th>
-                  <th className="px-3 py-4 text-center whitespace-nowrap min-w-[320px]">품목명</th>
-                  <th className="px-2 py-4 text-center w-[90px]">
-                    4/1 기준<br />수주잔량<br /><span className="text-[10px] text-slate-400 font-medium">(만개)</span>
-                  </th>
-                  <th className="px-2 py-4 text-center w-[80px]">
-                    월 자재<br />CAPA<br /><span className="text-[10px] text-slate-400 font-medium">(만개)</span>
-                  </th>
-                  <th className="px-2 py-4 text-center w-[80px]">
-                    월 생산<br />CAPA<br /><span className="text-[10px] text-slate-400 font-medium">(만개)</span>
-                  </th>
-                  <th className="px-2 py-4 text-center w-[70px]">
-                    생산목표<br /><span className="text-[10px] text-slate-400 font-medium">(만개)</span>
-                  </th>
-                  <th className="px-2 py-4 text-center w-[70px]">
-                    자재<br />진도율
-                  </th>
-                  <th className="px-2 py-4 text-center w-[70px]">
-                    생산<br />진도율
-                  </th>
-                  <th className="px-2 py-4 w-[30px]"></th>
+                <tr className="bg-slate-50/50 text-slate-700 text-sm font-bold tracking-wider whitespace-nowrap">
+                  <th className="px-3 py-3 text-center">고객사</th>
+                  <th className="px-3 py-3 text-center">품목코드</th>
+                  <th className="px-3 py-3 text-center whitespace-nowrap min-w-[200px]">품목명</th>
+                  <th className="px-3 py-3 text-center whitespace-nowrap">수주잔량<span className="text-xs text-slate-400 font-medium ml-1">(만개)</span></th>
+                  <th className="px-3 py-3 text-center whitespace-nowrap">월자재CAPA<span className="text-xs text-slate-400 font-medium ml-1">(만개)</span></th>
+                  <th className="px-3 py-3 text-center whitespace-nowrap">월생산CAPA<span className="text-xs text-slate-400 font-medium ml-1">(만개)</span></th>
+                  <th className="px-3 py-3 text-center whitespace-nowrap">생산목표<span className="text-xs text-slate-400 font-medium ml-1">(만개)</span></th>
+                  <th className="px-3 py-3 text-center whitespace-nowrap">자재진도율</th>
+                  <th className="px-3 py-3 text-center whitespace-nowrap">생산진도율</th>
+                  <th className="px-2 py-3 w-[30px]"></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -411,37 +407,37 @@ export default function App() {
                       onClick={() => setSelectedProduct(selectedProduct?.code === product.code ? null : product)}
                     >
                       <td className="px-3 py-3 text-center">
-                        <span className="text-xs font-bold px-2 py-1 bg-slate-100 text-slate-600 rounded-md">
+                        <span className="text-sm font-bold px-2 py-1 bg-slate-100 text-slate-700 rounded-md">
                           {product.customer}
                         </span>
                       </td>
                       <td className="px-3 py-3 text-center">
-                        <span className="text-sm font-bold text-slate-900 font-mono">{product.code}</span>
+                        <span className="text-base font-bold text-slate-900 font-mono">{product.code}</span>
                       </td>
                       <td className="px-3 py-3 text-center">
-                        <span className="text-sm font-bold text-slate-900 group-hover:text-indigo-600 transition-colors whitespace-nowrap">
+                        <span className="text-base font-bold text-slate-900 group-hover:text-indigo-600 transition-colors whitespace-nowrap">
                           {product.name}
                         </span>
                       </td>
-                      <td className="px-3 py-3 text-center font-bold text-slate-900">
+                      <td className="px-3 py-3 text-center text-base font-bold text-slate-900">
                         {product.backlog.toLocaleString()}
                       </td>
-                      <td className="px-3 py-3 text-center font-bold text-amber-600">
+                      <td className="px-3 py-3 text-center text-base font-bold text-amber-700">
                         {product.materialCapa.toLocaleString()}
                       </td>
-                      <td className="px-3 py-3 text-center font-bold text-emerald-600">
+                      <td className="px-3 py-3 text-center text-base font-bold text-emerald-700">
                         {product.productionCapa === 0 ? '-' : product.productionCapa.toLocaleString()}
                       </td>
-                      <td className="px-3 py-3 text-center font-bold text-slate-900">
+                      <td className="px-3 py-3 text-center text-base font-bold text-slate-900">
                         {product.productionTarget.toLocaleString()}
                       </td>
-                      <td className="px-2 py-3 text-center">
+                      <td className="px-3 py-3 text-center">
                         <StatusBadge status={product.materialProgress >= 20 ? '이상' : '미달'} />
-                        <p className="text-[10px] text-slate-400 mt-1">{product.materialProgress}%</p>
+                        <p className="text-sm text-slate-500 mt-1">{product.materialProgress}%</p>
                       </td>
-                      <td className="px-2 py-3 text-center">
+                      <td className="px-3 py-3 text-center">
                         <StatusBadge status={product.productionProgress >= 20 ? '이상' : '미달'} />
-                        <p className="text-[10px] text-slate-400 mt-1">{product.productionProgress}%</p>
+                        <p className="text-sm text-slate-500 mt-1">{product.productionProgress}%</p>
                       </td>
                       <td className="px-3 py-3 text-right">
                         <ChevronRight className={cn(
