@@ -237,7 +237,7 @@ export default function App() {
                 <Package className="w-5 h-5 text-white" />
               </div>
               <div>
-                <p className="text-[10px] text-slate-400 font-medium">{`${new Date().getMonth() + 1}/${new Date().getDate()}`} 기준 수주잔량</p>
+                <p className="text-[10px] text-slate-400 font-medium">4/1 기준 수주잔량</p>
                 <p className="text-lg font-bold text-slate-900">{stats.totalBacklog.toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
               </div>
             </div>
