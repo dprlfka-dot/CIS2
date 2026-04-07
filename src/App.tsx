@@ -486,7 +486,7 @@ export default function App() {
                                         저장
                                       </button>
                                     </div>
-                                    <table className="w-full text-xs border-collapse table-fixed">
+                                    <table className="w-full text-sm border-collapse table-fixed">
                                       <colgroup>
                                         <col className="w-[60px]" />
                                         <col /><col /><col /><col /><col /><col /><col /><col /><col className="w-[56px]" /><col className="w-[56px]" />
@@ -495,8 +495,8 @@ export default function App() {
                                         {calendarWeeks.map((week, wi) => {
                                           return (
                                             <React.Fragment key={wi}>
-                                              <tr className={cn(wi > 0 && "border-t-2 border-indigo-100")}>
-                                                <td colSpan={11} className="pt-2 pb-1 text-[10px] font-bold text-indigo-500 uppercase tracking-wider">{week.label}</td>
+                                              <tr className={cn(wi > 0 && "border-t-2 border-indigo-200")}>
+                                                <td colSpan={11} className="pt-2 pb-1 text-xs font-bold text-indigo-700 uppercase tracking-wider">{week.label}</td>
                                               </tr>
                                               {(() => {
                                                 const validIndices = week.cols.filter((idx): idx is number => idx !== null);
@@ -515,19 +515,19 @@ export default function App() {
                                                 return (
                                                   <>
                                                     {/* 일자 행 */}
-                                                    <tr className="text-slate-400">
-                                                      <td className="pb-1 text-center font-medium">일자</td>
+                                                    <tr className="text-slate-600">
+                                                      <td className="pb-1 text-center font-bold">일자</td>
                                                       {week.cols.map((idx, ci) => (
-                                                        <td key={ci} className={cn("pb-1 text-center font-bold", ci === 0 && "text-rose-400", ci === 6 && "text-blue-400")}>
+                                                        <td key={ci} className={cn("pb-1 text-center font-bold", ci === 0 && "text-rose-600", ci === 6 && "text-blue-600")}>
                                                           {idx !== null ? product.daily[idx]?.date : ''}
                                                         </td>
                                                       ))}
-                                                      <td className="pb-1 text-center font-bold text-indigo-500 bg-indigo-50/50">누계</td>
-                                                      <td className="pb-1 text-center font-bold text-amber-500 bg-amber-50/50 text-[9px] leading-tight">자재<br/>진도율</td>
-                                                      <td className="pb-1 text-center font-bold text-emerald-500 bg-emerald-50/50 text-[9px] leading-tight">생산<br/>진도율</td>
+                                                      <td className="pb-1 text-center font-bold text-indigo-700 bg-indigo-50/50">누계</td>
+                                                      <td className="pb-1 text-center font-bold text-amber-700 bg-amber-50/50 text-[10px] leading-tight">자재<br/>진도율</td>
+                                                      <td className="pb-1 text-center font-bold text-emerald-700 bg-emerald-50/50 text-[10px] leading-tight">생산<br/>진도율</td>
                                                     </tr>
                                                     <tr>
-                                                      <td className="py-1 font-medium text-slate-500 text-center">생산목표</td>
+                                                      <td className="py-1 font-bold text-slate-700 text-center">생산목표</td>
                                                       {week.cols.map((idx, ci) => (
                                                         <td key={ci} className={cn("py-0.5 text-center", ci === 0 && "bg-rose-50/50", ci === 6 && "bg-blue-50/50")}>
                                                           {idx !== null ? (
@@ -537,21 +537,21 @@ export default function App() {
                                                               value={(() => { const v = editingTargets[product.code]?.[idx] !== undefined ? editingTargets[product.code][idx] : product.daily[idx]?.target ?? 0; return v === 0 ? '' : v; })()}
                                                               onClick={(e) => e.stopPropagation()}
                                                               onChange={(e) => handleTargetChange(product.code, idx, e.target.value)}
-                                                              className="w-10 px-0.5 py-0.5 text-center text-xs font-bold text-slate-700 bg-white border border-slate-200 rounded focus:outline-none focus:ring-1 focus:ring-indigo-400/50"
+                                                              className="w-12 px-0.5 py-0.5 text-center text-sm font-bold text-slate-800 bg-white border border-slate-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-400/50"
                                                             />
                                                           ) : ''}
                                                         </td>
                                                       ))}
-                                                      <td className="py-1 text-center font-bold text-indigo-700 bg-indigo-50/50">{weekTargetSum || '-'}</td>
-                                                      <td rowSpan={3} className="py-1 text-center font-bold text-amber-600 bg-amber-50/50 align-middle text-sm">
+                                                      <td className="py-1 text-center font-bold text-indigo-800 bg-indigo-50/50">{weekTargetSum || '-'}</td>
+                                                      <td rowSpan={3} className="py-1 text-center font-bold text-amber-700 bg-amber-50/50 align-middle text-base">
                                                         {weekTargetSum > 0 ? Math.round((weekArrivalSum / weekTargetSum) * 100) : 0}%
                                                       </td>
-                                                      <td rowSpan={3} className="py-1 text-center font-bold text-emerald-600 bg-emerald-50/50 align-middle text-sm">
+                                                      <td rowSpan={3} className="py-1 text-center font-bold text-emerald-700 bg-emerald-50/50 align-middle text-base">
                                                         {weekTargetSum > 0 ? Math.round((weekAchievementSum / weekTargetSum) * 100) : 0}%
                                                       </td>
                                                     </tr>
                                                     <tr>
-                                                      <td className="py-1 font-medium text-amber-600 text-center">자재입고</td>
+                                                      <td className="py-1 font-bold text-amber-700 text-center">자재입고</td>
                                                       {week.cols.map((idx, ci) => (
                                                         <td key={ci} className={cn("py-0.5 text-center", ci === 0 && "bg-rose-50/50", ci === 6 && "bg-blue-50/50")}>
                                                           {idx !== null ? (
@@ -561,15 +561,15 @@ export default function App() {
                                                               value={(() => { const v = editingArrivals[product.code]?.[idx] !== undefined ? editingArrivals[product.code][idx] : product.daily[idx]?.arrival ?? 0; return v === 0 ? '' : v; })()}
                                                               onClick={(e) => e.stopPropagation()}
                                                               onChange={(e) => handleArrivalChange(product.code, idx, e.target.value)}
-                                                              className="w-10 px-0.5 py-0.5 text-center text-xs font-bold text-amber-600 bg-white border border-amber-200 rounded focus:outline-none focus:ring-1 focus:ring-amber-400/50"
+                                                              className="w-12 px-0.5 py-0.5 text-center text-sm font-bold text-amber-700 bg-white border border-amber-300 rounded focus:outline-none focus:ring-1 focus:ring-amber-400/50"
                                                             />
                                                           ) : ''}
                                                         </td>
                                                       ))}
-                                                      <td className="py-1 text-center font-bold text-amber-700 bg-indigo-50/50">{weekArrivalSum || '-'}</td>
+                                                      <td className="py-1 text-center font-bold text-amber-800 bg-indigo-50/50">{weekArrivalSum || '-'}</td>
                                                     </tr>
                                                     <tr>
-                                                      <td className="py-1 font-medium text-emerald-600 text-center">생산실적</td>
+                                                      <td className="py-1 font-bold text-emerald-700 text-center">생산실적</td>
                                                       {week.cols.map((idx, ci) => (
                                                         <td key={ci} className={cn("py-0.5 text-center", ci === 0 && "bg-rose-50/50", ci === 6 && "bg-blue-50/50")}>
                                                           {idx !== null ? (
@@ -579,12 +579,12 @@ export default function App() {
                                                               value={(() => { const v = editingAchievements[product.code]?.[idx] !== undefined ? editingAchievements[product.code][idx] : product.daily[idx]?.achievement ?? 0; return v === 0 ? '' : v; })()}
                                                               onClick={(e) => e.stopPropagation()}
                                                               onChange={(e) => handleAchievementChange(product.code, idx, e.target.value)}
-                                                              className="w-10 px-0.5 py-0.5 text-center text-xs font-bold text-emerald-600 bg-white border border-emerald-200 rounded focus:outline-none focus:ring-1 focus:ring-emerald-400/50"
+                                                              className="w-12 px-0.5 py-0.5 text-center text-sm font-bold text-emerald-700 bg-white border border-emerald-300 rounded focus:outline-none focus:ring-1 focus:ring-emerald-400/50"
                                                             />
                                                           ) : ''}
                                                         </td>
                                                       ))}
-                                                      <td className="py-1 text-center font-bold text-emerald-700 bg-indigo-50/50">{weekAchievementSum || '-'}</td>
+                                                      <td className="py-1 text-center font-bold text-emerald-800 bg-indigo-50/50">{weekAchievementSum || '-'}</td>
                                                     </tr>
                                                   </>
                                                 );
