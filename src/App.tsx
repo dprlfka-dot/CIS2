@@ -76,6 +76,7 @@ export default function App() {
   const [selectedProduct, setSelectedProduct] = useState<ProductData | null>(null);
   const [products, setProducts] = useState<ProductData[]>(loadProducts);
   const [editingArrivals, setEditingArrivals] = useState<Record<string, number[]>>({});
+  const [editingAchievements, setEditingAchievements] = useState<Record<string, number[]>>({});
   const [saveStatus, setSaveStatus] = useState<Record<string, 'saved' | 'saving'>>({});
 
   const customers = useMemo(() => {
@@ -112,16 +113,32 @@ export default function App() {
     });
   }, [products]);
 
+  const handleAchievementChange = useCallback((productCode: string, dayIndex: number, value: string) => {
+    const num = value === '' ? 0 : parseInt(value, 10);
+    if (isNaN(num)) return;
+    setEditingAchievements(prev => {
+      const current = prev[productCode] || products.find(p => p.code === productCode)!.daily.map(d => d.achievement);
+      const updated = [...current];
+      updated[dayIndex] = num;
+      return { ...prev, [productCode]: updated };
+    });
+  }, [products]);
+
   const handleSave = useCallback((productCode: string) => {
     const arrivals = editingArrivals[productCode];
-    if (!arrivals) return;
+    const achievements = editingAchievements[productCode];
+    if (!arrivals && !achievements) return;
 
     setSaveStatus(prev => ({ ...prev, [productCode]: 'saving' }));
 
     setProducts(prev => {
       const updated = prev.map(p => {
         if (p.code !== productCode) return p;
-        const newDaily = p.daily.map((d, i) => ({ ...d, arrival: arrivals[i] }));
+        const newDaily = p.daily.map((d, i) => ({
+          ...d,
+          ...(arrivals ? { arrival: arrivals[i] } : {}),
+          ...(achievements ? { achievement: achievements[i] } : {}),
+        }));
         return { ...p, daily: newDaily };
       });
       localStorage.setItem('scm_products', JSON.stringify(updated));
@@ -133,6 +150,11 @@ export default function App() {
       delete next[productCode];
       return next;
     });
+    setEditingAchievements(prev => {
+      const next = { ...prev };
+      delete next[productCode];
+      return next;
+    });
 
     setSaveStatus(prev => ({ ...prev, [productCode]: 'saved' }));
     setTimeout(() => setSaveStatus(prev => {
@@ -140,7 +162,7 @@ export default function App() {
       delete next[productCode];
       return next;
     }), 2000);
-  }, [editingArrivals]);
+  }, [editingArrivals, editingAchievements]);
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans pb-12">
@@ -321,10 +343,10 @@ export default function App() {
                                     )}
                                     <button
                                       onClick={(e) => { e.stopPropagation(); handleSave(product.code); }}
-                                      disabled={!editingArrivals[product.code]}
+                                      disabled={!editingArrivals[product.code] && !editingAchievements[product.code]}
                                       className={cn(
                                         "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors",
-                                        editingArrivals[product.code]
+                                        (editingArrivals[product.code] || editingAchievements[product.code])
                                           ? "bg-indigo-600 text-white hover:bg-indigo-700"
                                           : "bg-slate-200 text-slate-400 cursor-not-allowed"
                                       )}
@@ -367,8 +389,23 @@ export default function App() {
                                         })}
                                       </tr>
                                       <tr>
-                                        <td className="py-2 font-medium text-slate-500 sticky left-0 bg-slate-50 z-10 pr-3">생산실적</td>
-                                        {product.daily.map((d, i) => <td key={i} className="py-2 text-center font-bold text-emerald-600 px-1">{d.achievement || '-'}</td>)}
+                                        <td className="py-2 font-medium text-emerald-600 sticky left-0 bg-slate-50 z-10 pr-3">생산실적</td>
+                                        {product.daily.map((d, i) => {
+                                          const editVal = editingAchievements[product.code]?.[i];
+                                          const displayVal = editVal !== undefined ? editVal : d.achievement;
+                                          return (
+                                            <td key={i} className="py-1 text-center px-1">
+                                              <input
+                                                type="number"
+                                                min="0"
+                                                value={displayVal}
+                                                onClick={(e) => e.stopPropagation()}
+                                                onChange={(e) => handleAchievementChange(product.code, i, e.target.value)}
+                                                className="w-12 px-0.5 py-1 text-center text-xs font-bold text-emerald-600 bg-white border border-emerald-200 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-400"
+                                              />
+                                            </td>
+                                          );
+                                        })}
                                       </tr>
                                     </tbody>
                                   </table>
