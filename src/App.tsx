@@ -330,7 +330,7 @@ export default function App() {
           });
 
           return (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
               {/* 좌측: 고객사별 진도율 */}
               <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
                 <h3 className="text-sm font-bold text-slate-900 mb-4">고객사별 진도율</h3>
@@ -367,9 +367,9 @@ export default function App() {
               </div>
 
               {/* 우측: 주차별 진도율 그래프 */}
-              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 flex flex-col">
                 <h3 className="text-sm font-bold text-slate-900 mb-4">주차별 진도율 추이</h3>
-                <div className="w-full h-[280px]">
+                <div className="w-full flex-1 min-h-0">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={weeklyChartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
@@ -380,9 +380,9 @@ export default function App() {
                         formatter={(value: number) => [`${value}%`]}
                       />
                       <Legend wrapperStyle={{ fontSize: '12px' }} />
-                      <Line type="monotone" dataKey="목표" stroke="#6366f1" strokeWidth={2.5} dot={{ r: 4, fill: '#6366f1' }} activeDot={{ r: 6 }} />
-                      <Line type="monotone" dataKey="자재입고" stroke="#f59e0b" strokeWidth={2.5} dot={{ r: 4, fill: '#f59e0b' }} activeDot={{ r: 6 }} />
-                      <Line type="monotone" dataKey="생산실적" stroke="#10b981" strokeWidth={2.5} dot={{ r: 4, fill: '#10b981' }} activeDot={{ r: 6 }} />
+                      <Line type="monotone" dataKey="목표" stroke="#6366f1" strokeWidth={1.5} dot={{ r: 3, fill: '#6366f1' }} activeDot={{ r: 5 }} />
+                      <Line type="monotone" dataKey="자재입고" stroke="#f59e0b" strokeWidth={1.5} dot={{ r: 3, fill: '#f59e0b' }} activeDot={{ r: 5 }} />
+                      <Line type="monotone" dataKey="생산실적" stroke="#10b981" strokeWidth={1.5} dot={{ r: 3, fill: '#10b981' }} activeDot={{ r: 5 }} />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
