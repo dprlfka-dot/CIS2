@@ -15,18 +15,6 @@ import {
   ArrowDownRight,
   Save
 } from 'lucide-react';
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell
-} from 'recharts';
 import { motion, AnimatePresence } from 'motion/react';
 import { DASHBOARD_DATA } from './data';
 import { ProductData } from './types';
@@ -98,14 +86,14 @@ export default function App() {
   const [editingAchievements, setEditingAchievements] = useState<Record<string, number[]>>({});
   const [saveStatus, setSaveStatus] = useState<Record<string, 'saved' | 'saving'>>({});
 
-  // 2026년 4월: 수요일 시작. 월~일 7열 고정, 주차별 행 구분
-  // 각 주차: [월,화,수,목,금,토,일] 에 해당하는 daily index (null = 빈 칸)
+  // 2026년 4월: 수요일 시작. 일~토 7열 고정, 주차별 행 구분
+  // 각 주차: [일,월,화,수,목,금,토] 에 해당하는 daily index (null = 빈 칸)
   const calendarWeeks = [
-    { label: '1주차', cols: [null, null, 0, 1, 2, 3, 4] },       // 4/1(수)~4/5(일)
-    { label: '2주차', cols: [5, 6, 7, 8, 9, 10, 11] },           // 4/6(월)~4/12(일)
-    { label: '3주차', cols: [12, 13, 14, 15, 16, 17, 18] },      // 4/13(월)~4/19(일)
-    { label: '4주차', cols: [19, 20, 21, 22, 23, 24, 25] },      // 4/20(월)~4/26(일)
-    { label: '5주차', cols: [26, 27, 28, 29, null, null, null] }, // 4/27(월)~4/30(목)
+    { label: '1주차', cols: [null, null, null, 0, 1, 2, 3] },    // 4/1(수)~4/4(토)
+    { label: '2주차', cols: [4, 5, 6, 7, 8, 9, 10] },            // 4/5(일)~4/11(토)
+    { label: '3주차', cols: [11, 12, 13, 14, 15, 16, 17] },      // 4/12(일)~4/18(토)
+    { label: '4주차', cols: [18, 19, 20, 21, 22, 23, 24] },      // 4/19(일)~4/25(토)
+    { label: '5주차', cols: [25, 26, 27, 28, 29, null, null] },   // 4/26(일)~4/30(수)
   ];
 
   const customers = useMemo(() => {
@@ -276,6 +264,53 @@ export default function App() {
           />
         </div>
 
+        {/* 고객사별 진도율 */}
+        {(() => {
+          const customerStats = customers.filter(c => c !== 'All').map(customer => {
+            const custProducts = products.filter(p => p.customer === customer);
+            const avgMaterial = Math.round(custProducts.reduce((s, p) => s + p.materialProgress, 0) / custProducts.length);
+            const avgProduction = Math.round(custProducts.reduce((s, p) => s + p.productionProgress, 0) / custProducts.length);
+            const totalTarget = custProducts.reduce((s, p) => s + p.productionTarget, 0);
+            const itemCount = custProducts.length;
+            return { customer, avgMaterial, avgProduction, totalTarget, itemCount };
+          });
+          return (
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+              <h3 className="text-sm font-bold text-slate-900 mb-4">고객사별 자재 진도율 / 생산 진도율</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {customerStats.map(cs => (
+                  <div key={cs.customer} className="bg-slate-50 rounded-xl p-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-bold text-slate-800">{cs.customer}</span>
+                      <span className="text-[10px] text-slate-400">{cs.itemCount}개 품목 · 목표 {cs.totalTarget.toLocaleString()}만개</span>
+                    </div>
+                    <div className="space-y-2">
+                      <div>
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-xs font-medium text-amber-600">자재 진도율</span>
+                          <span className="text-xs font-bold text-amber-600">{cs.avgMaterial}%</span>
+                        </div>
+                        <div className="w-full h-2 bg-amber-100 rounded-full overflow-hidden">
+                          <div className="h-full bg-amber-400 rounded-full transition-all" style={{ width: `${Math.min(cs.avgMaterial, 100)}%` }} />
+                        </div>
+                      </div>
+                      <div>
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-xs font-medium text-emerald-600">생산 진도율</span>
+                          <span className="text-xs font-bold text-emerald-600">{cs.avgProduction}%</span>
+                        </div>
+                        <div className="w-full h-2 bg-emerald-100 rounded-full overflow-hidden">
+                          <div className="h-full bg-emerald-500 rounded-full transition-all" style={{ width: `${Math.min(cs.avgProduction, 100)}%` }} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
+
         {/* Filters & Table */}
         <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
           <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row gap-4 justify-between items-center">
@@ -405,7 +440,7 @@ export default function App() {
                                   <Calendar className="w-4 h-4 text-indigo-500" />
                                   일별 상세 현황 — 4월 (단위: 천개)
                                 </h4>
-                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <div>
                                   {/* 월간 달력 */}
                                   <div className="bg-slate-50 rounded-xl p-4 overflow-x-auto" onClick={(e) => e.stopPropagation()}>
                                     <div className="flex items-center justify-end gap-2 mb-2">
@@ -429,14 +464,14 @@ export default function App() {
                                     <table className="w-full text-xs border-collapse table-fixed">
                                       <colgroup>
                                         <col className="w-[60px]" />
-                                        <col /><col /><col /><col /><col /><col /><col /><col />
+                                        <col /><col /><col /><col /><col /><col /><col /><col /><col className="w-[56px]" /><col className="w-[56px]" />
                                       </colgroup>
                                       <tbody>
                                         {calendarWeeks.map((week, wi) => {
                                           return (
                                             <React.Fragment key={wi}>
                                               <tr className={cn(wi > 0 && "border-t-2 border-indigo-100")}>
-                                                <td colSpan={9} className="pt-2 pb-1 text-[10px] font-bold text-indigo-500 uppercase tracking-wider">{week.label}</td>
+                                                <td colSpan={11} className="pt-2 pb-1 text-[10px] font-bold text-indigo-500 uppercase tracking-wider">{week.label}</td>
                                               </tr>
                                               {(() => {
                                                 const validIndices = week.cols.filter((idx): idx is number => idx !== null);
@@ -455,25 +490,33 @@ export default function App() {
                                                     <tr className="text-slate-400">
                                                       <td className="pb-1 text-center font-medium">일자</td>
                                                       {week.cols.map((idx, ci) => (
-                                                        <td key={ci} className={cn("pb-1 text-center font-bold", ci === 5 && "text-blue-400", ci === 6 && "text-rose-400")}>
+                                                        <td key={ci} className={cn("pb-1 text-center font-bold", ci === 0 && "text-rose-400", ci === 6 && "text-blue-400")}>
                                                           {idx !== null ? product.daily[idx]?.date : ''}
                                                         </td>
                                                       ))}
                                                       <td className="pb-1 text-center font-bold text-indigo-500 bg-indigo-50/50">누계</td>
+                                                      <td className="pb-1 text-center font-bold text-amber-500 bg-amber-50/50 text-[9px] leading-tight">자재<br/>진도율</td>
+                                                      <td className="pb-1 text-center font-bold text-emerald-500 bg-emerald-50/50 text-[9px] leading-tight">생산<br/>진도율</td>
                                                     </tr>
                                                     <tr>
                                                       <td className="py-1 font-medium text-slate-500 text-center">생산목표</td>
                                                       {week.cols.map((idx, ci) => (
-                                                        <td key={ci} className={cn("py-1 text-center font-bold text-slate-700", ci === 5 && "bg-blue-50/50", ci === 6 && "bg-rose-50/50")}>
+                                                        <td key={ci} className={cn("py-1 text-center font-bold text-slate-700", ci === 0 && "bg-rose-50/50", ci === 6 && "bg-blue-50/50")}>
                                                           {idx !== null ? (product.daily[idx]?.target || '-') : ''}
                                                         </td>
                                                       ))}
                                                       <td className="py-1 text-center font-bold text-indigo-700 bg-indigo-50/50">{weekTargetSum || '-'}</td>
+                                                      <td rowSpan={3} className="py-1 text-center font-bold text-amber-600 bg-amber-50/50 align-middle text-sm">
+                                                        {weekTargetSum > 0 ? Math.round((weekArrivalSum / weekTargetSum) * 100) : 0}%
+                                                      </td>
+                                                      <td rowSpan={3} className="py-1 text-center font-bold text-emerald-600 bg-emerald-50/50 align-middle text-sm">
+                                                        {weekTargetSum > 0 ? Math.round((weekAchievementSum / weekTargetSum) * 100) : 0}%
+                                                      </td>
                                                     </tr>
                                                     <tr>
                                                       <td className="py-1 font-medium text-amber-600 text-center">자재입고</td>
                                                       {week.cols.map((idx, ci) => (
-                                                        <td key={ci} className={cn("py-0.5 text-center", ci === 5 && "bg-blue-50/50", ci === 6 && "bg-rose-50/50")}>
+                                                        <td key={ci} className={cn("py-0.5 text-center", ci === 0 && "bg-rose-50/50", ci === 6 && "bg-blue-50/50")}>
                                                           {idx !== null ? (
                                                             <input
                                                               type="number"
@@ -491,7 +534,7 @@ export default function App() {
                                                     <tr>
                                                       <td className="py-1 font-medium text-emerald-600 text-center">생산실적</td>
                                                       {week.cols.map((idx, ci) => (
-                                                        <td key={ci} className={cn("py-0.5 text-center", ci === 5 && "bg-blue-50/50", ci === 6 && "bg-rose-50/50")}>
+                                                        <td key={ci} className={cn("py-0.5 text-center", ci === 0 && "bg-rose-50/50", ci === 6 && "bg-blue-50/50")}>
                                                           {idx !== null ? (
                                                             <input
                                                               type="number"
@@ -514,27 +557,6 @@ export default function App() {
                                         })}
                                       </tbody>
                                     </table>
-                                  </div>
-
-                                  {/* 품목별 요약 */}
-                                  <div className="space-y-4">
-                                    {/* 일별 실적 차트 */}
-                                    <div className="bg-slate-50 rounded-xl p-4">
-                                      <h5 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">일별 목표 vs 입고 vs 실적</h5>
-                                      <div className="h-[180px] w-full">
-                                        <ResponsiveContainer width="100%" height="100%">
-                                          <BarChart data={product.daily.filter(d => d.target > 0 || d.arrival > 0 || d.achievement > 0)}>
-                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                                            <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 9 }} interval={0} angle={-45} textAnchor="end" height={40} />
-                                            <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10 }} />
-                                            <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', fontSize: '11px' }} />
-                                            <Bar dataKey="target" name="목표" fill="#6366f1" radius={[3, 3, 0, 0]} />
-                                            <Bar dataKey="arrival" name="입고" fill="#f59e0b" radius={[3, 3, 0, 0]} />
-                                            <Bar dataKey="achievement" name="실적" fill="#10b981" radius={[3, 3, 0, 0]} />
-                                          </BarChart>
-                                        </ResponsiveContainer>
-                                      </div>
-                                    </div>
                                   </div>
                                 </div>
                               </div>
