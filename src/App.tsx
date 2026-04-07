@@ -82,6 +82,7 @@ export default function App() {
   const [selectedCustomer, setSelectedCustomer] = useState('All');
   const [selectedProduct, setSelectedProduct] = useState<ProductData | null>(null);
   const [products, setProducts] = useState<ProductData[]>(loadProducts);
+  const [editingTargets, setEditingTargets] = useState<Record<string, number[]>>({});
   const [editingArrivals, setEditingArrivals] = useState<Record<string, number[]>>({});
   const [editingAchievements, setEditingAchievements] = useState<Record<string, number[]>>({});
   const [saveStatus, setSaveStatus] = useState<Record<string, 'saved' | 'saving'>>({});
@@ -121,6 +122,18 @@ export default function App() {
     return { totalBacklog, totalTarget, totalAchievement, avgMaterialProgress, avgProductionProgress, targetProgressRate };
   }, [products]);
 
+  const handleTargetChange = useCallback((productCode: string, dayIndex: number, value: string) => {
+    if (value === '') { value = '0'; }
+    const num = parseInt(value, 10);
+    if (isNaN(num) || num < 0) return;
+    setEditingTargets(prev => {
+      const current = prev[productCode] || products.find(p => p.code === productCode)!.daily.map(d => d.target);
+      const updated = [...current];
+      updated[dayIndex] = num;
+      return { ...prev, [productCode]: updated };
+    });
+  }, [products]);
+
   const handleArrivalChange = useCallback((productCode: string, dayIndex: number, value: string) => {
     if (value === '') { value = '0'; }
     const num = parseInt(value, 10);
@@ -146,9 +159,10 @@ export default function App() {
   }, [products]);
 
   const handleSave = useCallback((productCode: string) => {
+    const targets = editingTargets[productCode];
     const arrivals = editingArrivals[productCode];
     const achievements = editingAchievements[productCode];
-    if (!arrivals && !achievements) return;
+    if (!targets && !arrivals && !achievements) return;
 
     setSaveStatus(prev => ({ ...prev, [productCode]: 'saving' }));
 
@@ -157,6 +171,7 @@ export default function App() {
         if (p.code !== productCode) return p;
         const newDaily = p.daily.map((d, i) => ({
           ...d,
+          ...(targets ? { target: targets[i] } : {}),
           ...(arrivals ? { arrival: arrivals[i] } : {}),
           ...(achievements ? { achievement: achievements[i] } : {}),
         }));
@@ -166,6 +181,11 @@ export default function App() {
       return updated;
     });
 
+    setEditingTargets(prev => {
+      const next = { ...prev };
+      delete next[productCode];
+      return next;
+    });
     setEditingArrivals(prev => {
       const next = { ...prev };
       delete next[productCode];
@@ -183,13 +203,13 @@ export default function App() {
       delete next[productCode];
       return next;
     }), 2000);
-  }, [editingArrivals, editingAchievements]);
+  }, [editingTargets, editingArrivals, editingAchievements]);
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans pb-12">
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans pb-4">
       {/* Header */}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        <div className="max-w-[1860px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="bg-indigo-600 p-2 rounded-lg">
               <LayoutDashboard className="w-6 h-6 text-white" />
@@ -207,7 +227,7 @@ export default function App() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      <main className="max-w-[1860px] mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-4">
         {/* 종합 현황 보드 */}
         <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
           <h3 className="text-sm font-bold text-slate-900 mb-4">종합 현황</h3>
@@ -281,7 +301,7 @@ export default function App() {
           });
           return (
             <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
-              <h3 className="text-sm font-bold text-slate-900 mb-4">고객사별 자재 진도율 / 생산 진도율</h3>
+              <h3 className="text-sm font-bold text-slate-900 mb-4">고객사별 진도율</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {customerStats.map(cs => (
                   <div key={cs.customer} className="bg-slate-50 rounded-xl p-4 space-y-3">
@@ -358,7 +378,7 @@ export default function App() {
                 <tr className="bg-slate-50/50 text-slate-600 text-[11px] font-bold tracking-wider whitespace-nowrap">
                   <th className="px-3 py-4 text-center w-[60px]">고객사</th>
                   <th className="px-3 py-4 text-center w-[120px]">품목코드</th>
-                  <th className="px-3 py-4 text-center">품목명</th>
+                  <th className="px-3 py-4 text-center whitespace-nowrap min-w-[320px]">품목명</th>
                   <th className="px-2 py-4 text-center w-[90px]">
                     4/1 기준<br />수주잔량<br /><span className="text-[10px] text-slate-400 font-medium">(만개)</span>
                   </th>
@@ -390,40 +410,40 @@ export default function App() {
                       )}
                       onClick={() => setSelectedProduct(selectedProduct?.code === product.code ? null : product)}
                     >
-                      <td className="px-6 py-5 text-center">
+                      <td className="px-3 py-3 text-center">
                         <span className="text-xs font-bold px-2 py-1 bg-slate-100 text-slate-600 rounded-md">
                           {product.customer}
                         </span>
                       </td>
-                      <td className="px-6 py-5 text-center">
+                      <td className="px-3 py-3 text-center">
                         <span className="text-sm font-bold text-slate-900 font-mono">{product.code}</span>
                       </td>
-                      <td className="px-6 py-5 text-center">
-                        <span className="text-sm font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">
+                      <td className="px-3 py-3 text-center">
+                        <span className="text-sm font-bold text-slate-900 group-hover:text-indigo-600 transition-colors whitespace-nowrap">
                           {product.name}
                         </span>
                       </td>
-                      <td className="px-6 py-5 text-center font-bold text-slate-900">
+                      <td className="px-3 py-3 text-center font-bold text-slate-900">
                         {product.backlog.toLocaleString()}
                       </td>
-                      <td className="px-6 py-5 text-center font-bold text-amber-600">
+                      <td className="px-3 py-3 text-center font-bold text-amber-600">
                         {product.materialCapa.toLocaleString()}
                       </td>
-                      <td className="px-6 py-5 text-center font-bold text-emerald-600">
+                      <td className="px-3 py-3 text-center font-bold text-emerald-600">
                         {product.productionCapa === 0 ? '-' : product.productionCapa.toLocaleString()}
                       </td>
-                      <td className="px-6 py-5 text-center font-bold text-slate-900">
+                      <td className="px-3 py-3 text-center font-bold text-slate-900">
                         {product.productionTarget.toLocaleString()}
                       </td>
-                      <td className="px-2 py-5 text-center">
+                      <td className="px-2 py-3 text-center">
                         <StatusBadge status={product.materialProgress >= 20 ? '이상' : '미달'} />
                         <p className="text-[10px] text-slate-400 mt-1">{product.materialProgress}%</p>
                       </td>
-                      <td className="px-2 py-5 text-center">
+                      <td className="px-2 py-3 text-center">
                         <StatusBadge status={product.productionProgress >= 20 ? '이상' : '미달'} />
                         <p className="text-[10px] text-slate-400 mt-1">{product.productionProgress}%</p>
                       </td>
-                      <td className="px-6 py-5 text-right">
+                      <td className="px-3 py-3 text-right">
                         <ChevronRight className={cn(
                           "w-5 h-5 text-slate-300 transition-transform",
                           selectedProduct?.code === product.code && "rotate-90 text-indigo-500"
@@ -454,10 +474,10 @@ export default function App() {
                                       )}
                                       <button
                                         onClick={(e) => { e.stopPropagation(); handleSave(product.code); }}
-                                        disabled={!editingArrivals[product.code] && !editingAchievements[product.code]}
+                                        disabled={!editingTargets[product.code] && !editingArrivals[product.code] && !editingAchievements[product.code]}
                                         className={cn(
                                           "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors",
-                                          (editingArrivals[product.code] || editingAchievements[product.code])
+                                          (editingTargets[product.code] || editingArrivals[product.code] || editingAchievements[product.code])
                                             ? "bg-indigo-600 text-white hover:bg-indigo-700"
                                             : "bg-slate-200 text-slate-400 cursor-not-allowed"
                                         )}
@@ -480,7 +500,10 @@ export default function App() {
                                               </tr>
                                               {(() => {
                                                 const validIndices = week.cols.filter((idx): idx is number => idx !== null);
-                                                const weekTargetSum = validIndices.reduce((sum, idx) => sum + (product.daily[idx]?.target ?? 0), 0);
+                                                const weekTargetSum = validIndices.reduce((sum, idx) => {
+                                                  const editVal = editingTargets[product.code]?.[idx];
+                                                  return sum + (editVal !== undefined ? editVal : (product.daily[idx]?.target ?? 0));
+                                                }, 0);
                                                 const weekArrivalSum = validIndices.reduce((sum, idx) => {
                                                   const editVal = editingArrivals[product.code]?.[idx];
                                                   return sum + (editVal !== undefined ? editVal : (product.daily[idx]?.arrival ?? 0));
@@ -506,8 +529,17 @@ export default function App() {
                                                     <tr>
                                                       <td className="py-1 font-medium text-slate-500 text-center">생산목표</td>
                                                       {week.cols.map((idx, ci) => (
-                                                        <td key={ci} className={cn("py-1 text-center font-bold text-slate-700", ci === 0 && "bg-rose-50/50", ci === 6 && "bg-blue-50/50")}>
-                                                          {idx !== null ? (product.daily[idx]?.target || '-') : ''}
+                                                        <td key={ci} className={cn("py-0.5 text-center", ci === 0 && "bg-rose-50/50", ci === 6 && "bg-blue-50/50")}>
+                                                          {idx !== null ? (
+                                                            <input
+                                                              type="number"
+                                                              min="0"
+                                                              value={(() => { const v = editingTargets[product.code]?.[idx] !== undefined ? editingTargets[product.code][idx] : product.daily[idx]?.target ?? 0; return v === 0 ? '' : v; })()}
+                                                              onClick={(e) => e.stopPropagation()}
+                                                              onChange={(e) => handleTargetChange(product.code, idx, e.target.value)}
+                                                              className="w-10 px-0.5 py-0.5 text-center text-xs font-bold text-slate-700 bg-white border border-slate-200 rounded focus:outline-none focus:ring-1 focus:ring-indigo-400/50"
+                                                            />
+                                                          ) : ''}
                                                         </td>
                                                       ))}
                                                       <td className="py-1 text-center font-bold text-indigo-700 bg-indigo-50/50">{weekTargetSum || '-'}</td>
