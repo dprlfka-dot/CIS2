@@ -16,6 +16,7 @@ import {
   Save
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { DASHBOARD_DATA } from './data';
 import { ProductData } from './types';
 import { cn } from './lib/utils';
@@ -289,7 +290,7 @@ export default function App() {
           </div>
         </div>
 
-        {/* 고객사별 진도율 */}
+        {/* 고객사별 진도율 + 주차별 진도율 그래프 */}
         {(() => {
           const customerStats = customers.filter(c => c !== 'All').map(customer => {
             const custProducts = products.filter(p => p.customer === customer);
@@ -299,38 +300,90 @@ export default function App() {
             const itemCount = custProducts.length;
             return { customer, avgMaterial, avgProduction, totalTarget, itemCount };
           });
+
+          // 주차별 누적 진도율 계산
+          const weekRanges = [
+            { label: '1주차', start: 0, end: 3 },
+            { label: '2주차', start: 0, end: 10 },
+            { label: '3주차', start: 0, end: 17 },
+            { label: '4주차', start: 0, end: 24 },
+            { label: '5주차', start: 0, end: 29 },
+          ];
+          const totalProductionTarget = products.reduce((s, p) => s + p.productionTarget, 0);
+          const weeklyChartData = weekRanges.map(week => {
+            let cumTarget = 0, cumArrival = 0, cumAchievement = 0;
+            products.forEach(p => {
+              for (let i = week.start; i <= week.end && i < p.daily.length; i++) {
+                cumTarget += p.daily[i].target;
+                cumArrival += p.daily[i].arrival;
+                cumAchievement += p.daily[i].achievement;
+              }
+            });
+            return {
+              name: week.label,
+              목표: Math.round((cumTarget / totalProductionTarget) * 1000) / 10,
+              자재입고: Math.round((cumArrival / totalProductionTarget) * 1000) / 10,
+              생산실적: Math.round((cumAchievement / totalProductionTarget) * 1000) / 10,
+            };
+          });
+
           return (
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
-              <h3 className="text-sm font-bold text-slate-900 mb-4">고객사별 진도율</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {customerStats.map(cs => (
-                  <div key={cs.customer} className="bg-slate-50 rounded-xl p-4 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-bold text-slate-800">{cs.customer}</span>
-                      <span className="text-[10px] text-slate-400">{cs.itemCount}개 품목 · 목표 {cs.totalTarget.toLocaleString()}만개</span>
-                    </div>
-                    <div className="space-y-2">
-                      <div>
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-xs font-medium text-amber-600">자재 진도율</span>
-                          <span className="text-xs font-bold text-amber-600">{cs.avgMaterial}%</span>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* 좌측: 고객사별 진도율 */}
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+                <h3 className="text-sm font-bold text-slate-900 mb-4">고객사별 진도율</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {customerStats.map(cs => (
+                    <div key={cs.customer} className="bg-slate-50 rounded-xl p-3 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-bold text-slate-800">{cs.customer}</span>
+                        <span className="text-[10px] text-slate-400">{cs.itemCount}개 · {cs.totalTarget.toLocaleString()}만개</span>
+                      </div>
+                      <div className="space-y-1.5">
+                        <div>
+                          <div className="flex items-center justify-between mb-0.5">
+                            <span className="text-[11px] font-medium text-amber-600">자재 진도율</span>
+                            <span className="text-[11px] font-bold text-amber-600">{cs.avgMaterial}%</span>
+                          </div>
+                          <div className="w-full h-1.5 bg-amber-100 rounded-full overflow-hidden">
+                            <div className="h-full bg-amber-400 rounded-full transition-all" style={{ width: `${Math.min(cs.avgMaterial, 100)}%` }} />
+                          </div>
                         </div>
-                        <div className="w-full h-2 bg-amber-100 rounded-full overflow-hidden">
-                          <div className="h-full bg-amber-400 rounded-full transition-all" style={{ width: `${Math.min(cs.avgMaterial, 100)}%` }} />
+                        <div>
+                          <div className="flex items-center justify-between mb-0.5">
+                            <span className="text-[11px] font-medium text-emerald-600">생산 진도율</span>
+                            <span className="text-[11px] font-bold text-emerald-600">{cs.avgProduction}%</span>
+                          </div>
+                          <div className="w-full h-1.5 bg-emerald-100 rounded-full overflow-hidden">
+                            <div className="h-full bg-emerald-500 rounded-full transition-all" style={{ width: `${Math.min(cs.avgProduction, 100)}%` }} />
+                          </div>
                         </div>
                       </div>
-                      <div>
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-xs font-medium text-emerald-600">생산 진도율</span>
-                          <span className="text-xs font-bold text-emerald-600">{cs.avgProduction}%</span>
-                        </div>
-                        <div className="w-full h-2 bg-emerald-100 rounded-full overflow-hidden">
-                          <div className="h-full bg-emerald-500 rounded-full transition-all" style={{ width: `${Math.min(cs.avgProduction, 100)}%` }} />
-                        </div>
-                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
+              </div>
+
+              {/* 우측: 주차별 진도율 그래프 */}
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+                <h3 className="text-sm font-bold text-slate-900 mb-4">주차별 진도율 추이</h3>
+                <div className="w-full h-[280px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={weeklyChartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                      <XAxis dataKey="name" tick={{ fontSize: 12, fill: '#64748b' }} />
+                      <YAxis tick={{ fontSize: 12, fill: '#64748b' }} unit="%" />
+                      <Tooltip
+                        contentStyle={{ borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '12px' }}
+                        formatter={(value: number) => [`${value}%`]}
+                      />
+                      <Legend wrapperStyle={{ fontSize: '12px' }} />
+                      <Line type="monotone" dataKey="목표" stroke="#6366f1" strokeWidth={2.5} dot={{ r: 4, fill: '#6366f1' }} activeDot={{ r: 6 }} />
+                      <Line type="monotone" dataKey="자재입고" stroke="#f59e0b" strokeWidth={2.5} dot={{ r: 4, fill: '#f59e0b' }} activeDot={{ r: 6 }} />
+                      <Line type="monotone" dataKey="생산실적" stroke="#10b981" strokeWidth={2.5} dot={{ r: 4, fill: '#10b981' }} activeDot={{ r: 6 }} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
               </div>
             </div>
           );
