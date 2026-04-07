@@ -1,10 +1,14 @@
 import { DashboardData, DailyData } from "./types";
 
+const DAY_NAMES = ['일', '월', '화', '수', '목', '금', '토'];
+
 const generateMonthlyDaily = (baseDays: DailyData[]): DailyData[] => {
   const days: DailyData[] = [];
   for (let d = 1; d <= 30; d++) {
+    const dayOfWeek = DAY_NAMES[new Date(2026, 3, d).getDay()];
+    const dateLabel = `4/${d}(${dayOfWeek})`;
     const existing = baseDays.find(b => b.date === `4/${d}`);
-    days.push(existing || { date: `4/${d}`, target: 0, arrival: 0, achievement: 0 });
+    days.push(existing ? { ...existing, date: dateLabel } : { date: dateLabel, target: 0, arrival: 0, achievement: 0 });
   }
   return days;
 };

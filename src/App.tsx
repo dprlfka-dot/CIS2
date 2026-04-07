@@ -15,6 +15,18 @@ import {
   ArrowDownRight,
   Save
 } from 'lucide-react';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell
+} from 'recharts';
 import { motion, AnimatePresence } from 'motion/react';
 import { DASHBOARD_DATA } from './data';
 import { ProductData } from './types';
@@ -85,15 +97,17 @@ export default function App() {
   const [editingArrivals, setEditingArrivals] = useState<Record<string, number[]>>({});
   const [editingAchievements, setEditingAchievements] = useState<Record<string, number[]>>({});
   const [saveStatus, setSaveStatus] = useState<Record<string, 'saved' | 'saving'>>({});
-  const [selectedWeek, setSelectedWeek] = useState<Record<string, number>>({});
 
-  const weeks = [
-    { label: '1주차', range: '4/1~4/7', start: 0, end: 7 },
-    { label: '2주차', range: '4/8~4/14', start: 7, end: 14 },
-    { label: '3주차', range: '4/15~4/21', start: 14, end: 21 },
-    { label: '4주차', range: '4/22~4/28', start: 21, end: 28 },
-    { label: '5주차', range: '4/29~4/30', start: 28, end: 30 },
+  // 2026년 4월: 수요일 시작. 월~일 7열 고정, 주차별 행 구분
+  // 각 주차: [월,화,수,목,금,토,일] 에 해당하는 daily index (null = 빈 칸)
+  const calendarWeeks = [
+    { label: '1주차', cols: [null, null, 0, 1, 2, 3, 4] },       // 4/1(수)~4/5(일)
+    { label: '2주차', cols: [5, 6, 7, 8, 9, 10, 11] },           // 4/6(월)~4/12(일)
+    { label: '3주차', cols: [12, 13, 14, 15, 16, 17, 18] },      // 4/13(월)~4/19(일)
+    { label: '4주차', cols: [19, 20, 21, 22, 23, 24, 25] },      // 4/20(월)~4/26(일)
+    { label: '5주차', cols: [26, 27, 28, 29, null, null, null] }, // 4/27(월)~4/30(목)
   ];
+  const dayHeaders = ['월', '화', '수', '목', '금', '토', '일'];
 
   const customers = useMemo(() => {
     const list = Array.from(new Set(products.map(p => p.customer)));
@@ -371,86 +385,123 @@ export default function App() {
                                     </button>
                                   </div>
                                 </div>
-                                <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
-                                  {weeks.map((w, wi) => (
-                                    <button
-                                      key={wi}
-                                      onClick={() => setSelectedWeek(prev => ({ ...prev, [product.code]: wi }))}
-                                      className={cn(
-                                        "px-3 py-1.5 rounded-lg text-xs font-bold transition-colors",
-                                        (selectedWeek[product.code] ?? 0) === wi
-                                          ? "bg-indigo-600 text-white"
-                                          : "bg-slate-100 text-slate-500 hover:bg-slate-200"
-                                      )}
-                                    >
-                                      {w.label}
-                                      <span className="ml-1 font-normal text-[10px] opacity-70">({w.range})</span>
-                                    </button>
-                                  ))}
-                                </div>
-                                {(() => {
-                                  const week = weeks[selectedWeek[product.code] ?? 0];
-                                  const weekDays = product.daily.slice(week.start, week.end);
-                                  const weekOffset = week.start;
-                                  return (
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                  {/* 월간 달력 */}
+                                  <div className="bg-slate-50 rounded-xl p-4 overflow-x-auto" onClick={(e) => e.stopPropagation()}>
+                                    <table className="w-full text-xs border-collapse">
+                                      <thead>
+                                        <tr className="text-slate-400">
+                                          <th className="pb-2 text-left pr-2 w-[56px]">구분</th>
+                                          {dayHeaders.map(d => (
+                                            <th key={d} className={cn("pb-2 text-center w-[calc((100%-56px)/7)]", (d === '토' || d === '일') && "text-rose-400")}>{d}</th>
+                                          ))}
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        {calendarWeeks.map((week, wi) => {
+                                          return (
+                                            <React.Fragment key={wi}>
+                                              <tr className={cn(wi > 0 && "border-t-2 border-indigo-100")}>
+                                                <td colSpan={8} className="pt-2 pb-1 text-[10px] font-bold text-indigo-500 uppercase tracking-wider">{week.label}</td>
+                                              </tr>
+                                              <tr>
+                                                <td className="py-1 font-medium text-slate-500 pr-2">목표</td>
+                                                {week.cols.map((idx, ci) => (
+                                                  <td key={ci} className={cn("py-1 text-center font-bold text-slate-700", (ci >= 5) && "bg-slate-100/50")}>
+                                                    {idx !== null ? (product.daily[idx]?.target || '-') : ''}
+                                                  </td>
+                                                ))}
+                                              </tr>
+                                              <tr>
+                                                <td className="py-1 font-medium text-amber-600 pr-2">입고</td>
+                                                {week.cols.map((idx, ci) => (
+                                                  <td key={ci} className={cn("py-0.5 text-center", (ci >= 5) && "bg-slate-100/50")}>
+                                                    {idx !== null ? (
+                                                      <input
+                                                        type="number"
+                                                        min="0"
+                                                        value={editingArrivals[product.code]?.[idx] !== undefined ? editingArrivals[product.code][idx] : product.daily[idx]?.arrival ?? 0}
+                                                        onClick={(e) => e.stopPropagation()}
+                                                        onChange={(e) => handleArrivalChange(product.code, idx, e.target.value)}
+                                                        className="w-10 px-0.5 py-0.5 text-center text-xs font-bold text-amber-600 bg-white border border-amber-200 rounded focus:outline-none focus:ring-1 focus:ring-amber-400/50"
+                                                      />
+                                                    ) : ''}
+                                                  </td>
+                                                ))}
+                                              </tr>
+                                              <tr>
+                                                <td className="py-1 font-medium text-emerald-600 pr-2">실적</td>
+                                                {week.cols.map((idx, ci) => (
+                                                  <td key={ci} className={cn("py-0.5 text-center", (ci >= 5) && "bg-slate-100/50")}>
+                                                    {idx !== null ? (
+                                                      <input
+                                                        type="number"
+                                                        min="0"
+                                                        value={editingAchievements[product.code]?.[idx] !== undefined ? editingAchievements[product.code][idx] : product.daily[idx]?.achievement ?? 0}
+                                                        onClick={(e) => e.stopPropagation()}
+                                                        onChange={(e) => handleAchievementChange(product.code, idx, e.target.value)}
+                                                        className="w-10 px-0.5 py-0.5 text-center text-xs font-bold text-emerald-600 bg-white border border-emerald-200 rounded focus:outline-none focus:ring-1 focus:ring-emerald-400/50"
+                                                      />
+                                                    ) : ''}
+                                                  </td>
+                                                ))}
+                                              </tr>
+                                            </React.Fragment>
+                                          );
+                                        })}
+                                      </tbody>
+                                    </table>
+                                  </div>
+
+                                  {/* 품목별 요약 */}
+                                  <div className="space-y-4">
+                                    {/* 진도율 요약 카드 */}
                                     <div className="bg-slate-50 rounded-xl p-4">
-                                      <table className="w-full text-xs border-collapse">
-                                        <thead>
-                                          <tr className="text-slate-400">
-                                            <th className="pb-2 text-left pr-3 w-[70px]">구분</th>
-                                            {weekDays.map(d => <th key={d.date} className="pb-2 text-center">{d.date}</th>)}
-                                          </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-slate-200">
-                                          <tr>
-                                            <td className="py-2 font-medium text-slate-500 pr-3">생산목표</td>
-                                            {weekDays.map((d, i) => <td key={i} className="py-2 text-center font-bold text-slate-700">{d.target || '-'}</td>)}
-                                          </tr>
-                                          <tr>
-                                            <td className="py-2 font-medium text-amber-600 pr-3">자재입고</td>
-                                            {weekDays.map((d, i) => {
-                                              const idx = weekOffset + i;
-                                              const editVal = editingArrivals[product.code]?.[idx];
-                                              const displayVal = editVal !== undefined ? editVal : d.arrival;
-                                              return (
-                                                <td key={i} className="py-1 text-center">
-                                                  <input
-                                                    type="number"
-                                                    min="0"
-                                                    value={displayVal}
-                                                    onClick={(e) => e.stopPropagation()}
-                                                    onChange={(e) => handleArrivalChange(product.code, idx, e.target.value)}
-                                                    className="w-14 px-1 py-1 text-center text-xs font-bold text-amber-600 bg-white border border-amber-200 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-amber-400"
-                                                  />
-                                                </td>
-                                              );
-                                            })}
-                                          </tr>
-                                          <tr>
-                                            <td className="py-2 font-medium text-emerald-600 pr-3">생산실적</td>
-                                            {weekDays.map((d, i) => {
-                                              const idx = weekOffset + i;
-                                              const editVal = editingAchievements[product.code]?.[idx];
-                                              const displayVal = editVal !== undefined ? editVal : d.achievement;
-                                              return (
-                                                <td key={i} className="py-1 text-center">
-                                                  <input
-                                                    type="number"
-                                                    min="0"
-                                                    value={displayVal}
-                                                    onClick={(e) => e.stopPropagation()}
-                                                    onChange={(e) => handleAchievementChange(product.code, idx, e.target.value)}
-                                                    className="w-14 px-1 py-1 text-center text-xs font-bold text-emerald-600 bg-white border border-emerald-200 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-400"
-                                                  />
-                                                </td>
-                                              );
-                                            })}
-                                          </tr>
-                                        </tbody>
-                                      </table>
+                                      <h5 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">진도율 요약</h5>
+                                      <div className="grid grid-cols-2 gap-4">
+                                        <div className="bg-white rounded-lg p-3 border border-slate-200">
+                                          <p className="text-[10px] font-medium text-slate-400">수주잔량</p>
+                                          <p className="text-lg font-bold text-slate-900">{product.backlog.toLocaleString()}<span className="text-xs text-slate-400 ml-1">만개</span></p>
+                                        </div>
+                                        <div className="bg-white rounded-lg p-3 border border-slate-200">
+                                          <p className="text-[10px] font-medium text-slate-400">생산목표</p>
+                                          <p className="text-lg font-bold text-slate-900">{product.productionTarget.toLocaleString()}<span className="text-xs text-slate-400 ml-1">만개</span></p>
+                                        </div>
+                                        <div className="bg-white rounded-lg p-3 border border-amber-200">
+                                          <p className="text-[10px] font-medium text-amber-500">자재 진도율</p>
+                                          <p className="text-lg font-bold text-amber-600">{product.materialProgress}%</p>
+                                          <div className="w-full h-1.5 bg-amber-100 rounded-full mt-1 overflow-hidden">
+                                            <div className="h-full bg-amber-400 rounded-full" style={{ width: `${product.materialProgress}%` }} />
+                                          </div>
+                                        </div>
+                                        <div className="bg-white rounded-lg p-3 border border-emerald-200">
+                                          <p className="text-[10px] font-medium text-emerald-500">생산 진도율</p>
+                                          <p className="text-lg font-bold text-emerald-600">{product.productionProgress}%</p>
+                                          <div className="w-full h-1.5 bg-emerald-100 rounded-full mt-1 overflow-hidden">
+                                            <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${product.productionProgress}%` }} />
+                                          </div>
+                                        </div>
+                                      </div>
                                     </div>
-                                  );
-                                })()}
+                                    {/* 일별 실적 차트 */}
+                                    <div className="bg-slate-50 rounded-xl p-4">
+                                      <h5 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">일별 목표 vs 실적</h5>
+                                      <div className="h-[180px] w-full">
+                                        <ResponsiveContainer width="100%" height="100%">
+                                          <BarChart data={product.daily.filter(d => d.target > 0 || d.arrival > 0 || d.achievement > 0)}>
+                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                                            <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 9 }} interval={0} angle={-45} textAnchor="end" height={40} />
+                                            <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10 }} />
+                                            <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', fontSize: '11px' }} />
+                                            <Bar dataKey="target" name="목표" fill="#6366f1" radius={[3, 3, 0, 0]} />
+                                            <Bar dataKey="arrival" name="입고" fill="#f59e0b" radius={[3, 3, 0, 0]} />
+                                            <Bar dataKey="achievement" name="실적" fill="#10b981" radius={[3, 3, 0, 0]} />
+                                          </BarChart>
+                                        </ResponsiveContainer>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
                               </div>
                             </motion.div>
                           </td>
