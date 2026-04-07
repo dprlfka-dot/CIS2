@@ -291,7 +291,6 @@ export default function App() {
                   <th className="px-6 py-4 text-center">생산목표</th>
                   <th className="px-6 py-4 text-center">자재진도</th>
                   <th className="px-6 py-4 text-center">생산진도</th>
-                  <th className="px-6 py-4 text-center">상태</th>
                   <th className="px-6 py-4"></th>
                 </tr>
               </thead>
@@ -340,9 +339,6 @@ export default function App() {
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-5 text-center">
-                        <StatusBadge status={product.status} />
-                      </td>
                       <td className="px-6 py-5 text-right">
                         <ChevronRight className={cn(
                           "w-5 h-5 text-slate-300 transition-transform",
@@ -353,7 +349,7 @@ export default function App() {
                     <AnimatePresence>
                       {selectedProduct?.code === product.code && (
                         <tr>
-                          <td colSpan={8} className="px-6 py-0">
+                          <td colSpan={7} className="px-6 py-0">
                             <motion.div 
                               initial={{ height: 0, opacity: 0 }}
                               animate={{ height: 'auto', opacity: 1 }}
@@ -364,7 +360,7 @@ export default function App() {
                                 <div className="flex items-center justify-between">
                                   <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                                     <Calendar className="w-4 h-4 text-indigo-500" />
-                                    일별 상세 현황 — 4월 (단위: 만개)
+                                    일별 상세 현황 — 4월 (단위: 천개)
                                   </h4>
                                   <div className="flex items-center gap-2">
                                     {saveStatus[product.code] === 'saved' && (
@@ -391,18 +387,29 @@ export default function App() {
                                     <table className="w-full text-xs border-collapse">
                                       <thead>
                                         <tr className="text-slate-400">
-                                          <th className="pb-2 text-left pr-2 w-[56px]">구분</th>
+                                          <th className="pb-2 text-left pr-2 w-[48px]">구분</th>
                                           {dayHeaders.map(d => (
-                                            <th key={d} className={cn("pb-2 text-center w-[calc((100%-56px)/7)]", (d === '토' || d === '일') && "text-rose-400")}>{d}</th>
+                                            <th key={d} className={cn("pb-2 text-center", (d === '토' || d === '일') && "text-rose-400")}>{d}</th>
                                           ))}
+                                          <th className="pb-2 text-center text-indigo-500 w-[44px]">누계</th>
                                         </tr>
                                       </thead>
                                       <tbody>
                                         {calendarWeeks.map((week, wi) => {
+                                          const validIndices = week.cols.filter((idx): idx is number => idx !== null);
+                                          const weekTargetSum = validIndices.reduce((sum, idx) => sum + (product.daily[idx]?.target ?? 0), 0);
+                                          const weekArrivalSum = validIndices.reduce((sum, idx) => sum + (editingArrivals[product.code]?.[idx] !== undefined ? editingArrivals[product.code][idx] : product.daily[idx]?.arrival ?? 0), 0);
+                                          const weekAchievementSum = validIndices.reduce((sum, idx) => sum + (editingAchievements[product.code]?.[idx] !== undefined ? editingAchievements[product.code][idx] : product.daily[idx]?.achievement ?? 0), 0);
                                           return (
                                             <React.Fragment key={wi}>
                                               <tr className={cn(wi > 0 && "border-t-2 border-indigo-100")}>
-                                                <td colSpan={8} className="pt-2 pb-1 text-[10px] font-bold text-indigo-500 uppercase tracking-wider">{week.label}</td>
+                                                <td className="pt-2 pb-1 text-[10px] font-bold text-indigo-500 uppercase tracking-wider">{week.label}</td>
+                                                {week.cols.map((idx, ci) => (
+                                                  <td key={ci} className={cn("pt-2 pb-1 text-center text-[10px] font-medium text-slate-400", (ci >= 5) && "text-rose-400")}>
+                                                    {idx !== null ? (idx + 1) : ''}
+                                                  </td>
+                                                ))}
+                                                <td className="pt-2 pb-1"></td>
                                               </tr>
                                               <tr>
                                                 <td className="py-1 font-medium text-slate-500 pr-2">목표</td>
@@ -411,6 +418,7 @@ export default function App() {
                                                     {idx !== null ? (product.daily[idx]?.target || '-') : ''}
                                                   </td>
                                                 ))}
+                                                <td className="py-1 text-center font-bold text-indigo-600 bg-indigo-50/50">{weekTargetSum}</td>
                                               </tr>
                                               <tr>
                                                 <td className="py-1 font-medium text-amber-600 pr-2">입고</td>
@@ -428,6 +436,7 @@ export default function App() {
                                                     ) : ''}
                                                   </td>
                                                 ))}
+                                                <td className="py-0.5 text-center font-bold text-amber-600 bg-indigo-50/50">{weekArrivalSum}</td>
                                               </tr>
                                               <tr>
                                                 <td className="py-1 font-medium text-emerald-600 pr-2">실적</td>
@@ -445,6 +454,7 @@ export default function App() {
                                                     ) : ''}
                                                   </td>
                                                 ))}
+                                                <td className="py-0.5 text-center font-bold text-emerald-600 bg-indigo-50/50">{weekAchievementSum}</td>
                                               </tr>
                                             </React.Fragment>
                                           );
@@ -457,7 +467,10 @@ export default function App() {
                                   <div className="space-y-4">
                                     {/* 진도율 요약 카드 */}
                                     <div className="bg-slate-50 rounded-xl p-4">
-                                      <h5 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">진도율 요약</h5>
+                                      <div className="flex items-center justify-between mb-3">
+                                        <h5 className="text-xs font-bold text-slate-500 uppercase tracking-wider">진도율 요약</h5>
+                                        <StatusBadge status={product.status} />
+                                      </div>
                                       <div className="grid grid-cols-2 gap-4">
                                         <div className="bg-white rounded-lg p-3 border border-slate-200">
                                           <p className="text-[10px] font-medium text-slate-400">수주잔량</p>
@@ -524,26 +537,6 @@ export default function App() {
         </div>
       </main>
 
-      {/* Footer Info */}
-      <footer className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
-        <div className="bg-indigo-900 rounded-2xl p-8 text-white flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="space-y-2 text-center md:text-left">
-            <h2 className="text-xl font-bold">SCM 담당자 가이드</h2>
-            <p className="text-indigo-200 text-sm max-w-md">
-              매일 자재 입고 현황과 생산 실적을 체크하여 미달 품목에 대한 조율을 진행하세요. 
-              진도율이 20% 미만인 품목은 즉시 유관부서와 확인이 필요합니다.
-            </p>
-          </div>
-          <div className="flex gap-4">
-            <button className="px-6 py-3 bg-white text-indigo-900 font-bold rounded-xl hover:bg-indigo-50 transition-colors">
-              보고서 내보내기
-            </button>
-            <button className="px-6 py-3 bg-indigo-700 text-white font-bold rounded-xl hover:bg-indigo-600 transition-colors border border-indigo-500">
-              일정 조율 요청
-            </button>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
