@@ -78,6 +78,15 @@ export default function App() {
   const [editingArrivals, setEditingArrivals] = useState<Record<string, number[]>>({});
   const [editingAchievements, setEditingAchievements] = useState<Record<string, number[]>>({});
   const [saveStatus, setSaveStatus] = useState<Record<string, 'saved' | 'saving'>>({});
+  const [selectedWeek, setSelectedWeek] = useState<Record<string, number>>({});
+
+  const weeks = [
+    { label: '1주차', range: '4/1~4/7', start: 0, end: 7 },
+    { label: '2주차', range: '4/8~4/14', start: 7, end: 14 },
+    { label: '3주차', range: '4/15~4/21', start: 14, end: 21 },
+    { label: '4주차', range: '4/22~4/28', start: 21, end: 28 },
+    { label: '5주차', range: '4/29~4/30', start: 28, end: 30 },
+  ];
 
   const customers = useMemo(() => {
     const list = Array.from(new Set(products.map(p => p.customer)));
@@ -356,60 +365,86 @@ export default function App() {
                                     </button>
                                   </div>
                                 </div>
-                                <div className="bg-slate-50 rounded-xl p-4 overflow-x-auto">
-                                  <table className="text-xs border-collapse">
-                                    <thead>
-                                      <tr className="text-slate-400">
-                                        <th className="pb-2 text-left sticky left-0 bg-slate-50 z-10 pr-3 min-w-[60px]">구분</th>
-                                        {product.daily.map(d => <th key={d.date} className="pb-2 text-center min-w-[44px] px-1">{d.date}</th>)}
-                                      </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-slate-200">
-                                      <tr>
-                                        <td className="py-2 font-medium text-slate-500 sticky left-0 bg-slate-50 z-10 pr-3">생산목표</td>
-                                        {product.daily.map((d, i) => <td key={i} className="py-2 text-center font-bold text-slate-700 px-1">{d.target || '-'}</td>)}
-                                      </tr>
-                                      <tr>
-                                        <td className="py-2 font-medium text-amber-600 sticky left-0 bg-slate-50 z-10 pr-3">자재입고</td>
-                                        {product.daily.map((d, i) => {
-                                          const editVal = editingArrivals[product.code]?.[i];
-                                          const displayVal = editVal !== undefined ? editVal : d.arrival;
-                                          return (
-                                            <td key={i} className="py-1 text-center px-1">
-                                              <input
-                                                type="number"
-                                                min="0"
-                                                value={displayVal}
-                                                onClick={(e) => e.stopPropagation()}
-                                                onChange={(e) => handleArrivalChange(product.code, i, e.target.value)}
-                                                className="w-12 px-0.5 py-1 text-center text-xs font-bold text-amber-600 bg-white border border-amber-200 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-amber-400"
-                                              />
-                                            </td>
-                                          );
-                                        })}
-                                      </tr>
-                                      <tr>
-                                        <td className="py-2 font-medium text-emerald-600 sticky left-0 bg-slate-50 z-10 pr-3">생산실적</td>
-                                        {product.daily.map((d, i) => {
-                                          const editVal = editingAchievements[product.code]?.[i];
-                                          const displayVal = editVal !== undefined ? editVal : d.achievement;
-                                          return (
-                                            <td key={i} className="py-1 text-center px-1">
-                                              <input
-                                                type="number"
-                                                min="0"
-                                                value={displayVal}
-                                                onClick={(e) => e.stopPropagation()}
-                                                onChange={(e) => handleAchievementChange(product.code, i, e.target.value)}
-                                                className="w-12 px-0.5 py-1 text-center text-xs font-bold text-emerald-600 bg-white border border-emerald-200 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-400"
-                                              />
-                                            </td>
-                                          );
-                                        })}
-                                      </tr>
-                                    </tbody>
-                                  </table>
+                                <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
+                                  {weeks.map((w, wi) => (
+                                    <button
+                                      key={wi}
+                                      onClick={() => setSelectedWeek(prev => ({ ...prev, [product.code]: wi }))}
+                                      className={cn(
+                                        "px-3 py-1.5 rounded-lg text-xs font-bold transition-colors",
+                                        (selectedWeek[product.code] ?? 0) === wi
+                                          ? "bg-indigo-600 text-white"
+                                          : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+                                      )}
+                                    >
+                                      {w.label}
+                                      <span className="ml-1 font-normal text-[10px] opacity-70">({w.range})</span>
+                                    </button>
+                                  ))}
                                 </div>
+                                {(() => {
+                                  const week = weeks[selectedWeek[product.code] ?? 0];
+                                  const weekDays = product.daily.slice(week.start, week.end);
+                                  const weekOffset = week.start;
+                                  return (
+                                    <div className="bg-slate-50 rounded-xl p-4">
+                                      <table className="w-full text-xs border-collapse">
+                                        <thead>
+                                          <tr className="text-slate-400">
+                                            <th className="pb-2 text-left pr-3 w-[70px]">구분</th>
+                                            {weekDays.map(d => <th key={d.date} className="pb-2 text-center">{d.date}</th>)}
+                                          </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-slate-200">
+                                          <tr>
+                                            <td className="py-2 font-medium text-slate-500 pr-3">생산목표</td>
+                                            {weekDays.map((d, i) => <td key={i} className="py-2 text-center font-bold text-slate-700">{d.target || '-'}</td>)}
+                                          </tr>
+                                          <tr>
+                                            <td className="py-2 font-medium text-amber-600 pr-3">자재입고</td>
+                                            {weekDays.map((d, i) => {
+                                              const idx = weekOffset + i;
+                                              const editVal = editingArrivals[product.code]?.[idx];
+                                              const displayVal = editVal !== undefined ? editVal : d.arrival;
+                                              return (
+                                                <td key={i} className="py-1 text-center">
+                                                  <input
+                                                    type="number"
+                                                    min="0"
+                                                    value={displayVal}
+                                                    onClick={(e) => e.stopPropagation()}
+                                                    onChange={(e) => handleArrivalChange(product.code, idx, e.target.value)}
+                                                    className="w-14 px-1 py-1 text-center text-xs font-bold text-amber-600 bg-white border border-amber-200 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-amber-400"
+                                                  />
+                                                </td>
+                                              );
+                                            })}
+                                          </tr>
+                                          <tr>
+                                            <td className="py-2 font-medium text-emerald-600 pr-3">생산실적</td>
+                                            {weekDays.map((d, i) => {
+                                              const idx = weekOffset + i;
+                                              const editVal = editingAchievements[product.code]?.[idx];
+                                              const displayVal = editVal !== undefined ? editVal : d.achievement;
+                                              return (
+                                                <td key={i} className="py-1 text-center">
+                                                  <input
+                                                    type="number"
+                                                    min="0"
+                                                    value={displayVal}
+                                                    onClick={(e) => e.stopPropagation()}
+                                                    onChange={(e) => handleAchievementChange(product.code, idx, e.target.value)}
+                                                    className="w-14 px-1 py-1 text-center text-xs font-bold text-emerald-600 bg-white border border-emerald-200 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-400"
+                                                  />
+                                                </td>
+                                              );
+                                            })}
+                                          </tr>
+                                        </tbody>
+                                      </table>
+                                    </div>
+                                  );
+                                })()}
                               </div>
                             </motion.div>
                           </td>
