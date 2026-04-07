@@ -211,57 +211,65 @@ export default function App() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-        {/* Stats Grid - 1행 */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          <StatCard
-            title="4/1 기준 수주 잔량"
-            value={stats.totalBacklog}
-            unit="만개"
-            icon={Package}
-            color="bg-indigo-500"
-          />
-          <StatCard
-            title="당월 생산 목표"
-            value={stats.totalTarget}
-            unit="만개"
-            icon={Factory}
-            color="bg-blue-500"
-          />
-          <StatCard
-            title="당월 생산 완료"
-            value={Math.round(stats.totalAchievement / 10)}
-            unit="만개"
-            icon={CheckCircle2}
-            color="bg-emerald-500"
-          />
-        </div>
-        {/* Stats Grid - 2행 */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          <StatCard
-            title="자재 입고 진도율"
-            value={stats.avgMaterialProgress}
-            unit="%"
-            icon={Truck}
-            trend="up"
-            trendValue={12}
-            color="bg-amber-500"
-          />
-          <StatCard
-            title="생산 실적 진도율"
-            value={stats.avgProductionProgress}
-            unit="%"
-            icon={TrendingUp}
-            trend="down"
-            trendValue={3}
-            color="bg-emerald-500"
-          />
-          <StatCard
-            title="목표 진도율"
-            value={stats.targetProgressRate}
-            unit="%"
-            icon={Calendar}
-            color="bg-indigo-500"
-          />
+        {/* 종합 현황 보드 */}
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+          <h3 className="text-sm font-bold text-slate-900 mb-4">종합 현황</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-indigo-500 shrink-0">
+                <Package className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <p className="text-[10px] text-slate-400 font-medium">4/1 기준 수주잔량</p>
+                <p className="text-lg font-bold text-slate-900">{stats.totalBacklog.toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-blue-500 shrink-0">
+                <Factory className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <p className="text-[10px] text-slate-400 font-medium">당월 생산 목표</p>
+                <p className="text-lg font-bold text-slate-900">{stats.totalTarget.toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-emerald-500 shrink-0">
+                <CheckCircle2 className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <p className="text-[10px] text-slate-400 font-medium">당월 생산 완료</p>
+                <p className="text-lg font-bold text-slate-900">{Math.round(stats.totalAchievement / 10).toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-amber-500 shrink-0">
+                <Truck className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <p className="text-[10px] text-slate-400 font-medium">자재 입고 진도율</p>
+                <p className="text-lg font-bold text-amber-600">{stats.avgMaterialProgress}%</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-emerald-500 shrink-0">
+                <TrendingUp className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <p className="text-[10px] text-slate-400 font-medium">생산 실적 진도율</p>
+                <p className="text-lg font-bold text-emerald-600">{stats.avgProductionProgress}%</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-indigo-500 shrink-0">
+                <Calendar className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <p className="text-[10px] text-slate-400 font-medium">목표 진도율</p>
+                <p className="text-lg font-bold text-indigo-600">{stats.targetProgressRate}%</p>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* 고객사별 진도율 */}
