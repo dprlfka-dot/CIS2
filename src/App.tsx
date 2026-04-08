@@ -582,14 +582,9 @@ export default function App() {
                                                       {week.cols.map((idx, ci) => (
                                                         <td key={ci} className={cn("py-0.5 text-center", ci === 0 && "bg-rose-50/50", ci === 6 && "bg-blue-50/50")}>
                                                           {idx !== null ? (
-                                                            <input
-                                                              type="number"
-                                                              min="0"
-                                                              value={(() => { const v = editingTargets[product.code]?.[idx] !== undefined ? editingTargets[product.code][idx] : product.daily[idx]?.target ?? 0; return v === 0 ? '' : v; })()}
-                                                              onClick={(e) => e.stopPropagation()}
-                                                              onChange={(e) => handleTargetChange(product.code, idx, e.target.value)}
-                                                              className="w-12 px-0.5 py-0.5 text-center text-sm font-bold text-slate-800 bg-white border border-slate-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-400/50"
-                                                            />
+                                                            <span className="inline-block w-12 px-0.5 py-0.5 text-center text-sm font-bold text-slate-800">
+                                                              {(() => { const v = editingTargets[product.code]?.[idx] !== undefined ? editingTargets[product.code][idx] : product.daily[idx]?.target ?? 0; return v === 0 ? '' : v; })()}
+                                                            </span>
                                                           ) : ''}
                                                         </td>
                                                       ))}
