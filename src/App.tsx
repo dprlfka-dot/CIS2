@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useRef } from 'react';
 import {
   LayoutDashboard,
   Package,
@@ -13,12 +13,15 @@ import {
   Calendar,
   ArrowUpRight,
   ArrowDownRight,
-  Save
+  Save,
+  Upload,
+  Download
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import * as XLSX from 'xlsx';
 import { DASHBOARD_DATA } from './data';
-import { ProductData } from './types';
+import { ProductData, DailyData } from './types';
 import { cn } from './lib/utils';
 
 const StatCard = ({ title, value, unit, icon: Icon, trend, trendValue, color }: any) => (
@@ -205,6 +208,107 @@ export default function App() {
       return next;
     }), 2000);
   }, [editingTargets, editingArrivals, editingAchievements]);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const DAY_NAMES = ['일', '월', '화', '수', '목', '금', '토'];
+
+  const handleExcelUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      try {
+        const wb = XLSX.read(evt.target?.result, { type: 'binary' });
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const rows: any[][] = XLSX.utils.sheet_to_json(ws, { header: 1 });
+
+        if (rows.length < 2) {
+          alert('데이터가 없습니다. 최소 헤더 + 1행 이상 필요합니다.');
+          return;
+        }
+
+        // 헤더 파싱: 고객사, 품목코드, 품목명, 수주잔량, 자재CAPA, 생산CAPA, 생산목표, 자재진도율, 생산진도율, 상태, 4/1_목표, 4/1_입고, 4/1_실적, 4/2_목표, ...
+        const header = rows[0].map((h: any) => String(h).trim());
+        const dataRows = rows.slice(1).filter((row: any[]) => row.some((cell: any) => cell !== undefined && cell !== ''));
+
+        const newProducts: ProductData[] = dataRows.map((row: any[]) => {
+          const get = (colName: string) => {
+            const idx = header.indexOf(colName);
+            return idx >= 0 ? row[idx] : undefined;
+          };
+          const getNum = (colName: string) => {
+            const v = get(colName);
+            return typeof v === 'number' ? v : (parseInt(String(v)) || 0);
+          };
+
+          const daily: DailyData[] = [];
+          for (let d = 1; d <= 30; d++) {
+            const dayOfWeek = DAY_NAMES[new Date(2026, 3, d).getDay()];
+            const dateLabel = `4/${d}(${dayOfWeek})`;
+            const target = getNum(`4/${d}_목표`);
+            const arrival = getNum(`4/${d}_입고`);
+            const achievement = getNum(`4/${d}_실적`);
+            daily.push({ date: dateLabel, target, arrival, achievement });
+          }
+
+          const statusVal = String(get('상태') || '이상').trim();
+
+          return {
+            customer: String(get('고객사') || ''),
+            code: String(get('품목코드') || ''),
+            name: String(get('품목명') || ''),
+            backlog: getNum('수주잔량'),
+            materialCapa: getNum('자재CAPA'),
+            productionCapa: getNum('생산CAPA'),
+            productionTarget: getNum('생산목표'),
+            weeklyTotal: getNum('생산목표'),
+            materialProgress: getNum('자재진도율'),
+            productionProgress: getNum('생산진도율'),
+            status: (statusVal === '미달' ? '미달' : '이상') as '이상' | '미달',
+            daily,
+          };
+        });
+
+        if (newProducts.length === 0) {
+          alert('유효한 데이터가 없습니다.');
+          return;
+        }
+
+        setProducts(newProducts);
+        localStorage.setItem('scm_products', JSON.stringify(newProducts));
+        setEditingTargets({});
+        setEditingArrivals({});
+        setEditingAchievements({});
+        setSelectedCustomer('All');
+        setSearchTerm('');
+        alert(`${newProducts.length}개 품목이 업로드되었습니다.`);
+      } catch (err) {
+        alert('엑셀 파일 파싱에 실패했습니다. 양식을 확인해주세요.');
+        console.error(err);
+      }
+    };
+    reader.readAsBinaryString(file);
+    e.target.value = '';
+  }, []);
+
+  const handleDownloadTemplate = useCallback(() => {
+    const header = ['고객사', '품목코드', '품목명', '수주잔량', '자재CAPA', '생산CAPA', '생산목표', '자재진도율', '생산진도율', '상태'];
+    for (let d = 1; d <= 30; d++) {
+      header.push(`4/${d}_목표`, `4/${d}_입고`, `4/${d}_실적`);
+    }
+
+    const sampleRow = ['APS', '9APS0014610', '메디큐브 PDRN핑크콜라겐겔마스크', 2700, 1100, 1100, 1100, 18, 18, '이상'];
+    for (let d = 1; d <= 30; d++) {
+      sampleRow.push(d <= 3 ? 50 : 0, d === 1 ? 200 : 0, d === 3 ? 200 : 0);
+    }
+
+    const ws = XLSX.utils.aoa_to_sheet([header, sampleRow]);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, '진도율데이터');
+    XLSX.writeFile(wb, '진도율_업로드_양식.xlsx');
+  }, []);
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans pb-4">
@@ -416,7 +520,30 @@ export default function App() {
                 />
               </div>
             </div>
-            {/* 금일 기준 목표 진도율 */}
+            {/* 엑셀 업로드 + 금일 기준 목표 진도율 */}
+            <div className="flex items-center gap-3">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".xlsx,.xls"
+                className="hidden"
+                onChange={handleExcelUpload}
+              />
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="flex items-center gap-1.5 px-3 py-2 bg-emerald-50 border border-emerald-200 rounded-xl text-xs font-bold text-emerald-700 hover:bg-emerald-100 transition-colors"
+              >
+                <Upload className="w-3.5 h-3.5" />
+                엑셀 업로드
+              </button>
+              <button
+                onClick={handleDownloadTemplate}
+                className="flex items-center gap-1.5 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition-colors"
+              >
+                <Download className="w-3.5 h-3.5" />
+                양식 다운로드
+              </button>
+            </div>
             {(() => {
               const today = new Date();
               const dayOfMonth = today.getDate();
