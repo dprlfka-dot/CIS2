@@ -627,14 +627,25 @@ export default function App() {
                       <td className="px-3 py-3 text-center text-base font-bold text-slate-900">
                         {product.productionTarget.toLocaleString()}
                       </td>
-                      <td className="px-3 py-3 text-center">
-                        <StatusBadge status={product.materialProgress >= stats.targetProgressRate ? '이상' : '미달'} />
-                        <p className="text-sm text-slate-500 mt-1">{product.materialProgress}%</p>
-                      </td>
-                      <td className="px-3 py-3 text-center">
-                        <StatusBadge status={product.productionProgress >= stats.targetProgressRate ? '이상' : '미달'} />
-                        <p className="text-sm text-slate-500 mt-1">{product.productionProgress}%</p>
-                      </td>
+                      {(() => {
+                        const totalTarget = product.daily.reduce((sum, d, i) => sum + (editingTargets[product.code]?.[i] !== undefined ? editingTargets[product.code][i] : d.target), 0);
+                        const totalArrival = product.daily.reduce((sum, d, i) => sum + (editingArrivals[product.code]?.[i] !== undefined ? editingArrivals[product.code][i] : d.arrival), 0);
+                        const totalAchievement = product.daily.reduce((sum, d, i) => sum + (editingAchievements[product.code]?.[i] !== undefined ? editingAchievements[product.code][i] : d.achievement), 0);
+                        const matRate = totalTarget > 0 ? Math.round((totalArrival / totalTarget) * 100) : 0;
+                        const prodRate = totalTarget > 0 ? Math.round((totalAchievement / totalTarget) * 100) : 0;
+                        return (
+                          <>
+                            <td className="px-3 py-3 text-center">
+                              <StatusBadge status={matRate >= stats.targetProgressRate ? '이상' : '미달'} />
+                              <p className="text-sm text-slate-500 mt-1">{matRate}%</p>
+                            </td>
+                            <td className="px-3 py-3 text-center">
+                              <StatusBadge status={prodRate >= stats.targetProgressRate ? '이상' : '미달'} />
+                              <p className="text-sm text-slate-500 mt-1">{prodRate}%</p>
+                            </td>
+                          </>
+                        );
+                      })()}
                       <td className="px-3 py-3 text-right">
                         <ChevronRight className={cn(
                           "w-5 h-5 text-slate-300 transition-transform",
