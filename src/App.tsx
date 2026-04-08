@@ -121,16 +121,17 @@ export default function App() {
     const totalAchievement = products.reduce((acc, p) => acc + p.daily.reduce((s, d) => s + d.achievement, 0), 0);
     const avgMaterialProgress = Math.round(products.reduce((acc, p) => acc + p.materialProgress, 0) / products.length);
     const avgProductionProgress = Math.round(products.reduce((acc, p) => acc + p.productionProgress, 0) / products.length);
-    // 4월 평일 기준 목표진도율 계산
+    // 당월 평일 기준 목표진도율 계산
     const today = new Date();
-    const year = 2026, month = 3; // April (0-indexed)
+    const year = today.getFullYear(), month = today.getMonth();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
     let totalWeekdays = 0;
     let passedWeekdays = 0;
-    for (let d = 1; d <= 30; d++) {
+    for (let d = 1; d <= daysInMonth; d++) {
       const day = new Date(year, month, d).getDay();
       if (day >= 1 && day <= 5) {
         totalWeekdays++;
-        if (d <= today.getDate() && today.getMonth() === month && today.getFullYear() === year) {
+        if (d <= today.getDate()) {
           passedWeekdays++;
         }
       }
@@ -560,17 +561,24 @@ export default function App() {
             </div>
             {(() => {
               const today = new Date();
-              const dayOfMonth = today.getDate();
-              const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
-              const progressPct = Math.round((dayOfMonth / daysInMonth) * 100);
+              const year = today.getFullYear(), mo = today.getMonth();
+              const daysInMonth = new Date(year, mo + 1, 0).getDate();
+              let totalWd = 0, passedWd = 0;
+              for (let d = 1; d <= daysInMonth; d++) {
+                const dow = new Date(year, mo, d).getDay();
+                if (dow >= 1 && dow <= 5) {
+                  totalWd++;
+                  if (d <= today.getDate()) passedWd++;
+                }
+              }
               return (
                 <div className="flex items-center gap-3 px-4 py-2 bg-indigo-50 border border-indigo-200 rounded-xl">
                   <span className="text-xs font-bold text-indigo-700 whitespace-nowrap">금일 목표 진도율</span>
                   <div className="w-32 h-2.5 bg-indigo-100 rounded-full overflow-hidden">
-                    <div className="h-full bg-indigo-500 rounded-full" style={{ width: `${progressPct}%` }} />
+                    <div className="h-full bg-indigo-500 rounded-full" style={{ width: `${stats.targetProgressRate}%` }} />
                   </div>
-                  <span className="text-xs font-bold text-indigo-600 whitespace-nowrap">{progressPct}%</span>
-                  <span className="text-[10px] text-slate-400 whitespace-nowrap">({today.getMonth() + 1}/{dayOfMonth} 기준, {dayOfMonth}일/{daysInMonth}일 경과)</span>
+                  <span className="text-xs font-bold text-indigo-600 whitespace-nowrap">{stats.targetProgressRate}%</span>
+                  <span className="text-[10px] text-slate-400 whitespace-nowrap">({mo + 1}/{today.getDate()} 기준, 평일 {passedWd}일/{totalWd}일 경과)</span>
                 </div>
               );
             })()}
