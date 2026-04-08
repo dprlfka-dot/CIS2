@@ -121,7 +121,21 @@ export default function App() {
     const totalAchievement = products.reduce((acc, p) => acc + p.daily.reduce((s, d) => s + d.achievement, 0), 0);
     const avgMaterialProgress = Math.round(products.reduce((acc, p) => acc + p.materialProgress, 0) / products.length);
     const avgProductionProgress = Math.round(products.reduce((acc, p) => acc + p.productionProgress, 0) / products.length);
-    const targetProgressRate = Math.round((7 / 30) * 100);
+    // 4월 평일 기준 목표진도율 계산
+    const today = new Date();
+    const year = 2026, month = 3; // April (0-indexed)
+    let totalWeekdays = 0;
+    let passedWeekdays = 0;
+    for (let d = 1; d <= 30; d++) {
+      const day = new Date(year, month, d).getDay();
+      if (day >= 1 && day <= 5) {
+        totalWeekdays++;
+        if (d <= today.getDate() && today.getMonth() === month && today.getFullYear() === year) {
+          passedWeekdays++;
+        }
+      }
+    }
+    const targetProgressRate = totalWeekdays > 0 ? Math.round((passedWeekdays / totalWeekdays) * 100) : 0;
 
     return { totalBacklog, totalTarget, totalAchievement, avgMaterialProgress, avgProductionProgress, targetProgressRate };
   }, [products]);
@@ -594,7 +608,7 @@ export default function App() {
                         </span>
                       </td>
                       <td className="px-3 py-3 text-center">
-                        <span className="text-base font-bold text-slate-900 font-mono">{product.code}</span>
+                        <span className="text-base font-bold text-slate-900">{product.code}</span>
                       </td>
                       <td className="px-3 py-3 text-center">
                         <span className="text-base font-bold text-slate-900 group-hover:text-indigo-600 transition-colors whitespace-nowrap">
@@ -614,11 +628,11 @@ export default function App() {
                         {product.productionTarget.toLocaleString()}
                       </td>
                       <td className="px-3 py-3 text-center">
-                        <StatusBadge status={product.materialProgress >= 20 ? '이상' : '미달'} />
+                        <StatusBadge status={product.materialProgress >= stats.targetProgressRate ? '이상' : '미달'} />
                         <p className="text-sm text-slate-500 mt-1">{product.materialProgress}%</p>
                       </td>
                       <td className="px-3 py-3 text-center">
-                        <StatusBadge status={product.productionProgress >= 20 ? '이상' : '미달'} />
+                        <StatusBadge status={product.productionProgress >= stats.targetProgressRate ? '이상' : '미달'} />
                         <p className="text-sm text-slate-500 mt-1">{product.productionProgress}%</p>
                       </td>
                       <td className="px-3 py-3 text-right">
