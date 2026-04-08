@@ -738,7 +738,7 @@ export default function App() {
                                                       <td className="pb-1 text-center font-bold text-emerald-700 bg-emerald-50/50 text-[10px] leading-tight">생산<br/>진도율</td>
                                                     </tr>
                                                     <tr>
-                                                      <td className="py-1 font-bold text-slate-700 text-center">생산목표</td>
+                                                      <td className="py-1 font-bold text-slate-700 text-center">예상수량</td>
                                                       {week.cols.map((idx, ci) => (
                                                         <td key={ci} className={cn("py-0.5 text-center", ci === 0 && "bg-rose-50/50", ci === 6 && "bg-blue-50/50")}>
                                                           {idx !== null ? (
