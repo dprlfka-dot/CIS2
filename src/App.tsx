@@ -73,6 +73,8 @@ const StatusBadge = ({ status }: { status: '이상' | '미달' }) => (
 
 export default function App() {
   const [searchTerm, setSearchTerm] = useState('');
+  const [buyerSearch, setBuyerSearch] = useState('');
+  const [cisSearch, setCisSearch] = useState('');
   const [selectedCustomer, setSelectedCustomer] = useState('All');
   const [selectedProduct, setSelectedProduct] = useState<ProductData | null>(null);
   const [products, setProducts] = useState<ProductData[]>([]);
@@ -122,10 +124,12 @@ export default function App() {
 
   const filteredProducts = useMemo(() => {
     return products.filter(p => {
-      const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      const matchesSearch = searchTerm === '' || p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            p.code.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesBuyer = buyerSearch === '' || (p.buyer || '').includes(buyerSearch);
+      const matchesCis = cisSearch === '' || (p.cisManager || '').includes(cisSearch);
       const matchesCustomer = selectedCustomer === 'All' || p.customer === selectedCustomer;
-      return matchesSearch && matchesCustomer;
+      return matchesSearch && matchesBuyer && matchesCis && matchesCustomer;
     }).sort((a, b) => {
       const customerCompare = a.customer.localeCompare(b.customer);
       if (customerCompare !== 0) return customerCompare;
@@ -730,23 +734,41 @@ export default function App() {
         {/* Filters & Table */}
         <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
           <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row gap-4 justify-between items-center">
-            <div className="flex items-center gap-3 flex-1">
+            <div className="flex items-center gap-2 flex-1 flex-wrap">
               <div className="flex items-center gap-2">
                 <Filter className="w-4 h-4 text-slate-400" />
                 <select
-                  className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                  className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                   value={selectedCustomer}
                   onChange={(e) => setSelectedCustomer(e.target.value)}
                 >
                   {customers.map(c => <option key={c} value={c}>{c === 'All' ? '모든 고객사' : c}</option>)}
                 </select>
               </div>
-              <div className="relative w-full max-w-xs">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <div className="relative">
                 <input
                   type="text"
-                  placeholder="제품명 또는 코드로 검색..."
-                  className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                  placeholder="구매담당 검색"
+                  className="w-28 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400 transition-all"
+                  value={buyerSearch}
+                  onChange={(e) => setBuyerSearch(e.target.value)}
+                />
+              </div>
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="CIS담당 검색"
+                  className="w-28 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 transition-all"
+                  value={cisSearch}
+                  onChange={(e) => setCisSearch(e.target.value)}
+                />
+              </div>
+              <div className="relative flex-1 max-w-xs">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="품목코드 또는 품목명 검색..."
+                  className="w-full pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
