@@ -967,10 +967,11 @@ export default function App() {
                                         저장
                                       </button>
                                     </div>
-                                    <table className="w-full text-sm border-collapse table-fixed">
+                                    <table className="w-full text-sm border-collapse">
                                       <colgroup>
-                                        <col className="w-[60px]" />
-                                        <col /><col /><col /><col /><col /><col /><col /><col /><col className="w-[56px]" /><col className="w-[56px]" />
+                                        <col style={{ width: '7%' }} />
+                                        <col style={{ width: '9%' }} /><col style={{ width: '9%' }} /><col style={{ width: '9%' }} /><col style={{ width: '9%' }} /><col style={{ width: '9%' }} /><col style={{ width: '9%' }} /><col style={{ width: '9%' }} />
+                                        <col style={{ width: '8%' }} /><col style={{ width: '6%' }} /><col style={{ width: '6%' }} />
                                       </colgroup>
                                       <tbody>
                                         {calendarWeeks.map((week, wi) => {
@@ -1012,7 +1013,7 @@ export default function App() {
                                                       {week.cols.map((idx, ci) => (
                                                         <td key={ci} className={cn("py-0.5 text-center", ci === 0 && "bg-rose-50/50", ci === 6 && "bg-blue-50/50")}>
                                                           {idx !== null ? (
-                                                            <span className="inline-block w-12 px-0.5 py-0.5 text-center text-sm font-bold text-slate-800">
+                                                            <span className="inline-block w-full max-w-[3.5rem] px-0.5 py-0.5 text-center text-sm font-bold text-slate-800">
                                                               {(() => { const v = editingTargets[product.code]?.[idx] !== undefined ? editingTargets[product.code][idx] : product.daily[idx]?.target ?? 0; return v === 0 ? '' : v; })()}
                                                             </span>
                                                           ) : ''}
@@ -1037,7 +1038,7 @@ export default function App() {
                                                               value={(() => { const v = editingArrivals[product.code]?.[idx] !== undefined ? editingArrivals[product.code][idx] : product.daily[idx]?.arrival ?? 0; return v === 0 ? '' : v; })()}
                                                               onClick={(e) => e.stopPropagation()}
                                                               onChange={(e) => handleArrivalChange(product.code, idx, e.target.value)}
-                                                              className="w-12 px-0.5 py-0.5 text-center text-sm font-bold text-amber-700 bg-white border border-amber-300 rounded focus:outline-none focus:ring-1 focus:ring-amber-400/50"
+                                                              className="w-full max-w-[3.5rem] px-0.5 py-0.5 text-center text-sm font-bold text-amber-700 bg-white border border-amber-300 rounded focus:outline-none focus:ring-1 focus:ring-amber-400/50"
                                                             />
                                                           ) : ''}
                                                         </td>
@@ -1055,7 +1056,7 @@ export default function App() {
                                                               value={(() => { const v = editingAchievements[product.code]?.[idx] !== undefined ? editingAchievements[product.code][idx] : product.daily[idx]?.achievement ?? 0; return v === 0 ? '' : v; })()}
                                                               onClick={(e) => e.stopPropagation()}
                                                               onChange={(e) => handleAchievementChange(product.code, idx, e.target.value)}
-                                                              className="w-12 px-0.5 py-0.5 text-center text-sm font-bold text-emerald-700 bg-white border border-emerald-300 rounded focus:outline-none focus:ring-1 focus:ring-emerald-400/50"
+                                                              className="w-full max-w-[3.5rem] px-0.5 py-0.5 text-center text-sm font-bold text-emerald-700 bg-white border border-emerald-300 rounded focus:outline-none focus:ring-1 focus:ring-emerald-400/50"
                                                             />
                                                           ) : ''}
                                                         </td>
