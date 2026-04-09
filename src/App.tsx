@@ -86,6 +86,14 @@ export default function App() {
         setProducts(DASHBOARD_DATA.products.map(p => ({ ...p, daily: p.daily.map(d => ({ ...d })) })));
       })
       .finally(() => setLoading(false));
+
+    // 10초마다 서버에서 최신 데이터 자동 갱신
+    const interval = setInterval(() => {
+      fetchProducts()
+        .then(setProducts)
+        .catch(() => {});
+    }, 10000);
+    return () => clearInterval(interval);
   }, []);
 
   // 2026년 4월: 수요일 시작. 일~토 7열 고정, 주차별 행 구분
@@ -116,8 +124,16 @@ export default function App() {
     const totalBacklog = products.reduce((acc, p) => acc + p.backlog, 0);
     const totalTarget = products.reduce((acc, p) => acc + p.productionTarget, 0);
     const totalAchievement = products.reduce((acc, p) => acc + p.daily.reduce((s, d) => s + d.achievement, 0), 0);
-    const avgMaterialProgress = Math.round(products.reduce((acc, p) => acc + p.materialProgress, 0) / products.length);
-    const avgProductionProgress = Math.round(products.reduce((acc, p) => acc + p.productionProgress, 0) / products.length);
+    const avgMaterialProgress = Math.round(products.reduce((acc, p) => {
+      const totalTarget = p.daily.reduce((s, d) => s + d.target, 0);
+      const totalArrival = p.daily.reduce((s, d) => s + d.arrival, 0);
+      return acc + (totalTarget > 0 ? Math.round((totalArrival / totalTarget) * 100) : 0);
+    }, 0) / products.length);
+    const avgProductionProgress = Math.round(products.reduce((acc, p) => {
+      const totalTarget = p.daily.reduce((s, d) => s + d.target, 0);
+      const totalAchievement = p.daily.reduce((s, d) => s + d.achievement, 0);
+      return acc + (totalTarget > 0 ? Math.round((totalAchievement / totalTarget) * 100) : 0);
+    }, 0) / products.length);
     // 당월 평일 기준 목표진도율 계산
     const today = new Date();
     const year = today.getFullYear(), month = today.getMonth();
@@ -429,8 +445,16 @@ export default function App() {
         {(() => {
           const customerStats = customers.filter(c => c !== 'All').map(customer => {
             const custProducts = products.filter(p => p.customer === customer);
-            const avgMaterial = Math.round(custProducts.reduce((s, p) => s + p.materialProgress, 0) / custProducts.length);
-            const avgProduction = Math.round(custProducts.reduce((s, p) => s + p.productionProgress, 0) / custProducts.length);
+            const avgMaterial = Math.round(custProducts.reduce((s, p) => {
+              const t = p.daily.reduce((a, d) => a + d.target, 0);
+              const arr = p.daily.reduce((a, d) => a + d.arrival, 0);
+              return s + (t > 0 ? Math.round((arr / t) * 100) : 0);
+            }, 0) / custProducts.length);
+            const avgProduction = Math.round(custProducts.reduce((s, p) => {
+              const t = p.daily.reduce((a, d) => a + d.target, 0);
+              const ach = p.daily.reduce((a, d) => a + d.achievement, 0);
+              return s + (t > 0 ? Math.round((ach / t) * 100) : 0);
+            }, 0) / custProducts.length);
             const totalTarget = custProducts.reduce((s, p) => s + p.productionTarget, 0);
             const itemCount = custProducts.length;
             return { customer, avgMaterial, avgProduction, totalTarget, itemCount };
