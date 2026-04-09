@@ -170,8 +170,11 @@ export default function App() {
 
     const totalArrival = products.reduce((acc, p) => acc + p.daily.reduce((s, d) => s + d.arrival, 0), 0);
     const carryOver = totalBacklog - totalTarget;
+    const totalPossibleRevenue = products.reduce((acc, p) => acc + (p.possibleRevenue || 0), 0);
+    const totalCurrentRevenue = products.reduce((acc, p) => acc + p.daily.reduce((s, d) => s + d.achievement * (p.unitPrice || 0), 0), 0);
+    const revenueProgressRate = totalPossibleRevenue > 0 ? Math.round((totalCurrentRevenue / totalPossibleRevenue) * 1000) / 10 : 0;
 
-    return { totalBacklog, totalTarget, totalAchievement, totalArrival, carryOver, avgMaterialProgress, avgProductionProgress, targetProgressRate };
+    return { totalBacklog, totalTarget, totalAchievement, totalArrival, carryOver, avgMaterialProgress, avgProductionProgress, targetProgressRate, totalPossibleRevenue, totalCurrentRevenue, revenueProgressRate };
   }, [products]);
 
   const handleTargetChange = useCallback((productCode: string, dayIndex: number, value: string) => {
@@ -486,7 +489,7 @@ export default function App() {
         {/* 종합 현황 보드 */}
         <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
           <h3 className="text-sm font-bold text-slate-900 mb-4">종합 현황</h3>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-4">
             <div className="flex items-center gap-3">
               <div className="p-2.5 rounded-xl bg-indigo-500 shrink-0">
                 <Package className="w-5 h-5 text-white" />
@@ -532,6 +535,24 @@ export default function App() {
                 <p className="text-lg font-bold text-emerald-600">{Math.round(stats.totalAchievement / 10).toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
               </div>
             </div>
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-violet-500 shrink-0">
+                <TrendingUp className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <p className="text-[10px] text-slate-400 font-medium">총 가능매출액</p>
+                <p className="text-lg font-bold text-violet-600">{stats.totalPossibleRevenue.toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">백만</span></p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-fuchsia-500 shrink-0">
+                <TrendingUp className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <p className="text-[10px] text-slate-400 font-medium">현재매출액 ({stats.revenueProgressRate}%)</p>
+                <p className="text-lg font-bold text-fuchsia-600">{Math.round(stats.totalCurrentRevenue).toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">백만</span></p>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -554,6 +575,9 @@ export default function App() {
             const totalArrival = custProducts.reduce((s, p) => s + p.daily.reduce((a, d) => a + d.arrival, 0), 0);
             const totalAchievement = custProducts.reduce((s, p) => s + p.daily.reduce((a, d) => a + d.achievement, 0), 0);
             const itemCount = custProducts.length;
+            const custPossibleRevenue = custProducts.reduce((s, p) => s + (p.possibleRevenue || 0), 0);
+            const custCurrentRevenue = custProducts.reduce((s, p) => s + p.daily.reduce((a, d) => a + d.achievement * (p.unitPrice || 0), 0), 0);
+            const custRevenueRate = custPossibleRevenue > 0 ? Math.round((custCurrentRevenue / custPossibleRevenue) * 1000) / 10 : 0;
             const productDetails = custProducts.map(p => {
               const t = p.daily.reduce((a, d) => a + d.target, 0);
               const arr = p.daily.reduce((a, d) => a + d.arrival, 0);
@@ -565,7 +589,7 @@ export default function App() {
                 productionRate: t > 0 ? Math.round((ach / t) * 100) : 0,
               };
             });
-            return { customer, avgMaterial, avgProduction, totalTarget, totalDailyTarget, totalArrival, totalAchievement, itemCount, productDetails };
+            return { customer, avgMaterial, avgProduction, totalTarget, totalDailyTarget, totalArrival, totalAchievement, itemCount, custPossibleRevenue, custCurrentRevenue, custRevenueRate, productDetails };
           });
 
           // 주차별 누적 진도율 계산 (일요일 기준)
@@ -608,7 +632,7 @@ export default function App() {
               목표: targetRate,
               자재입고: hasNewData && totalDailyTargetAll > 0 ? Math.round((cumArr / totalDailyTargetAll) * 1000) / 10 : undefined,
               생산실적: hasNewData && totalDailyTargetAll > 0 ? Math.round((cumAch / totalDailyTargetAll) * 1000) / 10 : undefined,
-              매출진도: hasNewData && totalPossibleRevenue > 0 ? Math.round((cumRevenue / totalPossibleRevenue) * 100) / 10 : undefined,
+              매출진도: hasNewData && totalPossibleRevenue > 0 ? Math.round((cumRevenue / totalPossibleRevenue) * 1000) / 10 : undefined,
             };
           });
 
@@ -652,11 +676,7 @@ export default function App() {
                       </div>
                       <div>
                         <p className="text-[9px] text-slate-400">매출 진도율</p>
-                        <p className="text-sm font-bold text-violet-600">{(() => {
-                          const totalRevenue = products.reduce((s, p) => s + p.daily.reduce((a, d) => a + d.achievement * (p.unitPrice || 0), 0), 0);
-                          const totalPossible = products.reduce((s, p) => s + (p.possibleRevenue || 0), 0);
-                          return totalPossible > 0 ? Math.round((totalRevenue / totalPossible) * 100) / 10 : 0;
-                        })()}%</p>
+                        <p className="text-sm font-bold text-violet-600">{stats.revenueProgressRate}%</p>
                       </div>
                     </div>
                   </div>
@@ -721,6 +741,17 @@ export default function App() {
                             <div className="h-full bg-emerald-500 rounded-full transition-all" style={{ width: `${Math.min(cs.avgProduction, 100)}%` }} />
                           </div>
                         </div>
+                        {cs.custPossibleRevenue > 0 && (
+                        <div>
+                          <div className="flex items-center justify-between mb-0.5">
+                            <span className="text-[11px] font-medium text-violet-600">매출 진도 <span className="text-[10px] text-slate-400">{Math.round(cs.custCurrentRevenue).toLocaleString()}/{cs.custPossibleRevenue.toLocaleString()}백만</span></span>
+                            <span className="text-[11px] font-bold text-violet-600">{cs.custRevenueRate}%</span>
+                          </div>
+                          <div className="w-full h-1.5 bg-violet-100 rounded-full overflow-hidden">
+                            <div className="h-full bg-violet-500 rounded-full transition-all" style={{ width: `${Math.min(cs.custRevenueRate, 100)}%` }} />
+                          </div>
+                        </div>
+                        )}
                       </div>
                     </div>
                   ))}
