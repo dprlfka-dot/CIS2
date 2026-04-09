@@ -26,6 +26,8 @@ app.get('/api/products', (_req, res) => {
     customer: p.customer,
     code: p.code,
     name: p.name,
+    buyer: p.buyer || '',
+    cisManager: p.cis_manager || '',
     backlog: p.backlog,
     materialCapa: p.material_capa,
     productionCapa: p.production_capa,
@@ -87,8 +89,8 @@ app.post('/api/products/bulk', (req, res) => {
     db.prepare('DELETE FROM products').run();
 
     const insertProduct = db.prepare(`
-      INSERT INTO products (code, customer, name, backlog, material_capa, production_capa, production_target, weekly_total, material_progress, production_progress, status)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO products (code, customer, name, buyer, cis_manager, backlog, material_capa, production_capa, production_target, weekly_total, material_progress, production_progress, status)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
     const insertDaily = db.prepare(`
       INSERT INTO daily_data (product_code, day_index, date_label, target, arrival, achievement)
@@ -96,7 +98,7 @@ app.post('/api/products/bulk', (req, res) => {
     `);
 
     for (const p of products) {
-      insertProduct.run(p.code, p.customer, p.name, p.backlog, p.materialCapa, p.productionCapa, p.productionTarget, p.weeklyTotal, p.materialProgress, p.productionProgress, p.status);
+      insertProduct.run(p.code, p.customer, p.name, p.buyer || '', p.cisManager || '', p.backlog, p.materialCapa, p.productionCapa, p.productionTarget, p.weeklyTotal, p.materialProgress, p.productionProgress, p.status);
       if (p.daily) {
         p.daily.forEach((d: any, i: number) => {
           insertDaily.run(p.code, i, d.date, d.target, d.arrival, d.achievement);

@@ -9,6 +9,8 @@ export interface ProductData {
   customer: string;
   code: string;
   name: string;
+  buyer: string;
+  cisManager: string;
   backlog: number;
   materialCapa: number;
   productionCapa: number;

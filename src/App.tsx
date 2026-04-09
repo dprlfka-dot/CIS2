@@ -308,6 +308,8 @@ export default function App() {
             customer: String(get('고객사') || ''),
             code: String(get('품목코드') || ''),
             name: String(get('품목명') || ''),
+            buyer: String(get('구매담당자') || ''),
+            cisManager: String(get('CIS담당자') || ''),
             backlog: getNum('수주잔량'),
             materialCapa: getNum('자재CAPA'),
             productionCapa: getNum('생산CAPA'),
@@ -349,12 +351,12 @@ export default function App() {
   }, []);
 
   const handleDownloadTemplate = useCallback(() => {
-    const header = ['고객사', '품목코드', '품목명', '수주잔량', '자재CAPA', '생산CAPA', '생산목표', '자재진도율', '생산진도율', '상태'];
+    const header = ['고객사', '구매담당자', 'CIS담당자', '품목코드', '품목명', '수주잔량', '자재CAPA', '생산CAPA', '생산목표', '자재진도율', '생산진도율', '상태'];
     for (let d = 1; d <= 30; d++) {
       header.push(`4/${d}_목표`, `4/${d}_입고`, `4/${d}_실적`);
     }
 
-    const sampleRow = ['APS', '9APS0014610', '메디큐브 PDRN핑크콜라겐겔마스크', 2700, 1100, 1100, 1100, 18, 18, '이상'];
+    const sampleRow = ['APS', '홍길동', '김철수', '9APS0014610', '메디큐브 PDRN핑크콜라겐겔마스크', 2700, 1100, 1100, 1100, 18, 18, '이상'];
     for (let d = 1; d <= 30; d++) {
       sampleRow.push(d <= 3 ? 50 : 0, d === 1 ? 200 : 0, d === 3 ? 200 : 0);
     }
@@ -800,12 +802,14 @@ export default function App() {
               <thead>
                 <tr className="bg-slate-50/50 text-slate-700 text-sm font-bold tracking-wider whitespace-nowrap">
                   <th className="px-3 py-3 text-center">고객사</th>
+                  <th className="px-3 py-3 text-center whitespace-nowrap">구매 담당자</th>
+                  <th className="px-3 py-3 text-center whitespace-nowrap">CIS 담당자</th>
                   <th className="px-3 py-3 text-center">품목코드</th>
                   <th className="px-3 py-3 text-center whitespace-nowrap min-w-[200px]">품목명</th>
                   <th className="px-3 py-3 text-center whitespace-nowrap">수주잔량<span className="text-xs text-slate-400 font-medium ml-1">(만개)</span></th>
                   <th className="px-3 py-3 text-center whitespace-nowrap">월자재CAPA<span className="text-xs text-slate-400 font-medium ml-1">(만개)</span></th>
                   <th className="px-3 py-3 text-center whitespace-nowrap">월생산CAPA<span className="text-xs text-slate-400 font-medium ml-1">(만개)</span></th>
-                  <th className="px-3 py-3 text-center whitespace-nowrap">매출가능수량<span className="text-xs text-slate-400 font-medium ml-1">(만개)</span></th>
+                  <th className="px-3 py-3 text-center whitespace-nowrap">매출예상수량<span className="text-xs text-slate-400 font-medium ml-1">(만개)</span></th>
                   <th className="px-3 py-3 text-center whitespace-nowrap">자재진도율</th>
                   <th className="px-3 py-3 text-center whitespace-nowrap">생산진도율</th>
                   <th className="px-2 py-3 w-[30px]"></th>
@@ -825,6 +829,12 @@ export default function App() {
                         <span className="text-sm font-bold px-2 py-1 bg-slate-100 text-slate-700 rounded-md">
                           {product.customer}
                         </span>
+                      </td>
+                      <td className="px-3 py-3 text-center">
+                        <span className="text-sm text-slate-700">{product.buyer || '-'}</span>
+                      </td>
+                      <td className="px-3 py-3 text-center">
+                        <span className="text-sm text-slate-700">{product.cisManager || '-'}</span>
                       </td>
                       <td className="px-3 py-3 text-center">
                         <span className="text-base font-bold text-slate-900">{product.code}</span>
