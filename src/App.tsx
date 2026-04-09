@@ -805,11 +805,11 @@ export default function App() {
                   <th className="px-2 py-2 text-center min-w-[56px]">구매</th>
                   <th className="px-2 py-2 text-center min-w-[56px]">CIS</th>
                   <th className="px-2 py-2 text-center">품목코드</th>
-                  <th className="px-2 py-2 text-center min-w-[140px]">품목명</th>
-                  <th className="px-1 py-2 text-center whitespace-nowrap">잔량</th>
-                  <th className="px-1 py-2 text-center whitespace-nowrap">자재C</th>
-                  <th className="px-1 py-2 text-center whitespace-nowrap">생산C</th>
-                  <th className="px-1 py-2 text-center whitespace-nowrap">매출예상</th>
+                  <th className="px-2 py-2 text-center min-w-[160px]">품목명</th>
+                  <th className="px-2 py-2 text-center whitespace-nowrap">수주잔량</th>
+                  <th className="px-2 py-2 text-center whitespace-nowrap">자재CAPA</th>
+                  <th className="px-2 py-2 text-center whitespace-nowrap">생산CAPA</th>
+                  <th className="px-2 py-2 text-center whitespace-nowrap">매출예상</th>
                   <th className="px-2 py-2 text-center">자재진도율</th>
                   <th className="px-2 py-2 text-center">생산진도율</th>
                   <th className="px-1 py-2 w-[24px]"></th>
@@ -844,16 +844,16 @@ export default function App() {
                           {product.name}
                         </span>
                       </td>
-                      <td className="px-1 py-1.5 text-center text-xs font-bold text-slate-900">
+                      <td className="px-2 py-1.5 text-center text-xs font-bold text-slate-900">
                         {product.backlog.toLocaleString()}
                       </td>
-                      <td className="px-1 py-1.5 text-center text-xs font-bold text-amber-700">
+                      <td className="px-2 py-1.5 text-center text-xs font-bold text-amber-700">
                         {product.materialCapa.toLocaleString()}
                       </td>
-                      <td className="px-1 py-1.5 text-center text-xs font-bold text-emerald-700">
+                      <td className="px-2 py-1.5 text-center text-xs font-bold text-emerald-700">
                         {product.productionCapa === 0 ? '-' : product.productionCapa.toLocaleString()}
                       </td>
-                      <td className="px-1 py-1.5 text-center text-xs font-bold text-slate-900">
+                      <td className="px-2 py-1.5 text-center text-xs font-bold text-slate-900">
                         {product.productionTarget.toLocaleString()}
                       </td>
                       {(() => {
