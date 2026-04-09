@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import {
   LayoutDashboard,
   Package,
@@ -23,6 +23,7 @@ import * as XLSX from 'xlsx';
 import { DASHBOARD_DATA } from './data';
 import { ProductData, DailyData } from './types';
 import { cn } from './lib/utils';
+import { fetchProducts, saveDailyData, bulkUploadProducts } from './api';
 
 const StatCard = ({ title, value, unit, icon: Icon, trend, trendValue, color }: any) => (
   <motion.div 
@@ -66,30 +67,26 @@ const StatusBadge = ({ status }: { status: '이상' | '미달' }) => (
   </span>
 );
 
-const DATA_VERSION = '2';
-
-const loadProducts = (): ProductData[] => {
-  const savedVersion = localStorage.getItem('scm_data_version');
-  if (savedVersion !== DATA_VERSION) {
-    localStorage.removeItem('scm_products');
-    localStorage.setItem('scm_data_version', DATA_VERSION);
-  }
-  const saved = localStorage.getItem('scm_products');
-  if (saved) {
-    return JSON.parse(saved);
-  }
-  return DASHBOARD_DATA.products.map(p => ({ ...p, daily: p.daily.map(d => ({ ...d })) }));
-};
-
 export default function App() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCustomer, setSelectedCustomer] = useState('All');
   const [selectedProduct, setSelectedProduct] = useState<ProductData | null>(null);
-  const [products, setProducts] = useState<ProductData[]>(loadProducts);
+  const [products, setProducts] = useState<ProductData[]>([]);
+  const [loading, setLoading] = useState(true);
   const [editingTargets, setEditingTargets] = useState<Record<string, number[]>>({});
   const [editingArrivals, setEditingArrivals] = useState<Record<string, number[]>>({});
   const [editingAchievements, setEditingAchievements] = useState<Record<string, number[]>>({});
   const [saveStatus, setSaveStatus] = useState<Record<string, 'saved' | 'saving'>>({});
+
+  useEffect(() => {
+    fetchProducts()
+      .then(setProducts)
+      .catch(err => {
+        console.error('서버 연결 실패, 기본 데이터 사용:', err);
+        setProducts(DASHBOARD_DATA.products.map(p => ({ ...p, daily: p.daily.map(d => ({ ...d })) })));
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
   // 2026년 4월: 수요일 시작. 일~토 7열 고정, 주차별 행 구분
   // 각 주차: [일,월,화,수,목,금,토] 에 해당하는 daily index (null = 빈 칸)
@@ -185,19 +182,24 @@ export default function App() {
 
     setSaveStatus(prev => ({ ...prev, [productCode]: 'saving' }));
 
-    setProducts(prev => {
-      const updated = prev.map(p => {
-        if (p.code !== productCode) return p;
-        const newDaily = p.daily.map((d, i) => ({
-          ...d,
-          ...(targets ? { target: targets[i] } : {}),
-          ...(arrivals ? { arrival: arrivals[i] } : {}),
-          ...(achievements ? { achievement: achievements[i] } : {}),
-        }));
-        return { ...p, daily: newDaily };
-      });
-      localStorage.setItem('scm_products', JSON.stringify(updated));
-      return updated;
+    setProducts(prev => prev.map(p => {
+      if (p.code !== productCode) return p;
+      const newDaily = p.daily.map((d, i) => ({
+        ...d,
+        ...(targets ? { target: targets[i] } : {}),
+        ...(arrivals ? { arrival: arrivals[i] } : {}),
+        ...(achievements ? { achievement: achievements[i] } : {}),
+      }));
+      return { ...p, daily: newDaily };
+    }));
+
+    saveDailyData(productCode, {
+      ...(targets ? { targets } : {}),
+      ...(arrivals ? { arrivals } : {}),
+      ...(achievements ? { achievements } : {}),
+    }).catch(err => {
+      console.error('저장 실패:', err);
+      alert('서버 저장에 실패했습니다. 다시 시도해주세요.');
     });
 
     setEditingTargets(prev => {
@@ -291,14 +293,20 @@ export default function App() {
           return;
         }
 
-        setProducts(newProducts);
-        localStorage.setItem('scm_products', JSON.stringify(newProducts));
-        setEditingTargets({});
-        setEditingArrivals({});
-        setEditingAchievements({});
-        setSelectedCustomer('All');
-        setSearchTerm('');
-        alert(`${newProducts.length}개 품목이 업로드되었습니다.`);
+        bulkUploadProducts(newProducts)
+          .then(() => {
+            setProducts(newProducts);
+            setEditingTargets({});
+            setEditingArrivals({});
+            setEditingAchievements({});
+            setSelectedCustomer('All');
+            setSearchTerm('');
+            alert(`${newProducts.length}개 품목이 업로드되었습니다.`);
+          })
+          .catch(err => {
+            console.error('업로드 실패:', err);
+            alert('서버 저장에 실패했습니다. 다시 시도해주세요.');
+          });
       } catch (err) {
         alert('엑셀 파일 파싱에 실패했습니다. 양식을 확인해주세요.');
         console.error(err);
@@ -324,6 +332,14 @@ export default function App() {
     XLSX.utils.book_append_sheet(wb, ws, '진도율데이터');
     XLSX.writeFile(wb, '진도율_업로드_양식.xlsx');
   }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-slate-500 text-lg font-medium">데이터 로딩 중...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans pb-4">
