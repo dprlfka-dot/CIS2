@@ -934,21 +934,21 @@ export default function App() {
                     <AnimatePresence>
                       {selectedProduct?.code === product.code && (
                         <tr>
-                          <td colSpan={10} className="px-6 py-0">
+                          <td colSpan={12} className="px-2 py-0">
                             <motion.div 
                               initial={{ height: 0, opacity: 0 }}
                               animate={{ height: 'auto', opacity: 1 }}
                               exit={{ height: 0, opacity: 0 }}
                               className="overflow-hidden"
                             >
-                              <div className="py-6 border-t border-slate-100 space-y-4">
+                              <div className="py-4 border-t border-slate-100 space-y-3">
                                 <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2 mb-4">
                                   <Calendar className="w-4 h-4 text-indigo-500" />
                                   일별 상세 현황 — 4월 (단위: 천개)
                                 </h4>
                                 <div>
                                   {/* 월간 달력 */}
-                                  <div className="bg-slate-50 rounded-xl p-4 overflow-x-auto" onClick={(e) => e.stopPropagation()}>
+                                  <div className="bg-slate-50 rounded-xl p-3 overflow-x-auto" onClick={(e) => e.stopPropagation()}>
                                     <div className="flex items-center justify-end gap-2 mb-2">
                                       {saveStatus[product.code] === 'saved' && (
                                         <span className="text-xs text-emerald-600 font-medium">저장 완료!</span>
