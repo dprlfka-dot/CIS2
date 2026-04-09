@@ -800,19 +800,19 @@ export default function App() {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-slate-50/50 text-slate-700 text-sm font-bold tracking-wider whitespace-nowrap">
-                  <th className="px-3 py-3 text-center">고객사</th>
-                  <th className="px-3 py-3 text-center whitespace-nowrap">구매 담당자</th>
-                  <th className="px-3 py-3 text-center whitespace-nowrap">CIS 담당자</th>
-                  <th className="px-3 py-3 text-center">품목코드</th>
-                  <th className="px-3 py-3 text-center whitespace-nowrap min-w-[200px]">품목명</th>
-                  <th className="px-3 py-3 text-center whitespace-nowrap">수주잔량<span className="text-xs text-slate-400 font-medium ml-1">(만개)</span></th>
-                  <th className="px-3 py-3 text-center whitespace-nowrap">월자재CAPA<span className="text-xs text-slate-400 font-medium ml-1">(만개)</span></th>
-                  <th className="px-3 py-3 text-center whitespace-nowrap">월생산CAPA<span className="text-xs text-slate-400 font-medium ml-1">(만개)</span></th>
-                  <th className="px-3 py-3 text-center whitespace-nowrap">매출예상수량<span className="text-xs text-slate-400 font-medium ml-1">(만개)</span></th>
-                  <th className="px-3 py-3 text-center whitespace-nowrap">자재진도율</th>
-                  <th className="px-3 py-3 text-center whitespace-nowrap">생산진도율</th>
-                  <th className="px-2 py-3 w-[30px]"></th>
+                <tr className="bg-slate-50/50 text-slate-700 text-xs font-bold tracking-wider whitespace-nowrap">
+                  <th className="px-2 py-2 text-center">고객사</th>
+                  <th className="px-2 py-2 text-center">구매</th>
+                  <th className="px-2 py-2 text-center">CIS</th>
+                  <th className="px-2 py-2 text-center">품목코드</th>
+                  <th className="px-2 py-2 text-center min-w-[140px]">품목명</th>
+                  <th className="px-2 py-2 text-center">수주잔량<span className="text-[10px] text-slate-400 ml-0.5">(만개)</span></th>
+                  <th className="px-2 py-2 text-center">자재CAPA<span className="text-[10px] text-slate-400 ml-0.5">(만개)</span></th>
+                  <th className="px-2 py-2 text-center">생산CAPA<span className="text-[10px] text-slate-400 ml-0.5">(만개)</span></th>
+                  <th className="px-2 py-2 text-center">매출예상<span className="text-[10px] text-slate-400 ml-0.5">(만개)</span></th>
+                  <th className="px-2 py-2 text-center">자재진도율</th>
+                  <th className="px-2 py-2 text-center">생산진도율</th>
+                  <th className="px-1 py-2 w-[24px]"></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -825,35 +825,35 @@ export default function App() {
                       )}
                       onClick={() => setSelectedProduct(selectedProduct?.code === product.code ? null : product)}
                     >
-                      <td className="px-3 py-3 text-center">
-                        <span className="text-sm font-bold px-2 py-1 bg-slate-100 text-slate-700 rounded-md">
+                      <td className="px-2 py-1.5 text-center">
+                        <span className="text-xs font-bold px-1.5 py-0.5 bg-slate-100 text-slate-700 rounded">
                           {product.customer}
                         </span>
                       </td>
-                      <td className="px-3 py-3 text-center">
-                        <span className="text-sm text-slate-700">{product.buyer || '-'}</span>
+                      <td className="px-2 py-1.5 text-center">
+                        <span className="text-xs text-slate-700">{product.buyer || '-'}</span>
                       </td>
-                      <td className="px-3 py-3 text-center">
-                        <span className="text-sm text-slate-700">{product.cisManager || '-'}</span>
+                      <td className="px-2 py-1.5 text-center">
+                        <span className="text-xs text-slate-700">{product.cisManager || '-'}</span>
                       </td>
-                      <td className="px-3 py-3 text-center">
-                        <span className="text-base font-bold text-slate-900">{product.code}</span>
+                      <td className="px-2 py-1.5 text-center">
+                        <span className="text-xs font-bold text-slate-900">{product.code}</span>
                       </td>
-                      <td className="px-3 py-3 text-center">
-                        <span className="text-base font-bold text-slate-900 group-hover:text-indigo-600 transition-colors whitespace-nowrap">
+                      <td className="px-2 py-1.5 text-center">
+                        <span className="text-xs font-bold text-slate-900 group-hover:text-indigo-600 transition-colors whitespace-nowrap">
                           {product.name}
                         </span>
                       </td>
-                      <td className="px-3 py-3 text-center text-base font-bold text-slate-900">
+                      <td className="px-2 py-1.5 text-center text-xs font-bold text-slate-900">
                         {product.backlog.toLocaleString()}
                       </td>
-                      <td className="px-3 py-3 text-center text-base font-bold text-amber-700">
+                      <td className="px-2 py-1.5 text-center text-xs font-bold text-amber-700">
                         {product.materialCapa.toLocaleString()}
                       </td>
-                      <td className="px-3 py-3 text-center text-base font-bold text-emerald-700">
+                      <td className="px-2 py-1.5 text-center text-xs font-bold text-emerald-700">
                         {product.productionCapa === 0 ? '-' : product.productionCapa.toLocaleString()}
                       </td>
-                      <td className="px-3 py-3 text-center text-base font-bold text-slate-900">
+                      <td className="px-2 py-1.5 text-center text-xs font-bold text-slate-900">
                         {product.productionTarget.toLocaleString()}
                       </td>
                       {(() => {
@@ -864,13 +864,13 @@ export default function App() {
                         const prodRate = totalTarget > 0 ? Math.round((totalAchievement / totalTarget) * 100) : 0;
                         return (
                           <>
-                            <td className="px-3 py-3 text-center">
+                            <td className="px-2 py-1.5 text-center">
                               <StatusBadge status={matRate >= stats.targetProgressRate ? '이상' : '미달'} />
-                              <p className="text-sm text-slate-500 mt-1">{matRate}%</p>
+                              <p className="text-[11px] text-slate-500 mt-0.5">{matRate}%</p>
                             </td>
-                            <td className="px-3 py-3 text-center">
+                            <td className="px-2 py-1.5 text-center">
                               <StatusBadge status={prodRate >= stats.targetProgressRate ? '이상' : '미달'} />
-                              <p className="text-sm text-slate-500 mt-1">{prodRate}%</p>
+                              <p className="text-[11px] text-slate-500 mt-0.5">{prodRate}%</p>
                             </td>
                           </>
                         );
