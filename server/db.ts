@@ -21,6 +21,8 @@ db.exec(`
     material_capa INTEGER NOT NULL DEFAULT 0,
     production_capa INTEGER NOT NULL DEFAULT 0,
     production_target INTEGER NOT NULL DEFAULT 0,
+    unit_price INTEGER NOT NULL DEFAULT 0,
+    possible_revenue INTEGER NOT NULL DEFAULT 0,
     weekly_total INTEGER NOT NULL DEFAULT 0,
     material_progress INTEGER NOT NULL DEFAULT 0,
     production_progress INTEGER NOT NULL DEFAULT 0,
@@ -50,8 +52,8 @@ db.exec(`
 const count = db.prepare('SELECT COUNT(*) as cnt FROM products').get() as any;
 if (count.cnt === 0) {
   const insertProduct = db.prepare(`
-    INSERT INTO products (code, customer, name, buyer, cis_manager, backlog, material_capa, production_capa, production_target, weekly_total, material_progress, production_progress, status)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO products (code, customer, name, buyer, cis_manager, backlog, material_capa, production_capa, production_target, unit_price, possible_revenue, weekly_total, material_progress, production_progress, status)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
   const insertDaily = db.prepare(`
     INSERT INTO daily_data (product_code, day_index, date_label, target, arrival, achievement)
@@ -60,7 +62,7 @@ if (count.cnt === 0) {
 
   const seed = db.transaction(() => {
     for (const p of DASHBOARD_DATA.products) {
-      insertProduct.run(p.code, p.customer, p.name, p.buyer || '', p.cisManager || '', p.backlog, p.materialCapa, p.productionCapa, p.productionTarget, p.weeklyTotal, p.materialProgress, p.productionProgress, p.status);
+      insertProduct.run(p.code, p.customer, p.name, p.buyer || '', p.cisManager || '', p.backlog, p.materialCapa, p.productionCapa, p.productionTarget, p.unitPrice || 0, p.possibleRevenue || 0, p.weeklyTotal, p.materialProgress, p.productionProgress, p.status);
       p.daily.forEach((d, i) => {
         insertDaily.run(p.code, i, d.date, d.target, d.arrival, d.achievement);
       });

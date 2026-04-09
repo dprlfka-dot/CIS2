@@ -583,11 +583,12 @@ export default function App() {
             const cumDays = workingDays.slice(0, idx + 1).reduce((a, b) => a + b, 0);
             const targetRate = Math.round((cumDays / totalWorkingDays) * 1000) / 10;
 
-            let cumArr = 0, cumAch = 0;
+            let cumArr = 0, cumAch = 0, cumRevenue = 0;
             products.forEach(p => {
               for (let i = 0; i <= weekEndIndices[idx] && i < p.daily.length; i++) {
                 cumArr += p.daily[i].arrival;
                 cumAch += p.daily[i].achievement;
+                cumRevenue += p.daily[i].achievement * (p.unitPrice || 0);
               }
             });
 
@@ -601,11 +602,13 @@ export default function App() {
               }
             });
             const hasNewData = weekArr > 0 || weekAch > 0;
+            const totalPossibleRevenue = products.reduce((s, p) => s + (p.possibleRevenue || 0), 0);
             return {
               name: label,
               목표: targetRate,
               자재입고: hasNewData && totalDailyTargetAll > 0 ? Math.round((cumArr / totalDailyTargetAll) * 1000) / 10 : undefined,
               생산실적: hasNewData && totalDailyTargetAll > 0 ? Math.round((cumAch / totalDailyTargetAll) * 1000) / 10 : undefined,
+              매출진도: hasNewData && totalPossibleRevenue > 0 ? Math.round((cumRevenue / totalPossibleRevenue) * 100) / 10 : undefined,
             };
           });
 
@@ -643,6 +646,19 @@ export default function App() {
                         <p className="text-sm font-bold text-emerald-600">{stats.avgProductionProgress}%</p>
                       </div>
                     </div>
+                    <div className="flex items-center gap-1.5">
+                      <div className="p-1.5 rounded-lg bg-violet-500 shrink-0">
+                        <TrendingUp className="w-3.5 h-3.5 text-white" />
+                      </div>
+                      <div>
+                        <p className="text-[9px] text-slate-400">매출 진도율</p>
+                        <p className="text-sm font-bold text-violet-600">{(() => {
+                          const totalRevenue = products.reduce((s, p) => s + p.daily.reduce((a, d) => a + d.achievement * (p.unitPrice || 0), 0), 0);
+                          const totalPossible = products.reduce((s, p) => s + (p.possibleRevenue || 0), 0);
+                          return totalPossible > 0 ? Math.round((totalRevenue / totalPossible) * 100) / 10 : 0;
+                        })()}%</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <div className="w-full flex-1 min-h-0">
@@ -659,6 +675,7 @@ export default function App() {
                       <Line type="monotone" dataKey="목표" stroke="#6366f1" strokeWidth={1.5} dot={{ r: 3, fill: '#6366f1' }} activeDot={{ r: 5 }} />
                       <Line type="monotone" dataKey="자재입고" stroke="#f59e0b" strokeWidth={1.5} dot={{ r: 3, fill: '#f59e0b' }} activeDot={{ r: 5 }} />
                       <Line type="monotone" dataKey="생산실적" stroke="#10b981" strokeWidth={1.5} dot={{ r: 3, fill: '#10b981' }} activeDot={{ r: 5 }} />
+                      <Line type="monotone" dataKey="매출진도" stroke="#8b5cf6" strokeWidth={1.5} dot={{ r: 3, fill: '#8b5cf6' }} activeDot={{ r: 5 }} />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
@@ -859,6 +876,7 @@ export default function App() {
                   <th className="px-2 py-2 text-center whitespace-nowrap">자재CAPA</th>
                   <th className="px-2 py-2 text-center whitespace-nowrap">생산CAPA</th>
                   <th className="px-2 py-2 text-center whitespace-nowrap">매출예상</th>
+                  <th className="px-2 py-2 text-center whitespace-nowrap">가능매출액</th>
                   <th className="px-2 py-2 text-center">자재진도율</th>
                   <th className="px-2 py-2 text-center">생산진도율</th>
                   <th className="px-1 py-2 w-[24px]"></th>
@@ -905,6 +923,9 @@ export default function App() {
                       <td className="px-2 py-1.5 text-center text-xs font-bold text-slate-900">
                         {product.productionTarget.toLocaleString()}
                       </td>
+                      <td className="px-2 py-1.5 text-center text-xs font-bold text-violet-700">
+                        {product.possibleRevenue > 0 ? product.possibleRevenue.toLocaleString() : '-'}
+                      </td>
                       {(() => {
                         const totalTarget = product.daily.reduce((sum, d, i) => sum + (editingTargets[product.code]?.[i] !== undefined ? editingTargets[product.code][i] : d.target), 0);
                         const totalArrival = product.daily.reduce((sum, d, i) => sum + (editingArrivals[product.code]?.[i] !== undefined ? editingArrivals[product.code][i] : d.arrival), 0);
@@ -934,7 +955,7 @@ export default function App() {
                     <AnimatePresence>
                       {selectedProduct?.code === product.code && (
                         <tr>
-                          <td colSpan={12} className="px-2 py-0">
+                          <td colSpan={13} className="px-2 py-0">
                             <motion.div 
                               initial={{ height: 0, opacity: 0 }}
                               animate={{ height: 'auto', opacity: 1 }}

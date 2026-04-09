@@ -15,6 +15,8 @@ export interface ProductData {
   materialCapa: number;
   productionCapa: number;
   productionTarget: number;
+  unitPrice: number;
+  possibleRevenue: number;
   daily: DailyData[];
   weeklyTotal: number;
   materialProgress: number;
