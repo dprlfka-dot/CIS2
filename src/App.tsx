@@ -488,7 +488,7 @@ export default function App() {
         {activeTab === 'summary' && (<>
         {/* 종합 현황 보드 */}
         <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
-          <h3 className="text-sm font-bold text-slate-900 mb-4">종합 현황</h3>
+          <h3 className="text-lg font-bold text-slate-900 mb-4">종합 현황</h3>
           <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-4">
             <div className="flex items-center gap-3">
               <div className="p-2.5 rounded-xl bg-indigo-500 shrink-0">
@@ -645,7 +645,7 @@ export default function App() {
               {/* 좌측: 주차별 진도율 그래프 */}
               <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 flex flex-col h-[560px]">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-bold text-slate-900">주차별 진도율 추이</h3>
+                  <h3 className="text-lg font-bold text-slate-900">주차별 진도율 추이</h3>
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-1.5">
                       <div className="p-1.5 rounded-lg bg-indigo-500 shrink-0">
@@ -707,7 +707,7 @@ export default function App() {
 
               {/* 우측: 고객사별 진도율 */}
               <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 h-[560px] overflow-y-auto">
-                <h3 className="text-sm font-bold text-slate-900 mb-4">고객사별 진도율</h3>
+                <h3 className="text-lg font-bold text-slate-900 mb-4">고객사별 진도율</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {customerStats.map(cs => (
                     <div
