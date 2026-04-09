@@ -171,7 +171,7 @@ export default function App() {
     const totalArrival = products.reduce((acc, p) => acc + p.daily.reduce((s, d) => s + d.arrival, 0), 0);
     const carryOver = totalBacklog - totalTarget;
     const totalPossibleRevenue = products.reduce((acc, p) => acc + (p.possibleRevenue || 0), 0);
-    const totalCurrentRevenue = products.reduce((acc, p) => acc + p.daily.reduce((s, d) => s + d.achievement * (p.unitPrice || 0), 0), 0);
+    const totalCurrentRevenue = products.reduce((acc, p) => acc + p.daily.reduce((s, d) => s + d.achievement * (p.unitPrice || 0) / 1000, 0), 0);
     const revenueProgressRate = totalPossibleRevenue > 0 ? Math.round((totalCurrentRevenue / totalPossibleRevenue) * 1000) / 10 : 0;
 
     return { totalBacklog, totalTarget, totalAchievement, totalArrival, carryOver, avgMaterialProgress, avgProductionProgress, targetProgressRate, totalPossibleRevenue, totalCurrentRevenue, revenueProgressRate };
@@ -541,7 +541,7 @@ export default function App() {
               </div>
               <div>
                 <p className="text-[10px] text-slate-400 font-medium">총 가능매출액</p>
-                <p className="text-lg font-bold text-violet-600">{stats.totalPossibleRevenue.toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">백만</span></p>
+                <p className="text-lg font-bold text-violet-600">{(stats.totalPossibleRevenue / 100).toLocaleString(undefined, { maximumFractionDigits: 1 })}<span className="text-xs text-slate-400 ml-0.5">억원</span></p>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -550,7 +550,7 @@ export default function App() {
               </div>
               <div>
                 <p className="text-[10px] text-slate-400 font-medium">현재매출액 ({stats.revenueProgressRate}%)</p>
-                <p className="text-lg font-bold text-fuchsia-600">{Math.round(stats.totalCurrentRevenue).toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">백만</span></p>
+                <p className="text-lg font-bold text-fuchsia-600">{(stats.totalCurrentRevenue / 100).toLocaleString(undefined, { maximumFractionDigits: 1 })}<span className="text-xs text-slate-400 ml-0.5">억원</span></p>
               </div>
             </div>
           </div>
@@ -576,7 +576,7 @@ export default function App() {
             const totalAchievement = custProducts.reduce((s, p) => s + p.daily.reduce((a, d) => a + d.achievement, 0), 0);
             const itemCount = custProducts.length;
             const custPossibleRevenue = custProducts.reduce((s, p) => s + (p.possibleRevenue || 0), 0);
-            const custCurrentRevenue = custProducts.reduce((s, p) => s + p.daily.reduce((a, d) => a + d.achievement * (p.unitPrice || 0), 0), 0);
+            const custCurrentRevenue = custProducts.reduce((s, p) => s + p.daily.reduce((a, d) => a + d.achievement * (p.unitPrice || 0) / 1000, 0), 0);
             const custRevenueRate = custPossibleRevenue > 0 ? Math.round((custCurrentRevenue / custPossibleRevenue) * 1000) / 10 : 0;
             const productDetails = custProducts.map(p => {
               const t = p.daily.reduce((a, d) => a + d.target, 0);
@@ -612,7 +612,7 @@ export default function App() {
               for (let i = 0; i <= weekEndIndices[idx] && i < p.daily.length; i++) {
                 cumArr += p.daily[i].arrival;
                 cumAch += p.daily[i].achievement;
-                cumRevenue += p.daily[i].achievement * (p.unitPrice || 0);
+                cumRevenue += p.daily[i].achievement * (p.unitPrice || 0) / 1000;
               }
             });
 
