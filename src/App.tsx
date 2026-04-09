@@ -643,7 +643,7 @@ export default function App() {
           return (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* 좌측: 주차별 진도율 그래프 */}
-              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 flex flex-col h-[420px]">
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 flex flex-col h-[560px]">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-sm font-bold text-slate-900">주차별 진도율 추이</h3>
                   <div className="flex items-center gap-4">
@@ -706,7 +706,7 @@ export default function App() {
               </div>
 
               {/* 우측: 고객사별 진도율 */}
-              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 h-[420px] overflow-y-auto">
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 h-[560px] overflow-y-auto">
                 <h3 className="text-sm font-bold text-slate-900 mb-4">고객사별 진도율</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {customerStats.map(cs => (
@@ -759,7 +759,7 @@ export default function App() {
               {/* 고객사 품목별 팝업 */}
               {customerStats.filter(cs => expandedCustomers.has(cs.customer)).map(cs => (
                 <div key={`popup_${cs.customer}`} className="fixed inset-0 z-50 flex items-center justify-center bg-black/30" onClick={() => setExpandedCustomers(prev => { const next = new Set(prev); next.delete(cs.customer); return next; })}>
-                  <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-8 w-[600px] max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+                  <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-6 w-[90vw] max-w-[900px] max-h-[95vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
                     <div className="flex items-center justify-between mb-6">
                       <div>
                         <h3 className="text-lg font-bold text-slate-900">{cs.customer} 품목별 진도율</h3>
@@ -769,9 +769,9 @@ export default function App() {
                         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                       </button>
                     </div>
-                    <div className="space-y-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {cs.productDetails.map(pd => (
-                        <div key={pd.code} className="bg-slate-50 rounded-xl p-4 space-y-2.5">
+                        <div key={pd.code} className="bg-slate-50 rounded-xl p-4 space-y-2">
                           <p className="text-sm font-bold text-slate-800">{pd.code} &nbsp; {pd.name}</p>
                           <div className="flex items-center gap-3">
                             <span className="text-sm text-amber-600 w-14 shrink-0">자재</span>
