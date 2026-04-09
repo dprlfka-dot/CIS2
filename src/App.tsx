@@ -494,7 +494,29 @@ export default function App() {
 
           return (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
-              {/* 좌측: 고객사별 진도율 */}
+              {/* 좌측: 주차별 진도율 그래프 */}
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 flex flex-col">
+                <h3 className="text-sm font-bold text-slate-900 mb-4">주차별 진도율 추이</h3>
+                <div className="w-full flex-1 min-h-0">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={weeklyChartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                      <XAxis dataKey="name" tick={{ fontSize: 12, fill: '#64748b' }} />
+                      <YAxis tick={{ fontSize: 12, fill: '#64748b' }} unit="%" />
+                      <Tooltip
+                        contentStyle={{ borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '12px' }}
+                        formatter={(value: number) => [`${value}%`]}
+                      />
+                      <Legend wrapperStyle={{ fontSize: '12px' }} />
+                      <Line type="monotone" dataKey="목표" stroke="#6366f1" strokeWidth={1.5} dot={{ r: 3, fill: '#6366f1' }} activeDot={{ r: 5 }} />
+                      <Line type="monotone" dataKey="자재입고" stroke="#f59e0b" strokeWidth={1.5} dot={{ r: 3, fill: '#f59e0b' }} activeDot={{ r: 5 }} />
+                      <Line type="monotone" dataKey="생산실적" stroke="#10b981" strokeWidth={1.5} dot={{ r: 3, fill: '#10b981' }} activeDot={{ r: 5 }} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              {/* 우측: 고객사별 진도율 */}
               <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
                 <h3 className="text-sm font-bold text-slate-900 mb-4">고객사별 진도율</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -526,28 +548,6 @@ export default function App() {
                       </div>
                     </div>
                   ))}
-                </div>
-              </div>
-
-              {/* 우측: 주차별 진도율 그래프 */}
-              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 flex flex-col">
-                <h3 className="text-sm font-bold text-slate-900 mb-4">주차별 진도율 추이</h3>
-                <div className="w-full flex-1 min-h-0">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={weeklyChartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                      <XAxis dataKey="name" tick={{ fontSize: 12, fill: '#64748b' }} />
-                      <YAxis tick={{ fontSize: 12, fill: '#64748b' }} unit="%" />
-                      <Tooltip
-                        contentStyle={{ borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '12px' }}
-                        formatter={(value: number) => [`${value}%`]}
-                      />
-                      <Legend wrapperStyle={{ fontSize: '12px' }} />
-                      <Line type="monotone" dataKey="목표" stroke="#6366f1" strokeWidth={1.5} dot={{ r: 3, fill: '#6366f1' }} activeDot={{ r: 5 }} />
-                      <Line type="monotone" dataKey="자재입고" stroke="#f59e0b" strokeWidth={1.5} dot={{ r: 3, fill: '#f59e0b' }} activeDot={{ r: 5 }} />
-                      <Line type="monotone" dataKey="생산실적" stroke="#10b981" strokeWidth={1.5} dot={{ r: 3, fill: '#10b981' }} activeDot={{ r: 5 }} />
-                    </LineChart>
-                  </ResponsiveContainer>
                 </div>
               </div>
             </div>
