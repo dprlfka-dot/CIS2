@@ -109,6 +109,73 @@ app.post('/api/products/bulk', (req, res) => {
   res.json({ ok: true, count: products.length });
 });
 
+// POST /api/snapshots - 스냅샷 저장
+app.post('/api/snapshots', (req, res) => {
+  const { label } = req.body as { label?: string };
+
+  // 현재 데이터 조회
+  const products = db.prepare('SELECT * FROM products ORDER BY customer, code').all() as any[];
+  const dailyAll = db.prepare('SELECT * FROM daily_data ORDER BY product_code, day_index').all() as any[];
+
+  const dailyMap: Record<string, any[]> = {};
+  for (const d of dailyAll) {
+    if (!dailyMap[d.product_code]) dailyMap[d.product_code] = [];
+    dailyMap[d.product_code].push({
+      date: d.date_label,
+      target: d.target,
+      arrival: d.arrival,
+      achievement: d.achievement,
+    });
+  }
+
+  const snapshot = products.map(p => ({
+    customer: p.customer,
+    code: p.code,
+    name: p.name,
+    backlog: p.backlog,
+    materialCapa: p.material_capa,
+    productionCapa: p.production_capa,
+    productionTarget: p.production_target,
+    weeklyTotal: p.weekly_total,
+    materialProgress: p.material_progress,
+    productionProgress: p.production_progress,
+    status: p.status,
+    daily: dailyMap[p.code] || [],
+  }));
+
+  const now = new Date();
+  const defaultLabel = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}월 스냅샷`;
+
+  db.prepare('INSERT INTO snapshots (label, data) VALUES (?, ?)').run(
+    label || defaultLabel,
+    JSON.stringify(snapshot)
+  );
+
+  res.json({ ok: true });
+});
+
+// GET /api/snapshots - 스냅샷 목록 조회
+app.get('/api/snapshots', (_req, res) => {
+  const snapshots = db.prepare('SELECT id, label, created_at FROM snapshots ORDER BY created_at DESC').all();
+  res.json(snapshots);
+});
+
+// GET /api/snapshots/:id - 스냅샷 상세 조회
+app.get('/api/snapshots/:id', (req, res) => {
+  const snapshot = db.prepare('SELECT * FROM snapshots WHERE id = ?').get(req.params.id) as any;
+  if (!snapshot) {
+    res.status(404).json({ error: 'Snapshot not found' });
+    return;
+  }
+  res.json({ ...snapshot, data: JSON.parse(snapshot.data) });
+});
+
+// DELETE /api/snapshots/:id - 스냅샷 삭제
+app.delete('/api/snapshots/:id', (req, res) => {
+  db.prepare('DELETE FROM snapshots WHERE id = ?').run(req.params.id);
+  res.json({ ok: true });
+});
+
 const PORT = 3001;
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`API server running on http://localhost:${PORT}`);

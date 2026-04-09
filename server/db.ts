@@ -35,6 +35,13 @@ db.exec(`
     PRIMARY KEY (product_code, day_index),
     FOREIGN KEY (product_code) REFERENCES products(code) ON DELETE CASCADE
   );
+
+  CREATE TABLE IF NOT EXISTS snapshots (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    label TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now', 'localtime')),
+    data TEXT NOT NULL
+  );
 `);
 
 // Seed if empty
