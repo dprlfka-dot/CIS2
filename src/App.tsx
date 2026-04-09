@@ -591,12 +591,21 @@ export default function App() {
               }
             });
 
-            const hasData = cumArr > 0 || cumAch > 0;
+            // 해당 주차에 새로운 실적이 있는지 확인
+            const prevEnd = idx > 0 ? weekEndIndices[idx - 1] : -1;
+            let weekArr = 0, weekAch = 0;
+            products.forEach(p => {
+              for (let i = prevEnd + 1; i <= weekEndIndices[idx] && i < p.daily.length; i++) {
+                weekArr += p.daily[i].arrival;
+                weekAch += p.daily[i].achievement;
+              }
+            });
+            const hasNewData = weekArr > 0 || weekAch > 0;
             return {
               name: label,
               목표: targetRate,
-              자재입고: hasData && totalDailyTargetAll > 0 ? Math.round((cumArr / totalDailyTargetAll) * 1000) / 10 : undefined,
-              생산실적: hasData && totalDailyTargetAll > 0 ? Math.round((cumAch / totalDailyTargetAll) * 1000) / 10 : undefined,
+              자재입고: hasNewData && totalDailyTargetAll > 0 ? Math.round((cumArr / totalDailyTargetAll) * 1000) / 10 : undefined,
+              생산실적: hasNewData && totalDailyTargetAll > 0 ? Math.round((cumAch / totalDailyTargetAll) * 1000) / 10 : undefined,
             };
           });
 
