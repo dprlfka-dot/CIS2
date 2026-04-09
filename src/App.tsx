@@ -581,7 +581,7 @@ export default function App() {
                         <div className="space-y-1.5">
                           <div>
                             <div className="flex items-center justify-between mb-0.5">
-                              <span className="text-[11px] font-medium text-amber-600">자재 완료 <span className="text-[10px] text-slate-400">{cs.totalArrival.toLocaleString()}/{cs.totalDailyTarget.toLocaleString()}</span></span>
+                              <span className="text-[11px] font-medium text-amber-600">자재 완료 <span className="text-[10px] text-slate-400">{cs.totalArrival.toLocaleString()}천개/{cs.totalDailyTarget.toLocaleString()}천개</span></span>
                               <span className="text-[11px] font-bold text-amber-600">{cs.avgMaterial}%</span>
                             </div>
                             <div className="w-full h-1.5 bg-amber-100 rounded-full overflow-hidden">
@@ -590,7 +590,7 @@ export default function App() {
                           </div>
                           <div>
                             <div className="flex items-center justify-between mb-0.5">
-                              <span className="text-[11px] font-medium text-emerald-600">생산 완료 <span className="text-[10px] text-slate-400">{cs.totalAchievement.toLocaleString()}/{cs.totalDailyTarget.toLocaleString()}</span></span>
+                              <span className="text-[11px] font-medium text-emerald-600">생산 완료 <span className="text-[10px] text-slate-400">{cs.totalAchievement.toLocaleString()}천개/{cs.totalDailyTarget.toLocaleString()}천개</span></span>
                               <span className="text-[11px] font-bold text-emerald-600">{cs.avgProduction}%</span>
                             </div>
                             <div className="w-full h-1.5 bg-emerald-100 rounded-full overflow-hidden">
