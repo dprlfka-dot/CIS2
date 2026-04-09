@@ -117,6 +117,10 @@ export default function App() {
                            p.code.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCustomer = selectedCustomer === 'All' || p.customer === selectedCustomer;
       return matchesSearch && matchesCustomer;
+    }).sort((a, b) => {
+      const customerCompare = a.customer.localeCompare(b.customer);
+      if (customerCompare !== 0) return customerCompare;
+      return b.backlog - a.backlog;
     });
   }, [searchTerm, selectedCustomer, products]);
 
