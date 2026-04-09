@@ -802,14 +802,14 @@ export default function App() {
               <thead>
                 <tr className="bg-slate-50/50 text-slate-700 text-xs font-bold tracking-wider whitespace-nowrap">
                   <th className="px-2 py-2 text-center">고객사</th>
-                  <th className="px-2 py-2 text-center">구매</th>
-                  <th className="px-2 py-2 text-center">CIS</th>
+                  <th className="px-2 py-2 text-center min-w-[56px]">구매</th>
+                  <th className="px-2 py-2 text-center min-w-[56px]">CIS</th>
                   <th className="px-2 py-2 text-center">품목코드</th>
                   <th className="px-2 py-2 text-center min-w-[140px]">품목명</th>
-                  <th className="px-2 py-2 text-center">수주잔량<span className="text-[10px] text-slate-400 ml-0.5">(만개)</span></th>
-                  <th className="px-2 py-2 text-center">자재CAPA<span className="text-[10px] text-slate-400 ml-0.5">(만개)</span></th>
-                  <th className="px-2 py-2 text-center">생산CAPA<span className="text-[10px] text-slate-400 ml-0.5">(만개)</span></th>
-                  <th className="px-2 py-2 text-center">매출예상<span className="text-[10px] text-slate-400 ml-0.5">(만개)</span></th>
+                  <th className="px-1 py-2 text-center whitespace-nowrap">잔량</th>
+                  <th className="px-1 py-2 text-center whitespace-nowrap">자재C</th>
+                  <th className="px-1 py-2 text-center whitespace-nowrap">생산C</th>
+                  <th className="px-1 py-2 text-center whitespace-nowrap">매출예상</th>
                   <th className="px-2 py-2 text-center">자재진도율</th>
                   <th className="px-2 py-2 text-center">생산진도율</th>
                   <th className="px-1 py-2 w-[24px]"></th>
@@ -830,10 +830,10 @@ export default function App() {
                           {product.customer}
                         </span>
                       </td>
-                      <td className="px-2 py-1.5 text-center">
+                      <td className="px-2 py-1.5 text-center whitespace-nowrap">
                         <span className="text-xs text-slate-700">{product.buyer || '-'}</span>
                       </td>
-                      <td className="px-2 py-1.5 text-center">
+                      <td className="px-2 py-1.5 text-center whitespace-nowrap">
                         <span className="text-xs text-slate-700">{product.cisManager || '-'}</span>
                       </td>
                       <td className="px-2 py-1.5 text-center">
@@ -844,16 +844,16 @@ export default function App() {
                           {product.name}
                         </span>
                       </td>
-                      <td className="px-2 py-1.5 text-center text-xs font-bold text-slate-900">
+                      <td className="px-1 py-1.5 text-center text-xs font-bold text-slate-900">
                         {product.backlog.toLocaleString()}
                       </td>
-                      <td className="px-2 py-1.5 text-center text-xs font-bold text-amber-700">
+                      <td className="px-1 py-1.5 text-center text-xs font-bold text-amber-700">
                         {product.materialCapa.toLocaleString()}
                       </td>
-                      <td className="px-2 py-1.5 text-center text-xs font-bold text-emerald-700">
+                      <td className="px-1 py-1.5 text-center text-xs font-bold text-emerald-700">
                         {product.productionCapa === 0 ? '-' : product.productionCapa.toLocaleString()}
                       </td>
-                      <td className="px-2 py-1.5 text-center text-xs font-bold text-slate-900">
+                      <td className="px-1 py-1.5 text-center text-xs font-bold text-slate-900">
                         {product.productionTarget.toLocaleString()}
                       </td>
                       {(() => {
