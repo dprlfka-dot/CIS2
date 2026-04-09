@@ -1163,7 +1163,7 @@ export default function App() {
                       {/* 주차별 진도율 그래프 */}
                       <div className="bg-slate-50 rounded-xl p-4">
                         <h4 className="text-xs font-bold text-slate-700 mb-3">주차별 진도율 추이</h4>
-                        <div className="w-full h-[200px]">
+                        <div className="w-full h-[320px]">
                           <ResponsiveContainer width="100%" height="100%">
                             <LineChart data={snapChartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
                               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
