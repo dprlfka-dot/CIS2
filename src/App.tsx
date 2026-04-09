@@ -571,24 +571,28 @@ export default function App() {
           const totalWorkingDays = workingDays.reduce((a, b) => a + b, 0); // 22
           const weekLabels = ['1주차', '2주차', '3주차', '4주차', '5주차'];
 
-          // 1주차 실적 계산 (index 0~4: 4/1~4/5)
-          const totalProductionTarget = products.reduce((s, p) => s + p.productionTarget, 0);
-          let week1Arrival = 0, week1Achievement = 0;
-          products.forEach(p => {
-            for (let i = 0; i <= 4 && i < p.daily.length; i++) {
-              week1Arrival += p.daily[i].arrival;
-              week1Achievement += p.daily[i].achievement;
-            }
-          });
+          // 주차별 누적 실적 계산
+          const weekEndIndices = [4, 11, 18, 25, 29]; // 각 주차 마지막 day index
+          const totalDailyTargetAll = products.reduce((s, p) => s + p.daily.reduce((a, d) => a + d.target, 0), 0);
 
           const weeklyChartData = weekLabels.map((label, idx) => {
             const cumDays = workingDays.slice(0, idx + 1).reduce((a, b) => a + b, 0);
             const targetRate = Math.round((cumDays / totalWorkingDays) * 1000) / 10;
+
+            let cumArr = 0, cumAch = 0;
+            products.forEach(p => {
+              for (let i = 0; i <= weekEndIndices[idx] && i < p.daily.length; i++) {
+                cumArr += p.daily[i].arrival;
+                cumAch += p.daily[i].achievement;
+              }
+            });
+
+            const hasData = cumArr > 0 || cumAch > 0;
             return {
               name: label,
               목표: targetRate,
-              자재입고: idx === 0 ? Math.round((week1Arrival / totalProductionTarget) * 1000) / 10 : undefined,
-              생산실적: idx === 0 ? Math.round((week1Achievement / totalProductionTarget) * 1000) / 10 : undefined,
+              자재입고: hasData && totalDailyTargetAll > 0 ? Math.round((cumArr / totalDailyTargetAll) * 1000) / 10 : undefined,
+              생산실적: hasData && totalDailyTargetAll > 0 ? Math.round((cumAch / totalDailyTargetAll) * 1000) / 10 : undefined,
             };
           });
 
@@ -599,6 +603,15 @@ export default function App() {
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-sm font-bold text-slate-900">주차별 진도율 추이</h3>
                   <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-1.5">
+                      <div className="p-1.5 rounded-lg bg-indigo-500 shrink-0">
+                        <Calendar className="w-3.5 h-3.5 text-white" />
+                      </div>
+                      <div>
+                        <p className="text-[9px] text-slate-400">목표 진도율</p>
+                        <p className="text-sm font-bold text-indigo-600">{stats.targetProgressRate}%</p>
+                      </div>
+                    </div>
                     <div className="flex items-center gap-1.5">
                       <div className="p-1.5 rounded-lg bg-amber-500 shrink-0">
                         <Truck className="w-3.5 h-3.5 text-white" />
@@ -615,15 +628,6 @@ export default function App() {
                       <div>
                         <p className="text-[9px] text-slate-400">생산 실적 진도율</p>
                         <p className="text-sm font-bold text-emerald-600">{stats.avgProductionProgress}%</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <div className="p-1.5 rounded-lg bg-indigo-500 shrink-0">
-                        <Calendar className="w-3.5 h-3.5 text-white" />
-                      </div>
-                      <div>
-                        <p className="text-[9px] text-slate-400">목표 진도율</p>
-                        <p className="text-sm font-bold text-indigo-600">{stats.targetProgressRate}%</p>
                       </div>
                     </div>
                   </div>
