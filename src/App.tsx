@@ -582,11 +582,15 @@ export default function App() {
               const t = p.daily.reduce((a, d) => a + d.target, 0);
               const arr = p.daily.reduce((a, d) => a + d.arrival, 0);
               const ach = p.daily.reduce((a, d) => a + d.achievement, 0);
+              const prodRevenue = p.daily.reduce((a, d) => a + d.achievement * (p.unitPrice || 0) / 1000, 0);
               return {
                 name: p.name,
                 code: p.code,
                 materialRate: t > 0 ? Math.round((arr / t) * 100) : 0,
                 productionRate: t > 0 ? Math.round((ach / t) * 100) : 0,
+                possibleRevenue: p.possibleRevenue || 0,
+                currentRevenue: prodRevenue,
+                unitPrice: p.unitPrice || 0,
               };
             });
             return { customer, avgMaterial, avgProduction, totalTarget, totalDailyTarget, totalArrival, totalAchievement, itemCount, custPossibleRevenue, custCurrentRevenue, custRevenueRate, productDetails };
@@ -720,7 +724,12 @@ export default function App() {
                           <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
                           <span className="text-sm font-bold text-slate-800">{cs.customer}</span>
                         </div>
-                        <span className="text-[10px] text-slate-400">{cs.itemCount}품목 · {cs.totalTarget.toLocaleString()}만개</span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] text-slate-400">{cs.itemCount}품목 · {cs.totalTarget.toLocaleString()}만개</span>
+                          {cs.custPossibleRevenue > 0 && (
+                            <span className="text-[10px] font-bold text-violet-600">{(cs.custCurrentRevenue / 100).toLocaleString(undefined, { maximumFractionDigits: 1 })} / {(cs.custPossibleRevenue / 100).toLocaleString(undefined, { maximumFractionDigits: 1 })}억원</span>
+                          )}
+                        </div>
                       </div>
                       <div className="space-y-1.5">
                         <div>
@@ -741,17 +750,6 @@ export default function App() {
                             <div className="h-full bg-emerald-500 rounded-full transition-all" style={{ width: `${Math.min(cs.avgProduction, 100)}%` }} />
                           </div>
                         </div>
-                        {cs.custPossibleRevenue > 0 && (
-                        <div>
-                          <div className="flex items-center justify-between mb-0.5">
-                            <span className="text-[11px] font-medium text-violet-600">매출 진도 <span className="text-[10px] text-slate-400">{Math.round(cs.custCurrentRevenue).toLocaleString()}/{cs.custPossibleRevenue.toLocaleString()}백만</span></span>
-                            <span className="text-[11px] font-bold text-violet-600">{cs.custRevenueRate}%</span>
-                          </div>
-                          <div className="w-full h-1.5 bg-violet-100 rounded-full overflow-hidden">
-                            <div className="h-full bg-violet-500 rounded-full transition-all" style={{ width: `${Math.min(cs.custRevenueRate, 100)}%` }} />
-                          </div>
-                        </div>
-                        )}
                       </div>
                     </div>
                   ))}
@@ -790,6 +788,18 @@ export default function App() {
                             </div>
                             <span className="text-[11px] font-bold text-emerald-600 w-10 text-right">{pd.productionRate}%</span>
                           </div>
+                          {(pd.possibleRevenue > 0 || pd.currentRevenue > 0) && (
+                          <div className="flex items-center justify-between mt-1 pt-1 border-t border-slate-200">
+                            <span className="text-[11px] text-violet-600 font-medium">매출</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-[10px] text-slate-400">단가 {pd.unitPrice.toLocaleString()}원</span>
+                              <span className="text-[11px] font-bold text-violet-600">
+                                {(pd.currentRevenue / 100).toLocaleString(undefined, { maximumFractionDigits: 2 })}억
+                                {pd.possibleRevenue > 0 && <span className="text-[10px] text-slate-400 font-normal"> / {(pd.possibleRevenue / 100).toLocaleString(undefined, { maximumFractionDigits: 2 })}억</span>}
+                              </span>
+                            </div>
+                          </div>
+                          )}
                         </div>
                       ))}
                     </div>
