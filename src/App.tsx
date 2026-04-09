@@ -155,7 +155,10 @@ export default function App() {
     }
     const targetProgressRate = totalWeekdays > 0 ? Math.round((passedWeekdays / totalWeekdays) * 100) : 0;
 
-    return { totalBacklog, totalTarget, totalAchievement, avgMaterialProgress, avgProductionProgress, targetProgressRate };
+    const totalArrival = products.reduce((acc, p) => acc + p.daily.reduce((s, d) => s + d.arrival, 0), 0);
+    const carryOver = totalBacklog - totalTarget;
+
+    return { totalBacklog, totalTarget, totalAchievement, totalArrival, carryOver, avgMaterialProgress, avgProductionProgress, targetProgressRate };
   }, [products]);
 
   const handleTargetChange = useCallback((productCode: string, dayIndex: number, value: string) => {
@@ -387,7 +390,7 @@ export default function App() {
         {/* 종합 현황 보드 */}
         <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
           <h3 className="text-sm font-bold text-slate-900 mb-4">종합 현황</h3>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
             <div className="flex items-center gap-3">
               <div className="p-2.5 rounded-xl bg-indigo-500 shrink-0">
                 <Package className="w-5 h-5 text-white" />
@@ -402,8 +405,26 @@ export default function App() {
                 <Factory className="w-5 h-5 text-white" />
               </div>
               <div>
-                <p className="text-[10px] text-slate-400 font-medium">당월 생산 목표</p>
+                <p className="text-[10px] text-slate-400 font-medium">당월 예상 수량</p>
                 <p className="text-lg font-bold text-slate-900">{stats.totalTarget.toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-rose-500 shrink-0">
+                <ArrowDownRight className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <p className="text-[10px] text-slate-400 font-medium">이월 예상 수량</p>
+                <p className="text-lg font-bold text-rose-600">{stats.carryOver.toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-amber-500 shrink-0">
+                <Truck className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <p className="text-[10px] text-slate-400 font-medium">당월 자재 완료</p>
+                <p className="text-lg font-bold text-amber-600">{Math.round(stats.totalArrival / 10).toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -412,34 +433,7 @@ export default function App() {
               </div>
               <div>
                 <p className="text-[10px] text-slate-400 font-medium">당월 생산 완료</p>
-                <p className="text-lg font-bold text-slate-900">{Math.round(stats.totalAchievement / 10).toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-xl bg-amber-500 shrink-0">
-                <Truck className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <p className="text-[10px] text-slate-400 font-medium">자재 입고 진도율</p>
-                <p className="text-lg font-bold text-amber-600">{stats.avgMaterialProgress}%</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-xl bg-emerald-500 shrink-0">
-                <TrendingUp className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <p className="text-[10px] text-slate-400 font-medium">생산 실적 진도율</p>
-                <p className="text-lg font-bold text-emerald-600">{stats.avgProductionProgress}%</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-xl bg-indigo-500 shrink-0">
-                <Calendar className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <p className="text-[10px] text-slate-400 font-medium">목표 진도율</p>
-                <p className="text-lg font-bold text-indigo-600">{stats.targetProgressRate}%</p>
+                <p className="text-lg font-bold text-emerald-600">{Math.round(stats.totalAchievement / 10).toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
               </div>
             </div>
           </div>
@@ -496,7 +490,38 @@ export default function App() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
               {/* 좌측: 주차별 진도율 그래프 */}
               <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 flex flex-col">
-                <h3 className="text-sm font-bold text-slate-900 mb-4">주차별 진도율 추이</h3>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-bold text-slate-900">주차별 진도율 추이</h3>
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-1.5">
+                      <div className="p-1.5 rounded-lg bg-amber-500 shrink-0">
+                        <Truck className="w-3.5 h-3.5 text-white" />
+                      </div>
+                      <div>
+                        <p className="text-[9px] text-slate-400">자재 입고 진도율</p>
+                        <p className="text-sm font-bold text-amber-600">{stats.avgMaterialProgress}%</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <div className="p-1.5 rounded-lg bg-emerald-500 shrink-0">
+                        <TrendingUp className="w-3.5 h-3.5 text-white" />
+                      </div>
+                      <div>
+                        <p className="text-[9px] text-slate-400">생산 실적 진도율</p>
+                        <p className="text-sm font-bold text-emerald-600">{stats.avgProductionProgress}%</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <div className="p-1.5 rounded-lg bg-indigo-500 shrink-0">
+                        <Calendar className="w-3.5 h-3.5 text-white" />
+                      </div>
+                      <div>
+                        <p className="text-[9px] text-slate-400">목표 진도율</p>
+                        <p className="text-sm font-bold text-indigo-600">{stats.targetProgressRate}%</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
                 <div className="w-full flex-1 min-h-0">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={weeklyChartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
