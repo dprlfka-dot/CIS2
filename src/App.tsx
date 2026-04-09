@@ -601,9 +601,9 @@ export default function App() {
           });
 
           return (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* 좌측: 주차별 진도율 그래프 */}
-              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 flex flex-col">
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 flex flex-col h-[420px]">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-sm font-bold text-slate-900">주차별 진도율 추이</h3>
                   <div className="flex items-center gap-4">
@@ -656,75 +656,89 @@ export default function App() {
               </div>
 
               {/* 우측: 고객사별 진도율 */}
-              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 h-[420px] overflow-y-auto">
                 <h3 className="text-sm font-bold text-slate-900 mb-4">고객사별 진도율</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {customerStats.map(cs => {
-                    const isExpanded = expandedCustomers.has(cs.customer);
-                    return (
-                      <div key={cs.customer} className="bg-slate-50 rounded-xl p-3 space-y-2">
-                        <div
-                          className="flex items-center justify-between cursor-pointer"
-                          onClick={() => setExpandedCustomers(prev => {
-                            const next = new Set(prev);
-                            next.has(cs.customer) ? next.delete(cs.customer) : next.add(cs.customer);
-                            return next;
-                          })}
-                        >
-                          <div className="flex items-center gap-1.5">
-                            <ChevronRight className={cn("w-3.5 h-3.5 text-slate-400 transition-transform", isExpanded && "rotate-90")} />
-                            <span className="text-sm font-bold text-slate-800">{cs.customer}</span>
-                          </div>
-                          <span className="text-[10px] text-slate-400">{cs.itemCount}품목 · {cs.totalTarget.toLocaleString()}만개</span>
+                  {customerStats.map(cs => (
+                    <div
+                      key={cs.customer}
+                      className="bg-slate-50 rounded-xl p-3 space-y-2 cursor-pointer hover:bg-slate-100 transition-colors"
+                      onClick={() => setExpandedCustomers(prev => {
+                        const next = new Set(prev);
+                        next.has(cs.customer) ? next.delete(cs.customer) : next.add(cs.customer);
+                        return next;
+                      })}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5">
+                          <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+                          <span className="text-sm font-bold text-slate-800">{cs.customer}</span>
                         </div>
-                        <div className="space-y-1.5">
-                          <div>
-                            <div className="flex items-center justify-between mb-0.5">
-                              <span className="text-[11px] font-medium text-amber-600">자재 완료 <span className="text-[10px] text-slate-400">{cs.totalArrival.toLocaleString()}천개/{cs.totalDailyTarget.toLocaleString()}천개</span></span>
-                              <span className="text-[11px] font-bold text-amber-600">{cs.avgMaterial}%</span>
-                            </div>
-                            <div className="w-full h-1.5 bg-amber-100 rounded-full overflow-hidden">
-                              <div className="h-full bg-amber-400 rounded-full transition-all" style={{ width: `${Math.min(cs.avgMaterial, 100)}%` }} />
-                            </div>
-                          </div>
-                          <div>
-                            <div className="flex items-center justify-between mb-0.5">
-                              <span className="text-[11px] font-medium text-emerald-600">생산 완료 <span className="text-[10px] text-slate-400">{cs.totalAchievement.toLocaleString()}천개/{cs.totalDailyTarget.toLocaleString()}천개</span></span>
-                              <span className="text-[11px] font-bold text-emerald-600">{cs.avgProduction}%</span>
-                            </div>
-                            <div className="w-full h-1.5 bg-emerald-100 rounded-full overflow-hidden">
-                              <div className="h-full bg-emerald-500 rounded-full transition-all" style={{ width: `${Math.min(cs.avgProduction, 100)}%` }} />
-                            </div>
-                          </div>
-                        </div>
-                        {isExpanded && (
-                          <div className="pt-1.5 border-t border-slate-200 space-y-2">
-                            {cs.productDetails.map(pd => (
-                              <div key={pd.code} className="bg-white rounded-lg p-2 space-y-1">
-                                <p className="text-[10px] font-bold text-slate-700 truncate" title={pd.name}>{pd.name}</p>
-                                <div className="flex items-center gap-2">
-                                  <span className="text-[10px] text-amber-600 w-8 shrink-0">자재</span>
-                                  <div className="flex-1 h-1 bg-amber-100 rounded-full overflow-hidden">
-                                    <div className="h-full bg-amber-400 rounded-full" style={{ width: `${Math.min(pd.materialRate, 100)}%` }} />
-                                  </div>
-                                  <span className="text-[10px] font-bold text-amber-600 w-8 text-right">{pd.materialRate}%</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <span className="text-[10px] text-emerald-600 w-8 shrink-0">생산</span>
-                                  <div className="flex-1 h-1 bg-emerald-100 rounded-full overflow-hidden">
-                                    <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${Math.min(pd.productionRate, 100)}%` }} />
-                                  </div>
-                                  <span className="text-[10px] font-bold text-emerald-600 w-8 text-right">{pd.productionRate}%</span>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
+                        <span className="text-[10px] text-slate-400">{cs.itemCount}품목 · {cs.totalTarget.toLocaleString()}만개</span>
                       </div>
-                    );
-                  })}
+                      <div className="space-y-1.5">
+                        <div>
+                          <div className="flex items-center justify-between mb-0.5">
+                            <span className="text-[11px] font-medium text-amber-600">자재 완료 <span className="text-[10px] text-slate-400">{cs.totalArrival.toLocaleString()}천개/{cs.totalDailyTarget.toLocaleString()}천개</span></span>
+                            <span className="text-[11px] font-bold text-amber-600">{cs.avgMaterial}%</span>
+                          </div>
+                          <div className="w-full h-1.5 bg-amber-100 rounded-full overflow-hidden">
+                            <div className="h-full bg-amber-400 rounded-full transition-all" style={{ width: `${Math.min(cs.avgMaterial, 100)}%` }} />
+                          </div>
+                        </div>
+                        <div>
+                          <div className="flex items-center justify-between mb-0.5">
+                            <span className="text-[11px] font-medium text-emerald-600">생산 완료 <span className="text-[10px] text-slate-400">{cs.totalAchievement.toLocaleString()}천개/{cs.totalDailyTarget.toLocaleString()}천개</span></span>
+                            <span className="text-[11px] font-bold text-emerald-600">{cs.avgProduction}%</span>
+                          </div>
+                          <div className="w-full h-1.5 bg-emerald-100 rounded-full overflow-hidden">
+                            <div className="h-full bg-emerald-500 rounded-full transition-all" style={{ width: `${Math.min(cs.avgProduction, 100)}%` }} />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
+
+              {/* 고객사 품목별 팝업 */}
+              {customerStats.filter(cs => expandedCustomers.has(cs.customer)).map(cs => (
+                <div key={`popup_${cs.customer}`} className="fixed inset-0 z-50 flex items-center justify-center bg-black/30" onClick={() => setExpandedCustomers(prev => { const next = new Set(prev); next.delete(cs.customer); return next; })}>
+                  <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-6 w-[480px] max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <h3 className="text-sm font-bold text-slate-900">{cs.customer} 품목별 진도율</h3>
+                        <p className="text-[10px] text-slate-400">{cs.itemCount}품목 · {cs.totalTarget.toLocaleString()}만개</p>
+                      </div>
+                      <button onClick={() => setExpandedCustomers(prev => { const next = new Set(prev); next.delete(cs.customer); return next; })} className="p-1 text-slate-400 hover:text-slate-600 transition-colors">
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                      </button>
+                    </div>
+                    <div className="space-y-3">
+                      {cs.productDetails.map(pd => (
+                        <div key={pd.code} className="bg-slate-50 rounded-xl p-3 space-y-1.5">
+                          <p className="text-xs font-bold text-slate-800">{pd.name}</p>
+                          <p className="text-[10px] text-slate-400">{pd.code}</p>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[11px] text-amber-600 w-12 shrink-0">자재</span>
+                            <div className="flex-1 h-1.5 bg-amber-100 rounded-full overflow-hidden">
+                              <div className="h-full bg-amber-400 rounded-full" style={{ width: `${Math.min(pd.materialRate, 100)}%` }} />
+                            </div>
+                            <span className="text-[11px] font-bold text-amber-600 w-10 text-right">{pd.materialRate}%</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[11px] text-emerald-600 w-12 shrink-0">생산</span>
+                            <div className="flex-1 h-1.5 bg-emerald-100 rounded-full overflow-hidden">
+                              <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${Math.min(pd.productionRate, 100)}%` }} />
+                            </div>
+                            <span className="text-[11px] font-bold text-emerald-600 w-10 text-right">{pd.productionRate}%</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           );
         })()}
