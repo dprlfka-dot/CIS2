@@ -579,7 +579,17 @@ export default function App() {
           const weekEndIndices = [4, 11, 18, 25, 29]; // 각 주차 마지막 day index
           const totalDailyTargetAll = products.reduce((s, p) => s + p.daily.reduce((a, d) => a + d.target, 0), 0);
 
+          // 현재 날짜 기준 주차 판별 (4월 기준)
+          const todayDate = new Date();
+          const todayDay = todayDate.getMonth() === 3 ? todayDate.getDate() : (todayDate.getMonth() < 3 ? 0 : 31);
+          // 각 주차 마지막 날짜: 1주차=5일, 2주차=12일, 3주차=19일, 4주차=26일, 5주차=30일
+          const weekEndDays = [5, 12, 19, 26, 30];
+          const currentWeekIdx = weekEndDays.findIndex(d => todayDay <= d);
+          const maxWeek = currentWeekIdx >= 0 ? currentWeekIdx : 4;
+
           const weeklyChartData = weekLabels.map((label, idx) => {
+            if (idx > maxWeek) return { name: label };
+
             const cumDays = workingDays.slice(0, idx + 1).reduce((a, b) => a + b, 0);
             const targetRate = Math.round((cumDays / totalWorkingDays) * 1000) / 10;
 
