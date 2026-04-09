@@ -78,6 +78,7 @@ export default function App() {
   const [editingAchievements, setEditingAchievements] = useState<Record<string, number[]>>({});
   const [saveStatus, setSaveStatus] = useState<Record<string, 'saved' | 'saving'>>({});
   const [expandedCustomers, setExpandedCustomers] = useState<Set<string>>(new Set());
+  const [activeTab, setActiveTab] = useState<'summary' | 'detail'>('summary');
 
   useEffect(() => {
     fetchProducts()
@@ -388,6 +389,29 @@ export default function App() {
       </header>
 
       <main className="max-w-[1860px] mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-4">
+        {/* 탭 메뉴 */}
+        <div className="flex gap-1 bg-white rounded-2xl shadow-sm border border-slate-100 p-1.5">
+          <button
+            onClick={() => setActiveTab('summary')}
+            className={cn(
+              "flex-1 px-4 py-2.5 rounded-xl text-sm font-bold transition-all",
+              activeTab === 'summary' ? "bg-indigo-600 text-white shadow-sm" : "text-slate-500 hover:bg-slate-50"
+            )}
+          >
+            종합현황
+          </button>
+          <button
+            onClick={() => setActiveTab('detail')}
+            className={cn(
+              "flex-1 px-4 py-2.5 rounded-xl text-sm font-bold transition-all",
+              activeTab === 'detail' ? "bg-indigo-600 text-white shadow-sm" : "text-slate-500 hover:bg-slate-50"
+            )}
+          >
+            상세데이터
+          </button>
+        </div>
+
+        {activeTab === 'summary' && (<>
         {/* 종합 현황 보드 */}
         <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
           <h3 className="text-sm font-bold text-slate-900 mb-4">종합 현황</h3>
@@ -629,7 +653,9 @@ export default function App() {
             </div>
           );
         })()}
+        </>)}
 
+        {activeTab === 'detail' && (<>
         {/* Filters & Table */}
         <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
           <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row gap-4 justify-between items-center">
@@ -942,6 +968,7 @@ export default function App() {
             </div>
           )}
         </div>
+        </>)}
       </main>
 
     </div>
