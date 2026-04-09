@@ -1111,8 +1111,32 @@ export default function App() {
                   const snapTarget = viewingSnapshot.data.reduce((s, p) => s + p.productionTarget, 0);
                   const snapArrival = viewingSnapshot.data.reduce((s, p) => s + p.daily.reduce((a, d) => a + d.arrival, 0), 0);
                   const snapAchievement = viewingSnapshot.data.reduce((s, p) => s + p.daily.reduce((a, d) => a + d.achievement, 0), 0);
+
+                  // 주차별 그래프 데이터
+                  const workingDays = [3, 5, 5, 5, 4];
+                  const totalWorkingDays = workingDays.reduce((a, b) => a + b, 0);
+                  const weekLabels = ['1주차', '2주차', '3주차', '4주차', '5주차'];
+                  const weekEndIndices = [4, 11, 18, 25, 29];
+                  const snapTotalTarget = viewingSnapshot.data.reduce((s, p) => s + p.productionTarget, 0);
+
+                  const snapChartData = weekLabels.map((label, idx) => {
+                    const cumDays = workingDays.slice(0, idx + 1).reduce((a, b) => a + b, 0);
+                    const targetRate = Math.round((cumDays / totalWorkingDays) * 1000) / 10;
+                    let cumArr = 0, cumAch = 0;
+                    viewingSnapshot.data.forEach(p => {
+                      for (let i = 0; i <= weekEndIndices[idx] && i < p.daily.length; i++) {
+                        cumArr += p.daily[i].arrival;
+                        cumAch += p.daily[i].achievement;
+                      }
+                    });
+                    const arrRate = snapTotalTarget > 0 ? Math.round((cumArr / snapTotalTarget) * 1000) / 10 : 0;
+                    const achRate = snapTotalTarget > 0 ? Math.round((cumAch / snapTotalTarget) * 1000) / 10 : 0;
+                    return { name: label, 목표: targetRate, 자재입고: arrRate > 0 ? arrRate : undefined, 생산실적: achRate > 0 ? achRate : undefined };
+                  });
+
                   return (
                     <div className="space-y-4">
+                      {/* 종합 수치 */}
                       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
                         <div className="bg-slate-50 rounded-xl p-3 text-center">
                           <p className="text-[10px] text-slate-400">수주잔량</p>
@@ -1135,6 +1159,27 @@ export default function App() {
                           <p className="text-lg font-bold text-emerald-600">{Math.round(snapAchievement / 10).toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
                         </div>
                       </div>
+
+                      {/* 주차별 진도율 그래프 */}
+                      <div className="bg-slate-50 rounded-xl p-4">
+                        <h4 className="text-xs font-bold text-slate-700 mb-3">주차별 진도율 추이</h4>
+                        <div className="w-full h-[200px]">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <LineChart data={snapChartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
+                              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                              <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#64748b' }} />
+                              <YAxis tick={{ fontSize: 11, fill: '#64748b' }} unit="%" />
+                              <Tooltip contentStyle={{ borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '11px' }} formatter={(value: number) => [`${value}%`]} />
+                              <Legend wrapperStyle={{ fontSize: '11px' }} />
+                              <Line type="monotone" dataKey="목표" stroke="#6366f1" strokeWidth={1.5} dot={{ r: 3, fill: '#6366f1' }} />
+                              <Line type="monotone" dataKey="자재입고" stroke="#f59e0b" strokeWidth={1.5} dot={{ r: 3, fill: '#f59e0b' }} />
+                              <Line type="monotone" dataKey="생산실적" stroke="#10b981" strokeWidth={1.5} dot={{ r: 3, fill: '#10b981' }} />
+                            </LineChart>
+                          </ResponsiveContainer>
+                        </div>
+                      </div>
+
+                      {/* 고객사별 진도율 (클릭 시 품목별) */}
                       <div className="space-y-2">
                         {snapCustomers.map(cust => {
                           const custProds = viewingSnapshot.data.filter(p => p.customer === cust);
@@ -1143,13 +1188,25 @@ export default function App() {
                           const totalAch = custProds.reduce((s, p) => s + p.daily.reduce((a, d) => a + d.achievement, 0), 0);
                           const matRate = totalT > 0 ? Math.round((totalArr / totalT) * 100) : 0;
                           const prodRate = totalT > 0 ? Math.round((totalAch / totalT) * 100) : 0;
+                          const isExp = expandedCustomers.has(`snap_${cust}`);
                           return (
                             <div key={cust} className="bg-slate-50 rounded-xl p-3">
-                              <div className="flex items-center justify-between mb-2">
-                                <span className="text-sm font-bold text-slate-800">{cust}</span>
+                              <div
+                                className="flex items-center justify-between cursor-pointer"
+                                onClick={() => setExpandedCustomers(prev => {
+                                  const next = new Set(prev);
+                                  const key = `snap_${cust}`;
+                                  next.has(key) ? next.delete(key) : next.add(key);
+                                  return next;
+                                })}
+                              >
+                                <div className="flex items-center gap-1.5">
+                                  <ChevronRight className={cn("w-3.5 h-3.5 text-slate-400 transition-transform", isExp && "rotate-90")} />
+                                  <span className="text-sm font-bold text-slate-800">{cust}</span>
+                                </div>
                                 <span className="text-[10px] text-slate-400">{custProds.length}품목</span>
                               </div>
-                              <div className="space-y-1.5">
+                              <div className="space-y-1.5 mt-2">
                                 <div>
                                   <div className="flex items-center justify-between mb-0.5">
                                     <span className="text-[11px] font-medium text-amber-600">자재 완료 <span className="text-[10px] text-slate-400">{totalArr.toLocaleString()}천개/{totalT.toLocaleString()}천개</span></span>
@@ -1169,6 +1226,36 @@ export default function App() {
                                   </div>
                                 </div>
                               </div>
+                              {isExp && (
+                                <div className="pt-2 mt-2 border-t border-slate-200 space-y-2">
+                                  {custProds.map(pd => {
+                                    const pT = pd.daily.reduce((a, d) => a + d.target, 0);
+                                    const pArr = pd.daily.reduce((a, d) => a + d.arrival, 0);
+                                    const pAch = pd.daily.reduce((a, d) => a + d.achievement, 0);
+                                    const pMatR = pT > 0 ? Math.round((pArr / pT) * 100) : 0;
+                                    const pProdR = pT > 0 ? Math.round((pAch / pT) * 100) : 0;
+                                    return (
+                                      <div key={pd.code} className="bg-white rounded-lg p-2 space-y-1">
+                                        <p className="text-[10px] font-bold text-slate-700 truncate" title={pd.name}>{pd.name}</p>
+                                        <div className="flex items-center gap-2">
+                                          <span className="text-[10px] text-amber-600 w-8 shrink-0">자재</span>
+                                          <div className="flex-1 h-1 bg-amber-100 rounded-full overflow-hidden">
+                                            <div className="h-full bg-amber-400 rounded-full" style={{ width: `${Math.min(pMatR, 100)}%` }} />
+                                          </div>
+                                          <span className="text-[10px] font-bold text-amber-600 w-8 text-right">{pMatR}%</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                          <span className="text-[10px] text-emerald-600 w-8 shrink-0">생산</span>
+                                          <div className="flex-1 h-1 bg-emerald-100 rounded-full overflow-hidden">
+                                            <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${Math.min(pProdR, 100)}%` }} />
+                                          </div>
+                                          <span className="text-[10px] font-bold text-emerald-600 w-8 text-right">{pProdR}%</span>
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              )}
                             </div>
                           );
                         })}
@@ -1179,34 +1266,34 @@ export default function App() {
 
                 {snapshotSubTab === 'detail' && (
                   <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
+                    <table className="w-full text-left border-collapse" style={{ minWidth: '3500px' }}>
                       <thead>
                         <tr className="bg-slate-50/50 text-slate-700 text-xs font-bold whitespace-nowrap">
-                          <th className="px-2 py-2 text-center sticky left-0 bg-slate-50 z-10">고객사</th>
-                          <th className="px-2 py-2 text-center">품목코드</th>
-                          <th className="px-2 py-2 text-center min-w-[160px]">품목명</th>
-                          <th className="px-2 py-2 text-center">수주잔량</th>
-                          <th className="px-2 py-2 text-center">생산목표</th>
-                          <th className="px-2 py-2 text-center">자재진도율</th>
-                          <th className="px-2 py-2 text-center">생산진도율</th>
+                          <th className="px-2 py-2 text-center sticky left-0 bg-slate-50 z-10 min-w-[60px]">고객사</th>
+                          <th className="px-2 py-2 text-center min-w-[110px]">품목코드</th>
+                          <th className="px-2 py-2 text-center min-w-[180px]">품목명</th>
+                          <th className="px-2 py-2 text-center min-w-[60px]">수주잔량</th>
+                          <th className="px-2 py-2 text-center min-w-[60px]">생산목표</th>
+                          <th className="px-2 py-2 text-center min-w-[50px]">자재%</th>
+                          <th className="px-2 py-2 text-center min-w-[50px]">생산%</th>
                           {Array.from({ length: 30 }, (_, i) => {
                             const d = i + 1;
                             const dayOfWeek = ['일','월','화','수','목','금','토'][new Date(2026, 3, d).getDay()];
                             return (
-                              <th key={i} className="px-1 py-2 text-center text-[10px]" colSpan={3}>
+                              <th key={i} className="text-center text-[10px] border-l border-slate-200" colSpan={3}>
                                 {d}({dayOfWeek})
                               </th>
                             );
                           })}
                         </tr>
-                        <tr className="bg-slate-50/30 text-[10px] text-slate-500 font-medium">
+                        <tr className="bg-slate-50/30 text-[10px] text-slate-500 font-medium whitespace-nowrap">
                           <th className="sticky left-0 bg-slate-50 z-10"></th>
                           <th></th><th></th><th></th><th></th><th></th><th></th>
                           {Array.from({ length: 30 }, (_, i) => (
                             <React.Fragment key={i}>
-                              <th className="px-1 py-1 text-center text-amber-500">입고</th>
-                              <th className="px-1 py-1 text-center text-emerald-500">실적</th>
-                              <th className="px-1 py-1 text-center text-indigo-500">목표</th>
+                              <th className="px-1.5 py-1 text-center text-amber-500 min-w-[36px]">입고</th>
+                              <th className="px-1.5 py-1 text-center text-emerald-500 min-w-[36px]">실적</th>
+                              <th className="px-1.5 py-1 text-center text-indigo-500 min-w-[36px]">목표</th>
                             </React.Fragment>
                           ))}
                         </tr>
@@ -1222,16 +1309,16 @@ export default function App() {
                             <tr key={p.code} className="border-t border-slate-100 text-[11px] whitespace-nowrap">
                               <td className="px-2 py-1.5 text-center font-bold sticky left-0 bg-white z-10">{p.customer}</td>
                               <td className="px-2 py-1.5 text-center text-slate-500">{p.code}</td>
-                              <td className="px-2 py-1.5 truncate max-w-[160px]" title={p.name}>{p.name}</td>
+                              <td className="px-2 py-1.5 truncate max-w-[180px]" title={p.name}>{p.name}</td>
                               <td className="px-2 py-1.5 text-center">{p.backlog.toLocaleString()}</td>
                               <td className="px-2 py-1.5 text-center">{p.productionTarget.toLocaleString()}</td>
                               <td className="px-2 py-1.5 text-center font-bold text-amber-600">{matR}%</td>
                               <td className="px-2 py-1.5 text-center font-bold text-emerald-600">{prodR}%</td>
                               {p.daily.slice(0, 30).map((d, i) => (
                                 <React.Fragment key={i}>
-                                  <td className="px-1 py-1.5 text-center text-[10px] text-amber-600">{d.arrival || ''}</td>
-                                  <td className="px-1 py-1.5 text-center text-[10px] text-emerald-600">{d.achievement || ''}</td>
-                                  <td className="px-1 py-1.5 text-center text-[10px] text-indigo-500">{d.target || ''}</td>
+                                  <td className="px-1.5 py-1.5 text-center text-[10px] text-amber-600 border-l border-slate-100">{d.arrival || ''}</td>
+                                  <td className="px-1.5 py-1.5 text-center text-[10px] text-emerald-600">{d.achievement || ''}</td>
+                                  <td className="px-1.5 py-1.5 text-center text-[10px] text-indigo-500">{d.target || ''}</td>
                                 </React.Fragment>
                               ))}
                             </tr>
