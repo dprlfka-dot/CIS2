@@ -85,6 +85,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<'summary' | 'detail' | 'history'>('summary');
   const [snapshots, setSnapshots] = useState<SnapshotMeta[]>([]);
   const [viewingSnapshot, setViewingSnapshot] = useState<SnapshotDetail | null>(null);
+  const [snapshotSubTab, setSnapshotSubTab] = useState<'summary' | 'detail'>('summary');
 
   useEffect(() => {
     fetchProducts()
@@ -370,7 +371,9 @@ export default function App() {
 
   const handleCreateSnapshot = useCallback(async () => {
     const now = new Date();
-    const label = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}월 스냅샷`;
+    const defaultLabel = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}월 스냅샷`;
+    const label = prompt('스냅샷 제목을 입력하세요:', defaultLabel);
+    if (!label) return;
     try {
       await createSnapshot(label);
       alert('스냅샷이 저장되었습니다.');
@@ -1088,35 +1091,50 @@ export default function App() {
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <h3 className="text-sm font-bold text-slate-900">{viewingSnapshot.label}</h3>
-                    <p className="text-[10px] text-slate-400">{new Date(viewingSnapshot.created_at).toLocaleString('ko-KR')} 저장</p>
+                    <p className="text-[10px] text-slate-400">{new Date(viewingSnapshot.created_at).toLocaleString('ko-KR')} 저장 · {viewingSnapshot.data.length}개 품목</p>
                   </div>
-                  <span className="text-xs text-slate-400">{viewingSnapshot.data.length}개 품목</span>
+                  <div className="flex gap-1 bg-slate-100 rounded-lg p-0.5">
+                    <button
+                      onClick={() => setSnapshotSubTab('summary')}
+                      className={cn("px-3 py-1 rounded-md text-xs font-bold transition-all", snapshotSubTab === 'summary' ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500")}
+                    >종합현황</button>
+                    <button
+                      onClick={() => setSnapshotSubTab('detail')}
+                      className={cn("px-3 py-1 rounded-md text-xs font-bold transition-all", snapshotSubTab === 'detail' ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500")}
+                    >상세데이터</button>
+                  </div>
                 </div>
-                {(() => {
+
+                {snapshotSubTab === 'summary' && (() => {
                   const snapCustomers = Array.from(new Set(viewingSnapshot.data.map(p => p.customer)));
+                  const snapBacklog = viewingSnapshot.data.reduce((s, p) => s + p.backlog, 0);
+                  const snapTarget = viewingSnapshot.data.reduce((s, p) => s + p.productionTarget, 0);
+                  const snapArrival = viewingSnapshot.data.reduce((s, p) => s + p.daily.reduce((a, d) => a + d.arrival, 0), 0);
+                  const snapAchievement = viewingSnapshot.data.reduce((s, p) => s + p.daily.reduce((a, d) => a + d.achievement, 0), 0);
                   return (
                     <div className="space-y-4">
-                      {/* 스냅샷 종합 */}
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
                         <div className="bg-slate-50 rounded-xl p-3 text-center">
                           <p className="text-[10px] text-slate-400">수주잔량</p>
-                          <p className="text-lg font-bold text-slate-900">{viewingSnapshot.data.reduce((s, p) => s + p.backlog, 0).toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
+                          <p className="text-lg font-bold text-slate-900">{snapBacklog.toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
                         </div>
                         <div className="bg-slate-50 rounded-xl p-3 text-center">
-                          <p className="text-[10px] text-slate-400">예상 수량</p>
-                          <p className="text-lg font-bold text-slate-900">{viewingSnapshot.data.reduce((s, p) => s + p.productionTarget, 0).toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
+                          <p className="text-[10px] text-slate-400">당월 예상 수량</p>
+                          <p className="text-lg font-bold text-slate-900">{snapTarget.toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
+                        </div>
+                        <div className="bg-slate-50 rounded-xl p-3 text-center">
+                          <p className="text-[10px] text-slate-400">이월 예상 수량</p>
+                          <p className="text-lg font-bold text-rose-600">{(snapBacklog - snapTarget).toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
                         </div>
                         <div className="bg-slate-50 rounded-xl p-3 text-center">
                           <p className="text-[10px] text-slate-400">자재 완료</p>
-                          <p className="text-lg font-bold text-amber-600">{Math.round(viewingSnapshot.data.reduce((s, p) => s + p.daily.reduce((a, d) => a + d.arrival, 0), 0) / 10).toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
+                          <p className="text-lg font-bold text-amber-600">{Math.round(snapArrival / 10).toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
                         </div>
                         <div className="bg-slate-50 rounded-xl p-3 text-center">
                           <p className="text-[10px] text-slate-400">생산 완료</p>
-                          <p className="text-lg font-bold text-emerald-600">{Math.round(viewingSnapshot.data.reduce((s, p) => s + p.daily.reduce((a, d) => a + d.achievement, 0), 0) / 10).toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
+                          <p className="text-lg font-bold text-emerald-600">{Math.round(snapAchievement / 10).toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
                         </div>
                       </div>
-
-                      {/* 스냅샷 고객사별 */}
                       <div className="space-y-2">
                         {snapCustomers.map(cust => {
                           const custProds = viewingSnapshot.data.filter(p => p.customer === cust);
@@ -1155,44 +1173,74 @@ export default function App() {
                           );
                         })}
                       </div>
-
-                      {/* 스냅샷 품목별 테이블 */}
-                      <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse">
-                          <thead>
-                            <tr className="bg-slate-50/50 text-slate-700 text-xs font-bold">
-                              <th className="px-3 py-2 text-center">고객사</th>
-                              <th className="px-3 py-2 text-center">품목코드</th>
-                              <th className="px-3 py-2 text-center">품목명</th>
-                              <th className="px-3 py-2 text-center">생산목표</th>
-                              <th className="px-3 py-2 text-center">자재 진도율</th>
-                              <th className="px-3 py-2 text-center">생산 진도율</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {viewingSnapshot.data.map(p => {
-                              const t = p.daily.reduce((a, d) => a + d.target, 0);
-                              const arr = p.daily.reduce((a, d) => a + d.arrival, 0);
-                              const ach = p.daily.reduce((a, d) => a + d.achievement, 0);
-                              const matR = t > 0 ? Math.round((arr / t) * 100) : 0;
-                              const prodR = t > 0 ? Math.round((ach / t) * 100) : 0;
-                              return (
-                                <tr key={p.code} className="border-t border-slate-100 text-xs">
-                                  <td className="px-3 py-2 text-center font-bold">{p.customer}</td>
-                                  <td className="px-3 py-2 text-center text-slate-500">{p.code}</td>
-                                  <td className="px-3 py-2 text-center">{p.name}</td>
-                                  <td className="px-3 py-2 text-center">{p.productionTarget.toLocaleString()}</td>
-                                  <td className="px-3 py-2 text-center font-bold text-amber-600">{matR}%</td>
-                                  <td className="px-3 py-2 text-center font-bold text-emerald-600">{prodR}%</td>
-                                </tr>
-                              );
-                            })}
-                          </tbody>
-                        </table>
-                      </div>
                     </div>
                   );
                 })()}
+
+                {snapshotSubTab === 'detail' && (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="bg-slate-50/50 text-slate-700 text-xs font-bold whitespace-nowrap">
+                          <th className="px-2 py-2 text-center sticky left-0 bg-slate-50 z-10">고객사</th>
+                          <th className="px-2 py-2 text-center">품목코드</th>
+                          <th className="px-2 py-2 text-center min-w-[160px]">품목명</th>
+                          <th className="px-2 py-2 text-center">수주잔량</th>
+                          <th className="px-2 py-2 text-center">생산목표</th>
+                          <th className="px-2 py-2 text-center">자재진도율</th>
+                          <th className="px-2 py-2 text-center">생산진도율</th>
+                          {Array.from({ length: 30 }, (_, i) => {
+                            const d = i + 1;
+                            const dayOfWeek = ['일','월','화','수','목','금','토'][new Date(2026, 3, d).getDay()];
+                            return (
+                              <th key={i} className="px-1 py-2 text-center text-[10px]" colSpan={3}>
+                                {d}({dayOfWeek})
+                              </th>
+                            );
+                          })}
+                        </tr>
+                        <tr className="bg-slate-50/30 text-[10px] text-slate-500 font-medium">
+                          <th className="sticky left-0 bg-slate-50 z-10"></th>
+                          <th></th><th></th><th></th><th></th><th></th><th></th>
+                          {Array.from({ length: 30 }, (_, i) => (
+                            <React.Fragment key={i}>
+                              <th className="px-1 py-1 text-center text-amber-500">입고</th>
+                              <th className="px-1 py-1 text-center text-emerald-500">실적</th>
+                              <th className="px-1 py-1 text-center text-indigo-500">목표</th>
+                            </React.Fragment>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {viewingSnapshot.data.map(p => {
+                          const t = p.daily.reduce((a, d) => a + d.target, 0);
+                          const arr = p.daily.reduce((a, d) => a + d.arrival, 0);
+                          const ach = p.daily.reduce((a, d) => a + d.achievement, 0);
+                          const matR = t > 0 ? Math.round((arr / t) * 100) : 0;
+                          const prodR = t > 0 ? Math.round((ach / t) * 100) : 0;
+                          return (
+                            <tr key={p.code} className="border-t border-slate-100 text-[11px] whitespace-nowrap">
+                              <td className="px-2 py-1.5 text-center font-bold sticky left-0 bg-white z-10">{p.customer}</td>
+                              <td className="px-2 py-1.5 text-center text-slate-500">{p.code}</td>
+                              <td className="px-2 py-1.5 truncate max-w-[160px]" title={p.name}>{p.name}</td>
+                              <td className="px-2 py-1.5 text-center">{p.backlog.toLocaleString()}</td>
+                              <td className="px-2 py-1.5 text-center">{p.productionTarget.toLocaleString()}</td>
+                              <td className="px-2 py-1.5 text-center font-bold text-amber-600">{matR}%</td>
+                              <td className="px-2 py-1.5 text-center font-bold text-emerald-600">{prodR}%</td>
+                              {p.daily.slice(0, 30).map((d, i) => (
+                                <React.Fragment key={i}>
+                                  <td className="px-1 py-1.5 text-center text-[10px] text-amber-600">{d.arrival || ''}</td>
+                                  <td className="px-1 py-1.5 text-center text-[10px] text-emerald-600">{d.achievement || ''}</td>
+                                  <td className="px-1 py-1.5 text-center text-[10px] text-indigo-500">{d.target || ''}</td>
+                                </React.Fragment>
+                              ))}
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </>
             )}
           </div>
