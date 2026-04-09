@@ -646,41 +646,33 @@ export default function App() {
               <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 flex flex-col h-[560px]">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-bold text-slate-900">주차별 진도율 추이</h3>
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-1.5">
-                      <div className="p-1.5 rounded-lg bg-indigo-500 shrink-0">
-                        <Calendar className="w-3.5 h-3.5 text-white" />
-                      </div>
+                  <div className="flex items-center gap-5">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-indigo-500 shrink-0" />
                       <div>
-                        <p className="text-[9px] text-slate-400">목표 진도율</p>
-                        <p className="text-sm font-bold text-indigo-600">{stats.targetProgressRate}%</p>
+                        <p className="text-xs text-slate-400">목표</p>
+                        <p className="text-base font-bold text-indigo-600">{stats.targetProgressRate}%</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-1.5">
-                      <div className="p-1.5 rounded-lg bg-amber-500 shrink-0">
-                        <Truck className="w-3.5 h-3.5 text-white" />
-                      </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-amber-500 shrink-0" />
                       <div>
-                        <p className="text-[9px] text-slate-400">자재 입고 진도율</p>
-                        <p className="text-sm font-bold text-amber-600">{stats.avgMaterialProgress}%</p>
+                        <p className="text-xs text-slate-400">자재입고</p>
+                        <p className="text-base font-bold text-amber-600">{stats.avgMaterialProgress}%</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-1.5">
-                      <div className="p-1.5 rounded-lg bg-emerald-500 shrink-0">
-                        <TrendingUp className="w-3.5 h-3.5 text-white" />
-                      </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-emerald-500 shrink-0" />
                       <div>
-                        <p className="text-[9px] text-slate-400">생산 실적 진도율</p>
-                        <p className="text-sm font-bold text-emerald-600">{stats.avgProductionProgress}%</p>
+                        <p className="text-xs text-slate-400">생산실적</p>
+                        <p className="text-base font-bold text-emerald-600">{stats.avgProductionProgress}%</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-1.5">
-                      <div className="p-1.5 rounded-lg bg-violet-500 shrink-0">
-                        <TrendingUp className="w-3.5 h-3.5 text-white" />
-                      </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-violet-500 shrink-0" />
                       <div>
-                        <p className="text-[9px] text-slate-400">매출 진도율</p>
-                        <p className="text-sm font-bold text-violet-600">{stats.revenueProgressRate}%</p>
+                        <p className="text-xs text-slate-400">매출진도</p>
+                        <p className="text-base font-bold text-violet-600">{stats.revenueProgressRate}%</p>
                       </div>
                     </div>
                   </div>
