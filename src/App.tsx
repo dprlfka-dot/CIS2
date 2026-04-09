@@ -759,43 +759,42 @@ export default function App() {
               {/* 고객사 품목별 팝업 */}
               {customerStats.filter(cs => expandedCustomers.has(cs.customer)).map(cs => (
                 <div key={`popup_${cs.customer}`} className="fixed inset-0 z-50 flex items-center justify-center bg-black/30" onClick={() => setExpandedCustomers(prev => { const next = new Set(prev); next.delete(cs.customer); return next; })}>
-                  <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-6 w-[480px] max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-                    <div className="flex items-center justify-between mb-4">
+                  <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-8 w-[600px] max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+                    <div className="flex items-center justify-between mb-6">
                       <div>
-                        <h3 className="text-sm font-bold text-slate-900">{cs.customer} 품목별 진도율</h3>
-                        <p className="text-[10px] text-slate-400">{cs.itemCount}품목 · {cs.totalTarget.toLocaleString()}만개</p>
+                        <h3 className="text-lg font-bold text-slate-900">{cs.customer} 품목별 진도율</h3>
+                        <p className="text-sm text-slate-400">{cs.itemCount}품목 · {cs.totalTarget.toLocaleString()}만개</p>
                       </div>
-                      <button onClick={() => setExpandedCustomers(prev => { const next = new Set(prev); next.delete(cs.customer); return next; })} className="p-1 text-slate-400 hover:text-slate-600 transition-colors">
-                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                      <button onClick={() => setExpandedCustomers(prev => { const next = new Set(prev); next.delete(cs.customer); return next; })} className="p-1.5 text-slate-400 hover:text-slate-600 transition-colors">
+                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                       </button>
                     </div>
-                    <div className="space-y-3">
+                    <div className="space-y-4">
                       {cs.productDetails.map(pd => (
-                        <div key={pd.code} className="bg-slate-50 rounded-xl p-3 space-y-1.5">
-                          <p className="text-xs font-bold text-slate-800">{pd.name}</p>
-                          <p className="text-[10px] text-slate-400">{pd.code}</p>
-                          <div className="flex items-center gap-2">
-                            <span className="text-[11px] text-amber-600 w-12 shrink-0">자재</span>
-                            <div className="flex-1 h-1.5 bg-amber-100 rounded-full overflow-hidden">
+                        <div key={pd.code} className="bg-slate-50 rounded-xl p-4 space-y-2.5">
+                          <p className="text-sm font-bold text-slate-800">{pd.code} &nbsp; {pd.name}</p>
+                          <div className="flex items-center gap-3">
+                            <span className="text-sm text-amber-600 w-14 shrink-0">자재</span>
+                            <div className="flex-1 h-2 bg-amber-100 rounded-full overflow-hidden">
                               <div className="h-full bg-amber-400 rounded-full" style={{ width: `${Math.min(pd.materialRate, 100)}%` }} />
                             </div>
-                            <span className="text-[11px] font-bold text-amber-600 w-10 text-right">{pd.materialRate}%</span>
+                            <span className="text-sm font-bold text-amber-600 w-12 text-right">{pd.materialRate}%</span>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-[11px] text-emerald-600 w-12 shrink-0">생산</span>
-                            <div className="flex-1 h-1.5 bg-emerald-100 rounded-full overflow-hidden">
+                          <div className="flex items-center gap-3">
+                            <span className="text-sm text-emerald-600 w-14 shrink-0">생산</span>
+                            <div className="flex-1 h-2 bg-emerald-100 rounded-full overflow-hidden">
                               <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${Math.min(pd.productionRate, 100)}%` }} />
                             </div>
-                            <span className="text-[11px] font-bold text-emerald-600 w-10 text-right">{pd.productionRate}%</span>
+                            <span className="text-sm font-bold text-emerald-600 w-12 text-right">{pd.productionRate}%</span>
                           </div>
                           {(pd.possibleRevenue > 0 || pd.currentRevenue > 0) && (
-                          <div className="flex items-center justify-between mt-1 pt-1 border-t border-slate-200">
-                            <span className="text-[11px] text-violet-600 font-medium">매출</span>
-                            <div className="flex items-center gap-2">
-                              <span className="text-[10px] text-slate-400">단가 {pd.unitPrice.toLocaleString()}원</span>
-                              <span className="text-[11px] font-bold text-violet-600">
+                          <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-200">
+                            <span className="text-sm text-violet-600 font-medium">매출</span>
+                            <div className="flex items-center gap-3">
+                              <span className="text-xs text-slate-400">단위단가 {pd.unitPrice.toLocaleString()}원</span>
+                              <span className="text-sm font-bold text-violet-600">
                                 {(pd.currentRevenue / 100).toLocaleString(undefined, { maximumFractionDigits: 2 })}억
-                                {pd.possibleRevenue > 0 && <span className="text-[10px] text-slate-400 font-normal"> / {(pd.possibleRevenue / 100).toLocaleString(undefined, { maximumFractionDigits: 2 })}억</span>}
+                                {pd.possibleRevenue > 0 && <span className="text-xs text-slate-400 font-normal"> / {(pd.possibleRevenue / 100).toLocaleString(undefined, { maximumFractionDigits: 2 })}억</span>}
                               </span>
                             </div>
                           </div>
