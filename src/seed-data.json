@@ -52,7 +52,7 @@
         {
           "date": "4/6(월)",
           "target": 30,
-          "arrival": 0,
+          "arrival": 40,
           "achievement": 0
         },
         {
@@ -64,7 +64,7 @@
         {
           "date": "4/8(수)",
           "target": 30,
-          "arrival": 0,
+          "arrival": 40,
           "achievement": 0
         },
         {
@@ -76,7 +76,7 @@
         {
           "date": "4/10(금)",
           "target": 30,
-          "arrival": 0,
+          "arrival": 40,
           "achievement": 0
         },
         {
@@ -263,7 +263,7 @@
         {
           "date": "4/8(수)",
           "target": 10,
-          "arrival": 0,
+          "arrival": 27,
           "achievement": 0
         },
         {
@@ -456,7 +456,7 @@
         {
           "date": "4/7(화)",
           "target": 500,
-          "arrival": 0,
+          "arrival": 720,
           "achievement": 0
         },
         {
@@ -468,7 +468,7 @@
         {
           "date": "4/9(목)",
           "target": 500,
-          "arrival": 0,
+          "arrival": 630,
           "achievement": 0
         },
         {
@@ -649,37 +649,37 @@
         {
           "date": "4/6(월)",
           "target": 30,
-          "arrival": 0,
+          "arrival": 20,
           "achievement": 0
         },
         {
           "date": "4/7(화)",
           "target": 30,
-          "arrival": 0,
+          "arrival": 20,
           "achievement": 0
         },
         {
           "date": "4/8(수)",
           "target": 30,
-          "arrival": 0,
+          "arrival": 20,
           "achievement": 0
         },
         {
           "date": "4/9(목)",
           "target": 30,
-          "arrival": 0,
+          "arrival": 20,
           "achievement": 0
         },
         {
           "date": "4/10(금)",
           "target": 30,
-          "arrival": 0,
+          "arrival": 20,
           "achievement": 0
         },
         {
           "date": "4/11(토)",
           "target": 0,
-          "arrival": 0,
+          "arrival": 20,
           "achievement": 0
         },
         {
@@ -848,7 +848,7 @@
         {
           "date": "4/6(월)",
           "target": 40,
-          "arrival": 0,
+          "arrival": 150,
           "achievement": 0
         },
         {
@@ -872,7 +872,7 @@
         {
           "date": "4/10(금)",
           "target": 40,
-          "arrival": 0,
+          "arrival": 60,
           "achievement": 0
         },
         {
