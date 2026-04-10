@@ -781,7 +781,7 @@ export default function App() {
               {/* 고객사 품목별 팝업 */}
               {customerStats.filter(cs => expandedCustomers.has(cs.customer)).map(cs => (
                 <div key={`popup_${cs.customer}`} className="fixed inset-0 z-50 flex items-center justify-center bg-black/30" onClick={() => setExpandedCustomers(prev => { const next = new Set(prev); next.delete(cs.customer); return next; })}>
-                  <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-6 w-[95vw] max-w-[1100px] max-h-[95vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+                  <div className={cn("bg-white rounded-2xl shadow-xl border border-slate-200 p-6 max-h-[95vh] overflow-y-auto", cs.productDetails.length <= 1 ? "w-fit max-w-[95vw]" : "w-[95vw] max-w-[1100px]")} onClick={e => e.stopPropagation()}>
                     <div className="flex items-center justify-between mb-6">
                       <div>
                         <h3 className="text-lg font-bold text-slate-900">{cs.customer} 품목별 진도율</h3>
