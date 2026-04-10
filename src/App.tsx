@@ -707,7 +707,29 @@ export default function App() {
 
               {/* 우측: 고객사별 진도율 */}
               <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 h-[560px] overflow-y-auto">
-                <h3 className="text-lg font-bold text-slate-900 mb-4">고객사별 진도율</h3>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-bold text-slate-900">고객사별 진도율</h3>
+                  {(() => {
+                    const today = new Date();
+                    const yr = today.getFullYear(), mo = today.getMonth();
+                    const dim = new Date(yr, mo + 1, 0).getDate();
+                    let tWd = 0, pWd = 0;
+                    for (let d = 1; d <= dim; d++) {
+                      const dow = new Date(yr, mo, d).getDay();
+                      if (dow >= 1 && dow <= 5) { tWd++; if (d <= today.getDate()) pWd++; }
+                    }
+                    return (
+                      <div className="flex items-center gap-2 px-3 py-1.5 bg-indigo-50 border border-indigo-200 rounded-xl">
+                        <span className="text-xs font-bold text-indigo-700 whitespace-nowrap">금일 목표 진도율</span>
+                        <div className="w-24 h-2.5 bg-indigo-100 rounded-full overflow-hidden">
+                          <div className="h-full bg-indigo-500 rounded-full" style={{ width: `${stats.targetProgressRate}%` }} />
+                        </div>
+                        <span className="text-xs font-bold text-indigo-600 whitespace-nowrap">{stats.targetProgressRate}%</span>
+                        <span className="text-[10px] text-slate-400 whitespace-nowrap">({mo + 1}/{today.getDate()} 기준, 평일 {pWd}일/{tWd}일)</span>
+                      </div>
+                    );
+                  })()}
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {customerStats.map(cs => (
                     <div
