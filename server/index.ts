@@ -6,6 +6,14 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
+// 데이터 변경 시 증가하는 버전 카운터
+let dataVersion = 1;
+
+// GET /api/version - 현재 데이터 버전 조회 (폴링용, 가벼움)
+app.get('/api/version', (_req, res) => {
+  res.json({ version: dataVersion });
+});
+
 // GET /api/products - 전체 제품 + 일별 데이터 조회
 app.get('/api/products', (_req, res) => {
   const products = db.prepare('SELECT * FROM products ORDER BY customer, code').all() as any[];
@@ -75,6 +83,7 @@ app.patch('/api/products/:code/daily', (req, res) => {
   });
 
   update();
+  dataVersion++;
   res.json({ ok: true });
 });
 
@@ -110,6 +119,7 @@ app.post('/api/products/bulk', (req, res) => {
   });
 
   bulkReplace();
+  dataVersion++;
   res.json({ ok: true, count: products.length });
 });
 

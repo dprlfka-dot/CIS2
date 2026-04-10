@@ -27,7 +27,7 @@ import * as XLSX from 'xlsx';
 import { DASHBOARD_DATA } from './data';
 import { ProductData, DailyData } from './types';
 import { cn } from './lib/utils';
-import { fetchProducts, saveDailyData, bulkUploadProducts, createSnapshot, fetchSnapshots, fetchSnapshotDetail, deleteSnapshot, SnapshotMeta, SnapshotDetail } from './api';
+import { fetchProducts, fetchVersion, saveDailyData, bulkUploadProducts, createSnapshot, fetchSnapshots, fetchSnapshotDetail, deleteSnapshot, SnapshotMeta, SnapshotDetail } from './api';
 
 const StatCard = ({ title, value, unit, icon: Icon, trend, trendValue, color }: any) => (
   <motion.div 
@@ -83,6 +83,12 @@ export default function App() {
   const [editingArrivals, setEditingArrivals] = useState<Record<string, number[]>>({});
   const [editingAchievements, setEditingAchievements] = useState<Record<string, number[]>>({});
   const [saveStatus, setSaveStatus] = useState<Record<string, 'saved' | 'saving'>>({});
+  const editingTargetsRef = useRef(editingTargets);
+  const editingArrivalsRef = useRef(editingArrivals);
+  const editingAchievementsRef = useRef(editingAchievements);
+  editingTargetsRef.current = editingTargets;
+  editingArrivalsRef.current = editingArrivals;
+  editingAchievementsRef.current = editingAchievements;
   const [expandedCustomers, setExpandedCustomers] = useState<Set<string>>(new Set());
   const [activeTab, setActiveTab] = useState<'summary' | 'detail' | 'history'>('summary');
   const [snapshots, setSnapshots] = useState<SnapshotMeta[]>([]);
@@ -98,12 +104,24 @@ export default function App() {
       })
       .finally(() => setLoading(false));
 
-    // 10초마다 서버에서 최신 데이터 자동 갱신
-    const interval = setInterval(() => {
-      fetchProducts()
-        .then(setProducts)
-        .catch(() => {});
-    }, 10000);
+    // 5초마다 서버 버전 체크, 변경된 경우에만 데이터 가져옴
+    let knownVersion = 0;
+    fetchVersion().then(v => { knownVersion = v; }).catch(() => {});
+
+    const interval = setInterval(async () => {
+      // 편집 중이면 건너뜀
+      if (Object.keys(editingTargetsRef.current).length > 0 ||
+          Object.keys(editingArrivalsRef.current).length > 0 ||
+          Object.keys(editingAchievementsRef.current).length > 0) return;
+      try {
+        const serverVersion = await fetchVersion();
+        if (serverVersion !== knownVersion) {
+          knownVersion = serverVersion;
+          const freshProducts = await fetchProducts();
+          setProducts(freshProducts);
+        }
+      } catch { /* ignore */ }
+    }, 5000);
     return () => clearInterval(interval);
   }, []);
 
@@ -220,7 +238,7 @@ export default function App() {
     });
   }, [products]);
 
-  const handleSave = useCallback((productCode: string) => {
+  const handleSave = useCallback(async (productCode: string) => {
     const targets = editingTargets[productCode];
     const arrivals = editingArrivals[productCode];
     const achievements = editingAchievements[productCode];
@@ -228,6 +246,7 @@ export default function App() {
 
     setSaveStatus(prev => ({ ...prev, [productCode]: 'saving' }));
 
+    // 로컬 상태 즉시 업데이트 (낙관적 업데이트)
     setProducts(prev => prev.map(p => {
       if (p.code !== productCode) return p;
       const newDaily = p.daily.map((d, i) => ({
@@ -239,15 +258,7 @@ export default function App() {
       return { ...p, daily: newDaily };
     }));
 
-    saveDailyData(productCode, {
-      ...(targets ? { targets } : {}),
-      ...(arrivals ? { arrivals } : {}),
-      ...(achievements ? { achievements } : {}),
-    }).catch(err => {
-      console.error('저장 실패:', err);
-      alert('서버 저장에 실패했습니다. 다시 시도해주세요.');
-    });
-
+    // 편집 상태 클리어
     setEditingTargets(prev => {
       const next = { ...prev };
       delete next[productCode];
@@ -264,7 +275,30 @@ export default function App() {
       return next;
     });
 
-    setSaveStatus(prev => ({ ...prev, [productCode]: 'saved' }));
+    try {
+      // 서버에 저장 완료까지 대기
+      await saveDailyData(productCode, {
+        ...(targets ? { targets } : {}),
+        ...(arrivals ? { arrivals } : {}),
+        ...(achievements ? { achievements } : {}),
+      });
+      // 저장 성공 후 서버에서 최신 데이터 재조회
+      const freshProducts = await fetchProducts();
+      setProducts(freshProducts);
+      setSaveStatus(prev => ({ ...prev, [productCode]: 'saved' }));
+    } catch (err) {
+      console.error('저장 실패:', err);
+      alert('서버 저장에 실패했습니다. 다시 시도해주세요.');
+      // 실패 시 서버에서 원래 데이터 복원
+      fetchProducts().then(setProducts).catch(() => {});
+      setSaveStatus(prev => {
+        const next = { ...prev };
+        delete next[productCode];
+        return next;
+      });
+      return;
+    }
+
     setTimeout(() => setSaveStatus(prev => {
       const next = { ...prev };
       delete next[productCode];
@@ -516,12 +550,12 @@ export default function App() {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <div className="p-3 rounded-xl bg-rose-500 shrink-0">
-                <ArrowDownRight className="w-6 h-6 text-white" />
+              <div className="p-3 rounded-xl bg-violet-500 shrink-0">
+                <TrendingUp className="w-6 h-6 text-white" />
               </div>
               <div>
-                <p className="text-xs text-slate-900 font-bold">이월 예상 수량</p>
-                <p className="text-lg font-bold text-rose-600">{stats.carryOver.toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
+                <p className="text-xs text-slate-900 font-bold">총 가능매출액</p>
+                <p className="text-lg font-bold text-violet-600">{(stats.totalPossibleRevenue / 100).toLocaleString(undefined, { maximumFractionDigits: 1 })}<span className="text-xs text-slate-400 ml-0.5">억원</span></p>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -543,21 +577,12 @@ export default function App() {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <div className="p-3 rounded-xl bg-violet-500 shrink-0">
-                <TrendingUp className="w-6 h-6 text-white" />
+              <div className="p-3 rounded-xl bg-rose-500 shrink-0">
+                <ArrowDownRight className="w-6 h-6 text-white" />
               </div>
               <div>
-                <p className="text-xs text-slate-900 font-bold">총 가능매출액</p>
-                <p className="text-lg font-bold text-violet-600">{(stats.totalPossibleRevenue / 100).toLocaleString(undefined, { maximumFractionDigits: 1 })}<span className="text-xs text-slate-400 ml-0.5">억원</span></p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="p-3 rounded-xl bg-fuchsia-500 shrink-0">
-                <TrendingUp className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <p className="text-xs text-slate-900 font-bold">현재매출액 ({stats.revenueProgressRate}%)</p>
-                <p className="text-lg font-bold text-fuchsia-600">{(stats.totalCurrentRevenue / 100).toLocaleString(undefined, { maximumFractionDigits: 1 })}<span className="text-xs text-slate-400 ml-0.5">억원</span></p>
+                <p className="text-xs text-slate-900 font-bold">이월 예상 수량</p>
+                <p className="text-lg font-bold text-rose-600">{stats.carryOver.toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -567,6 +592,15 @@ export default function App() {
               <div>
                 <p className="text-xs text-slate-900 font-bold">이월 예상 매출</p>
                 <p className="text-lg font-bold text-rose-500">{(stats.carryOverRevenue).toLocaleString(undefined, { maximumFractionDigits: 1 })}<span className="text-xs text-slate-400 ml-0.5">억원</span></p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="p-3 rounded-xl bg-fuchsia-500 shrink-0">
+                <TrendingUp className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <p className="text-xs text-slate-900 font-bold">현재매출액 ({stats.revenueProgressRate}%)</p>
+                <p className="text-lg font-bold text-fuchsia-600">{(stats.totalCurrentRevenue / 100).toLocaleString(undefined, { maximumFractionDigits: 1 })}<span className="text-xs text-slate-400 ml-0.5">억원</span></p>
               </div>
             </div>
           </div>

@@ -2,6 +2,13 @@ import { ProductData } from './types';
 
 const BASE = '/api';
 
+export async function fetchVersion(): Promise<number> {
+  const res = await fetch(`${BASE}/version`);
+  if (!res.ok) throw new Error('Failed to fetch version');
+  const data = await res.json();
+  return data.version;
+}
+
 export async function fetchProducts(): Promise<ProductData[]> {
   const res = await fetch(`${BASE}/products`);
   if (!res.ok) throw new Error('Failed to fetch products');
