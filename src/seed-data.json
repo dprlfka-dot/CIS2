@@ -34,7 +34,7 @@
         {
           "date": "4/3(금)",
           "target": 30,
-          "arrival": 170,
+          "arrival": 0,
           "achievement": 20
         },
         {
@@ -1849,26 +1849,26 @@
         {
           "date": "4/7(화)",
           "target": 10,
-          "arrival": 0,
-          "achievement": 0
+          "arrival": 5,
+          "achievement": 6
         },
         {
           "date": "4/8(수)",
           "target": 10,
-          "arrival": 0,
-          "achievement": 0
+          "arrival": 21,
+          "achievement": 13
         },
         {
           "date": "4/9(목)",
           "target": 10,
-          "arrival": 0,
-          "achievement": 0
+          "arrival": 9,
+          "achievement": 5
         },
         {
           "date": "4/10(금)",
           "target": 10,
-          "arrival": 0,
-          "achievement": 0
+          "arrival": 18,
+          "achievement": 6
         },
         {
           "date": "4/11(토)",
@@ -2042,7 +2042,7 @@
         {
           "date": "4/6(월)",
           "target": 10,
-          "arrival": 0,
+          "arrival": 48,
           "achievement": 0
         },
         {
@@ -2054,7 +2054,7 @@
         {
           "date": "4/8(수)",
           "target": 10,
-          "arrival": 0,
+          "arrival": 28,
           "achievement": 0
         },
         {
@@ -2241,26 +2241,26 @@
         {
           "date": "4/6(월)",
           "target": 40,
-          "arrival": 0,
-          "achievement": 0
+          "arrival": 200,
+          "achievement": 40
         },
         {
           "date": "4/7(화)",
           "target": 40,
           "arrival": 0,
-          "achievement": 0
+          "achievement": 33
         },
         {
           "date": "4/8(수)",
           "target": 40,
           "arrival": 0,
-          "achievement": 0
+          "achievement": 24
         },
         {
           "date": "4/9(목)",
           "target": 40,
-          "arrival": 0,
-          "achievement": 0
+          "arrival": 100,
+          "achievement": 32
         },
         {
           "date": "4/10(금)",
