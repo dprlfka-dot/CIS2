@@ -153,7 +153,7 @@ export default function App() {
       if (customerCompare !== 0) return customerCompare;
       return b.backlog - a.backlog;
     });
-  }, [searchTerm, selectedCustomer, products]);
+  }, [searchTerm, buyerSearch, cisSearch, selectedCustomer, products]);
 
   const stats = useMemo(() => {
     const totalBacklog = products.reduce((acc, p) => acc + p.backlog, 0);
