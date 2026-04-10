@@ -495,7 +495,7 @@ export default function App() {
                 <Package className="w-5 h-5 text-white" />
               </div>
               <div>
-                <p className="text-[10px] text-slate-400 font-medium">4/1 기준 수주잔량</p>
+                <p className="text-[10px] text-slate-900 font-bold">4/1 기준 수주잔량</p>
                 <p className="text-lg font-bold text-slate-900">{stats.totalBacklog.toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
               </div>
             </div>
@@ -504,7 +504,7 @@ export default function App() {
                 <Factory className="w-5 h-5 text-white" />
               </div>
               <div>
-                <p className="text-[10px] text-slate-400 font-medium">당월 예상 수량</p>
+                <p className="text-[10px] text-slate-900 font-bold">당월 예상 수량</p>
                 <p className="text-lg font-bold text-slate-900">{stats.totalTarget.toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
               </div>
             </div>
@@ -513,7 +513,7 @@ export default function App() {
                 <ArrowDownRight className="w-5 h-5 text-white" />
               </div>
               <div>
-                <p className="text-[10px] text-slate-400 font-medium">이월 예상 수량</p>
+                <p className="text-[10px] text-slate-900 font-bold">이월 예상 수량</p>
                 <p className="text-lg font-bold text-rose-600">{stats.carryOver.toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
               </div>
             </div>
@@ -522,7 +522,7 @@ export default function App() {
                 <Truck className="w-5 h-5 text-white" />
               </div>
               <div>
-                <p className="text-[10px] text-slate-400 font-medium">당월 자재 완료</p>
+                <p className="text-[10px] text-slate-900 font-bold">당월 자재 완료</p>
                 <p className="text-lg font-bold text-amber-600">{Math.round(stats.totalArrival / 10).toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
               </div>
             </div>
@@ -531,7 +531,7 @@ export default function App() {
                 <CheckCircle2 className="w-5 h-5 text-white" />
               </div>
               <div>
-                <p className="text-[10px] text-slate-400 font-medium">당월 생산 완료</p>
+                <p className="text-[10px] text-slate-900 font-bold">당월 생산 완료</p>
                 <p className="text-lg font-bold text-emerald-600">{Math.round(stats.totalAchievement / 10).toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
               </div>
             </div>
@@ -540,7 +540,7 @@ export default function App() {
                 <TrendingUp className="w-5 h-5 text-white" />
               </div>
               <div>
-                <p className="text-[10px] text-slate-400 font-medium">총 가능매출액</p>
+                <p className="text-[10px] text-slate-900 font-bold">총 가능매출액</p>
                 <p className="text-lg font-bold text-violet-600">{(stats.totalPossibleRevenue / 100).toLocaleString(undefined, { maximumFractionDigits: 1 })}<span className="text-xs text-slate-400 ml-0.5">억원</span></p>
               </div>
             </div>
@@ -549,7 +549,7 @@ export default function App() {
                 <TrendingUp className="w-5 h-5 text-white" />
               </div>
               <div>
-                <p className="text-[10px] text-slate-400 font-medium">현재매출액 ({stats.revenueProgressRate}%)</p>
+                <p className="text-[10px] text-slate-900 font-bold">현재매출액 ({stats.revenueProgressRate}%)</p>
                 <p className="text-lg font-bold text-fuchsia-600">{(stats.totalCurrentRevenue / 100).toLocaleString(undefined, { maximumFractionDigits: 1 })}<span className="text-xs text-slate-400 ml-0.5">억원</span></p>
               </div>
             </div>
