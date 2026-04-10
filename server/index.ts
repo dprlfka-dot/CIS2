@@ -1,6 +1,56 @@
 import express from 'express';
 import cors from 'cors';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import db from './db';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const seedJsonPath = path.join(__dirname, '..', 'src', 'seed-data.json');
+
+// DB 전체 데이터를 src/seed-data.json에 동기화 (git 추적용)
+function syncSeedData() {
+  const products = db.prepare('SELECT * FROM products ORDER BY customer, code').all() as any[];
+  const dailyAll = db.prepare('SELECT * FROM daily_data ORDER BY product_code, day_index').all() as any[];
+
+  const dailyMap: Record<string, any[]> = {};
+  for (const d of dailyAll) {
+    if (!dailyMap[d.product_code]) dailyMap[d.product_code] = [];
+    dailyMap[d.product_code].push({
+      date: d.date_label,
+      target: d.target,
+      arrival: d.arrival,
+      achievement: d.achievement,
+    });
+  }
+
+  const result = products.map(p => ({
+    customer: p.customer,
+    code: p.code,
+    name: p.name,
+    buyer: p.buyer || '',
+    cisManager: p.cis_manager || '',
+    backlog: p.backlog,
+    materialCapa: p.material_capa,
+    productionCapa: p.production_capa,
+    productionTarget: p.production_target,
+    unitPrice: p.unit_price || 0,
+    possibleRevenue: p.possible_revenue || 0,
+    weeklyTotal: p.weekly_total,
+    materialProgress: p.material_progress,
+    productionProgress: p.production_progress,
+    status: p.status,
+    daily: dailyMap[p.code] || [],
+  }));
+
+  const data = {
+    title: '26.04월 대량발주품목 진도율 관리',
+    baseDate: '2026.04.06',
+    products: result,
+  };
+
+  fs.writeFileSync(seedJsonPath, JSON.stringify(data, null, 2));
+}
 
 const app = express();
 app.use(cors());
@@ -84,6 +134,7 @@ app.patch('/api/products/:code/daily', (req, res) => {
 
   update();
   dataVersion++;
+  syncSeedData();
   res.json({ ok: true });
 });
 
@@ -120,6 +171,7 @@ app.post('/api/products/bulk', (req, res) => {
 
   bulkReplace();
   dataVersion++;
+  syncSeedData();
   res.json({ ok: true, count: products.length });
 });
 

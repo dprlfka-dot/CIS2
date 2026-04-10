@@ -1,0 +1,2394 @@
+{
+  "title": "26.04월 대량발주품목 진도율 관리",
+  "baseDate": "2026.04.06",
+  "products": [
+    {
+      "customer": "APS",
+      "code": "9APS0010517",
+      "name": "메디큐브콜라겐나이트랩핑마스크75ML",
+      "buyer": "지소연",
+      "cisManager": "김형석",
+      "backlog": 620,
+      "materialCapa": 70,
+      "productionCapa": 0,
+      "productionTarget": 70,
+      "unitPrice": 0,
+      "possibleRevenue": 0,
+      "weeklyTotal": 70,
+      "materialProgress": 24,
+      "productionProgress": 2,
+      "status": "미달",
+      "daily": [
+        {
+          "date": "4/1(수)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/2(목)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/3(금)",
+          "target": 30,
+          "arrival": 170,
+          "achievement": 20
+        },
+        {
+          "date": "4/4(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/5(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/6(월)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/7(화)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/8(수)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/9(목)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/10(금)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/11(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/12(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/13(월)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/14(화)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/15(수)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/16(목)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/17(금)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/18(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/19(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/20(월)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/21(화)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/22(수)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/23(목)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/24(금)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/25(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/26(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/27(월)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/28(화)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/29(수)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/30(목)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        }
+      ]
+    },
+    {
+      "customer": "APS",
+      "code": "9APS0013213",
+      "name": "메디큐브제로모공블랙헤드머드팩100G",
+      "buyer": "지소연",
+      "cisManager": "김형석",
+      "backlog": 97,
+      "materialCapa": 30,
+      "productionCapa": 0,
+      "productionTarget": 30,
+      "unitPrice": 0,
+      "possibleRevenue": 0,
+      "weeklyTotal": 30,
+      "materialProgress": 18,
+      "productionProgress": 0,
+      "status": "미달",
+      "daily": [
+        {
+          "date": "4/1(수)",
+          "target": 10,
+          "arrival": 50,
+          "achievement": 0
+        },
+        {
+          "date": "4/2(목)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/3(금)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/4(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/5(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/6(월)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/7(화)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/8(수)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/9(목)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/10(금)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/11(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/12(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/13(월)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/14(화)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/15(수)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/16(목)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/17(금)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/18(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/19(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/20(월)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/21(화)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/22(수)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/23(목)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/24(금)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/25(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/26(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/27(월)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/28(화)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/29(수)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/30(목)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        }
+      ]
+    },
+    {
+      "customer": "APS",
+      "code": "9APS0014610",
+      "name": "메디큐브 PDRN핑크콜라겐겔마스크",
+      "buyer": "지소연",
+      "cisManager": "김형석",
+      "backlog": 2700,
+      "materialCapa": 1100,
+      "productionCapa": 1100,
+      "productionTarget": 1100,
+      "unitPrice": 0,
+      "possibleRevenue": 0,
+      "weeklyTotal": 1100,
+      "materialProgress": 18,
+      "productionProgress": 18,
+      "status": "이상",
+      "daily": [
+        {
+          "date": "4/1(수)",
+          "target": 500,
+          "arrival": 2000,
+          "achievement": 0
+        },
+        {
+          "date": "4/2(목)",
+          "target": 500,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/3(금)",
+          "target": 500,
+          "arrival": 0,
+          "achievement": 2000
+        },
+        {
+          "date": "4/4(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/5(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/6(월)",
+          "target": 500,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/7(화)",
+          "target": 500,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/8(수)",
+          "target": 500,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/9(목)",
+          "target": 500,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/10(금)",
+          "target": 500,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/11(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/12(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/13(월)",
+          "target": 500,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/14(화)",
+          "target": 500,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/15(수)",
+          "target": 500,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/16(목)",
+          "target": 500,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/17(금)",
+          "target": 500,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/18(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/19(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/20(월)",
+          "target": 500,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/21(화)",
+          "target": 500,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/22(수)",
+          "target": 500,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/23(목)",
+          "target": 500,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/24(금)",
+          "target": 500,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/25(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/26(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/27(월)",
+          "target": 500,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/28(화)",
+          "target": 500,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/29(수)",
+          "target": 500,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/30(목)",
+          "target": 500,
+          "arrival": 0,
+          "achievement": 0
+        }
+      ]
+    },
+    {
+      "customer": "APS",
+      "code": "9APS0015817",
+      "name": "메디큐브하이포클로로스애씨드필샷80ML",
+      "buyer": "지소연",
+      "cisManager": "김형석",
+      "backlog": 112,
+      "materialCapa": 64,
+      "productionCapa": 0,
+      "productionTarget": 64,
+      "unitPrice": 0,
+      "possibleRevenue": 0,
+      "weeklyTotal": 64,
+      "materialProgress": 50,
+      "productionProgress": 16,
+      "status": "이상",
+      "daily": [
+        {
+          "date": "4/1(수)",
+          "target": 30,
+          "arrival": 280,
+          "achievement": 0
+        },
+        {
+          "date": "4/2(목)",
+          "target": 30,
+          "arrival": 40,
+          "achievement": 0
+        },
+        {
+          "date": "4/3(금)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 100
+        },
+        {
+          "date": "4/4(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/5(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/6(월)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/7(화)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/8(수)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/9(목)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/10(금)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/11(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/12(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/13(월)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/14(화)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/15(수)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/16(목)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/17(금)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/18(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/19(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/20(월)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/21(화)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/22(수)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/23(목)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/24(금)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/25(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/26(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/27(월)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/28(화)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/29(수)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/30(목)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        }
+      ]
+    },
+    {
+      "customer": "APS",
+      "code": "9APS0016013",
+      "name": "메디큐브하이포클로로스애씨드바디필샷280ML",
+      "buyer": "지소연",
+      "cisManager": "김형석",
+      "backlog": 138,
+      "materialCapa": 97,
+      "productionCapa": 0,
+      "productionTarget": 97,
+      "unitPrice": 0,
+      "possibleRevenue": 0,
+      "weeklyTotal": 97,
+      "materialProgress": 52,
+      "productionProgress": 4,
+      "status": "미달",
+      "daily": [
+        {
+          "date": "4/1(수)",
+          "target": 40,
+          "arrival": 500,
+          "achievement": 0
+        },
+        {
+          "date": "4/2(목)",
+          "target": 40,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/3(금)",
+          "target": 40,
+          "arrival": 0,
+          "achievement": 40
+        },
+        {
+          "date": "4/4(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/5(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/6(월)",
+          "target": 40,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/7(화)",
+          "target": 40,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/8(수)",
+          "target": 40,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/9(목)",
+          "target": 40,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/10(금)",
+          "target": 40,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/11(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/12(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/13(월)",
+          "target": 40,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/14(화)",
+          "target": 40,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/15(수)",
+          "target": 40,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/16(목)",
+          "target": 40,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/17(금)",
+          "target": 40,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/18(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/19(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/20(월)",
+          "target": 40,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/21(화)",
+          "target": 40,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/22(수)",
+          "target": 40,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/23(목)",
+          "target": 40,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/24(금)",
+          "target": 40,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/25(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/26(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/27(월)",
+          "target": 40,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/28(화)",
+          "target": 40,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/29(수)",
+          "target": 40,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/30(목)",
+          "target": 40,
+          "arrival": 0,
+          "achievement": 0
+        }
+      ]
+    },
+    {
+      "customer": "DPD",
+      "code": "9DPD0010311",
+      "name": "레드니스수딩세럼, 인텐스세럼",
+      "buyer": "배승원",
+      "cisManager": "박진형",
+      "backlog": 160,
+      "materialCapa": 160,
+      "productionCapa": 0,
+      "productionTarget": 160,
+      "unitPrice": 2700,
+      "possibleRevenue": 4320,
+      "weeklyTotal": 160,
+      "materialProgress": 18,
+      "productionProgress": 0,
+      "status": "미달",
+      "daily": [
+        {
+          "date": "4/1(수)",
+          "target": 70,
+          "arrival": 280,
+          "achievement": 0
+        },
+        {
+          "date": "4/2(목)",
+          "target": 70,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/3(금)",
+          "target": 70,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/4(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/5(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/6(월)",
+          "target": 70,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/7(화)",
+          "target": 70,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/8(수)",
+          "target": 70,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/9(목)",
+          "target": 70,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/10(금)",
+          "target": 70,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/11(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/12(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/13(월)",
+          "target": 70,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/14(화)",
+          "target": 70,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/15(수)",
+          "target": 70,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/16(목)",
+          "target": 70,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/17(금)",
+          "target": 70,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/18(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/19(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/20(월)",
+          "target": 70,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/21(화)",
+          "target": 70,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/22(수)",
+          "target": 70,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/23(목)",
+          "target": 70,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/24(금)",
+          "target": 70,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/25(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/26(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/27(월)",
+          "target": 70,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/28(화)",
+          "target": 70,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/29(수)",
+          "target": 70,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/30(목)",
+          "target": 70,
+          "arrival": 0,
+          "achievement": 0
+        }
+      ]
+    },
+    {
+      "customer": "DPD",
+      "code": "9DPD0015010",
+      "name": "피디알앤수분크림",
+      "buyer": "배승원",
+      "cisManager": "박진형",
+      "backlog": 155,
+      "materialCapa": 60,
+      "productionCapa": 0,
+      "productionTarget": 60,
+      "unitPrice": 7750,
+      "possibleRevenue": 4650,
+      "weeklyTotal": 60,
+      "materialProgress": 13,
+      "productionProgress": 5,
+      "status": "미달",
+      "daily": [
+        {
+          "date": "4/1(수)",
+          "target": 30,
+          "arrival": 20,
+          "achievement": 0
+        },
+        {
+          "date": "4/2(목)",
+          "target": 30,
+          "arrival": 30,
+          "achievement": 20
+        },
+        {
+          "date": "4/3(금)",
+          "target": 30,
+          "arrival": 30,
+          "achievement": 10
+        },
+        {
+          "date": "4/4(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/5(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/6(월)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/7(화)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/8(수)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/9(목)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/10(금)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/11(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/12(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/13(월)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/14(화)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/15(수)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/16(목)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/17(금)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/18(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/19(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/20(월)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/21(화)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/22(수)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/23(목)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/24(금)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/25(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/26(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/27(월)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/28(화)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/29(수)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/30(목)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        }
+      ]
+    },
+    {
+      "customer": "DPD",
+      "code": "9DPD0021710",
+      "name": "캡슐미스트 100ml",
+      "buyer": "배승원",
+      "cisManager": "박진형",
+      "backlog": 98,
+      "materialCapa": 60,
+      "productionCapa": 0,
+      "productionTarget": 60,
+      "unitPrice": 6333,
+      "possibleRevenue": 3800,
+      "weeklyTotal": 60,
+      "materialProgress": 12,
+      "productionProgress": 8,
+      "status": "미달",
+      "daily": [
+        {
+          "date": "4/1(수)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 10
+        },
+        {
+          "date": "4/2(목)",
+          "target": 30,
+          "arrival": 70,
+          "achievement": 20
+        },
+        {
+          "date": "4/3(금)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 20
+        },
+        {
+          "date": "4/4(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/5(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/6(월)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/7(화)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/8(수)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/9(목)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/10(금)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/11(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/12(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/13(월)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/14(화)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/15(수)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/16(목)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/17(금)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/18(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/19(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/20(월)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/21(화)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/22(수)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/23(목)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/24(금)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/25(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/26(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/27(월)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/28(화)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/29(수)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/30(목)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        }
+      ]
+    },
+    {
+      "customer": "DPD",
+      "code": "9DPD0025810",
+      "name": "트라넥세럼",
+      "buyer": "배승원",
+      "cisManager": "박진형",
+      "backlog": 79,
+      "materialCapa": 60,
+      "productionCapa": 0,
+      "productionTarget": 60,
+      "unitPrice": 3500,
+      "possibleRevenue": 2100,
+      "weeklyTotal": 60,
+      "materialProgress": 10,
+      "productionProgress": 10,
+      "status": "이상",
+      "daily": [
+        {
+          "date": "4/1(수)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 10
+        },
+        {
+          "date": "4/2(목)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 50
+        },
+        {
+          "date": "4/3(금)",
+          "target": 30,
+          "arrival": 60,
+          "achievement": 0
+        },
+        {
+          "date": "4/4(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/5(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/6(월)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/7(화)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/8(수)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/9(목)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/10(금)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/11(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/12(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/13(월)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/14(화)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/15(수)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/16(목)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/17(금)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/18(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/19(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/20(월)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/21(화)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/22(수)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/23(목)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/24(금)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/25(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/26(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/27(월)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/28(화)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/29(수)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/30(목)",
+          "target": 30,
+          "arrival": 0,
+          "achievement": 0
+        }
+      ]
+    },
+    {
+      "customer": "IWD",
+      "code": "9IWD0063510",
+      "name": "롬앤 베러댄팔레트 9홋수",
+      "buyer": "임민수",
+      "cisManager": "김현주",
+      "backlog": 65,
+      "materialCapa": 28,
+      "productionCapa": 0,
+      "productionTarget": 28,
+      "unitPrice": 5000,
+      "possibleRevenue": 1400,
+      "weeklyTotal": 28,
+      "materialProgress": 8,
+      "productionProgress": 34,
+      "status": "이상",
+      "daily": [
+        {
+          "date": "4/1(수)",
+          "target": 10,
+          "arrival": 10,
+          "achievement": 70
+        },
+        {
+          "date": "4/2(목)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/3(금)",
+          "target": 10,
+          "arrival": 20,
+          "achievement": 20
+        },
+        {
+          "date": "4/4(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/5(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/6(월)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/7(화)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/8(수)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/9(목)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/10(금)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/11(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/12(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/13(월)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/14(화)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/15(수)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/16(목)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/17(금)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/18(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/19(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/20(월)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/21(화)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/22(수)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/23(목)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/24(금)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/25(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/26(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/27(월)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/28(화)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/29(수)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/30(목)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        }
+      ]
+    },
+    {
+      "customer": "OLV",
+      "code": "9OLV1035810",
+      "name": "바이오힐보판테셀리페어시카크림미스트120ML",
+      "buyer": "전영환",
+      "cisManager": "최윤호",
+      "backlog": 55,
+      "materialCapa": 25,
+      "productionCapa": 35,
+      "productionTarget": 25,
+      "unitPrice": 3540,
+      "possibleRevenue": 885,
+      "weeklyTotal": 25,
+      "materialProgress": 11,
+      "productionProgress": 23,
+      "status": "이상",
+      "daily": [
+        {
+          "date": "4/1(수)",
+          "target": 10,
+          "arrival": 30,
+          "achievement": 0
+        },
+        {
+          "date": "4/2(목)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 30
+        },
+        {
+          "date": "4/3(금)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 30
+        },
+        {
+          "date": "4/4(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/5(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/6(월)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/7(화)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/8(수)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/9(목)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/10(금)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/11(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/12(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/13(월)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/14(화)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/15(수)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/16(목)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/17(금)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/18(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/19(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/20(월)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/21(화)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/22(수)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/23(목)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/24(금)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/25(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/26(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/27(월)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/28(화)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/29(수)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/30(목)",
+          "target": 10,
+          "arrival": 0,
+          "achievement": 0
+        }
+      ]
+    },
+    {
+      "customer": "SNT",
+      "code": "9SNT0012710",
+      "name": "파우더포룸올데이타이트메이크업세팅픽서75ML 외 6종",
+      "buyer": "임민수",
+      "cisManager": "백승윤",
+      "backlog": 350,
+      "materialCapa": 80,
+      "productionCapa": 80,
+      "productionTarget": 80,
+      "unitPrice": 1975,
+      "possibleRevenue": 1580,
+      "weeklyTotal": 80,
+      "materialProgress": 0,
+      "productionProgress": 13,
+      "status": "이상",
+      "daily": [
+        {
+          "date": "4/1(수)",
+          "target": 40,
+          "arrival": 0,
+          "achievement": 40
+        },
+        {
+          "date": "4/2(목)",
+          "target": 40,
+          "arrival": 0,
+          "achievement": 40
+        },
+        {
+          "date": "4/3(금)",
+          "target": 40,
+          "arrival": 0,
+          "achievement": 40
+        },
+        {
+          "date": "4/4(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/5(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/6(월)",
+          "target": 40,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/7(화)",
+          "target": 40,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/8(수)",
+          "target": 40,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/9(목)",
+          "target": 40,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/10(금)",
+          "target": 40,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/11(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/12(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/13(월)",
+          "target": 40,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/14(화)",
+          "target": 40,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/15(수)",
+          "target": 40,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/16(목)",
+          "target": 40,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/17(금)",
+          "target": 40,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/18(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/19(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/20(월)",
+          "target": 40,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/21(화)",
+          "target": 40,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/22(수)",
+          "target": 40,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/23(목)",
+          "target": 40,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/24(금)",
+          "target": 40,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/25(토)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/26(일)",
+          "target": 0,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/27(월)",
+          "target": 40,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/28(화)",
+          "target": 40,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/29(수)",
+          "target": 40,
+          "arrival": 0,
+          "achievement": 0
+        },
+        {
+          "date": "4/30(목)",
+          "target": 40,
+          "arrival": 0,
+          "achievement": 0
+        }
+      ]
+    }
+  ]
+}
