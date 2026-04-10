@@ -199,7 +199,10 @@ export default function App() {
     const totalCurrentRevenue = products.reduce((acc, p) => acc + p.daily.reduce((s, d) => s + d.achievement * (p.unitPrice || 0) / 1000, 0), 0);
     const revenueProgressRate = totalPossibleRevenue > 0 ? Math.round((totalCurrentRevenue / totalPossibleRevenue) * 1000) / 10 : 0;
 
-    return { totalBacklog, totalTarget, totalAchievement, totalArrival, carryOver, carryOverRevenue, avgMaterialProgress, avgProductionProgress, targetProgressRate, totalPossibleRevenue, totalCurrentRevenue, revenueProgressRate };
+    // 총 수주금액: 수주잔량(만개) × 10000 × 단가(원) → 억원
+    const totalOrderAmount = products.reduce((acc, p) => acc + p.backlog * 10000 * (p.unitPrice || 0), 0) / 100000000;
+
+    return { totalBacklog, totalTarget, totalAchievement, totalArrival, carryOver, carryOverRevenue, avgMaterialProgress, avgProductionProgress, targetProgressRate, totalPossibleRevenue, totalCurrentRevenue, revenueProgressRate, totalOrderAmount };
   }, [products]);
 
   const handleTargetChange = useCallback((productCode: string, dayIndex: number, value: string) => {
@@ -649,7 +652,7 @@ export default function App() {
         {/* 종합 현황 보드 */}
         <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
           <h3 className="text-lg font-bold text-slate-900 mb-4">종합 현황</h3>
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
             <div className="flex items-center gap-3">
               <div className="p-3 rounded-xl bg-indigo-500 shrink-0">
                 <Package className="w-6 h-6 text-white" />
@@ -657,6 +660,7 @@ export default function App() {
               <div>
                 <p className="text-xs text-slate-900 font-bold">4/1 기준 수주잔량</p>
                 <p className="text-lg font-bold text-slate-900">{stats.totalBacklog.toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
+                <p className="text-xs text-indigo-600 font-bold">({stats.totalOrderAmount.toLocaleString(undefined, { maximumFractionDigits: 1 })}억원)</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -664,26 +668,9 @@ export default function App() {
                 <Factory className="w-6 h-6 text-white" />
               </div>
               <div>
-                <p className="text-xs text-slate-900 font-bold">당월 예상 수량</p>
+                <p className="text-xs text-slate-900 font-bold">당월 총 생산 예상 수량</p>
                 <p className="text-lg font-bold text-slate-900">{stats.totalTarget.toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="p-3 rounded-xl bg-violet-500 shrink-0">
-                <TrendingUp className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <p className="text-xs text-slate-900 font-bold">총 가능매출액</p>
-                <p className="text-lg font-bold text-violet-600">{(stats.totalPossibleRevenue / 100).toLocaleString(undefined, { maximumFractionDigits: 1 })}<span className="text-xs text-slate-400 ml-0.5">억원</span></p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="p-3 rounded-xl bg-amber-500 shrink-0">
-                <Truck className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <p className="text-xs text-slate-900 font-bold">당월 자재 완료</p>
-                <p className="text-lg font-bold text-amber-600">{Math.round(stats.totalArrival / 10).toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
+                <p className="text-xs text-violet-600 font-bold">({(stats.totalPossibleRevenue / 100).toLocaleString(undefined, { maximumFractionDigits: 1 })}억원)</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -691,8 +678,18 @@ export default function App() {
                 <CheckCircle2 className="w-6 h-6 text-white" />
               </div>
               <div>
-                <p className="text-xs text-slate-900 font-bold">당월 생산 완료</p>
+                <p className="text-xs text-slate-900 font-bold">당월 누적 생산 완료</p>
                 <p className="text-lg font-bold text-emerald-600">{Math.round(stats.totalAchievement / 10).toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
+                <p className="text-xs text-fuchsia-600 font-bold">({(stats.totalCurrentRevenue / 100).toLocaleString(undefined, { maximumFractionDigits: 1 })}억원 {stats.revenueProgressRate}%)</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="p-3 rounded-xl bg-amber-500 shrink-0">
+                <Truck className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <p className="text-xs text-slate-900 font-bold">당월 누적 자재 완료</p>
+                <p className="text-lg font-bold text-amber-600">{Math.round(stats.totalArrival / 10).toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -702,24 +699,7 @@ export default function App() {
               <div>
                 <p className="text-xs text-slate-900 font-bold">이월 예상 수량</p>
                 <p className="text-lg font-bold text-rose-600">{stats.carryOver.toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="p-3 rounded-xl bg-rose-400 shrink-0">
-                <ArrowDownRight className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <p className="text-xs text-slate-900 font-bold">이월 예상 매출</p>
-                <p className="text-lg font-bold text-rose-500">{(stats.carryOverRevenue).toLocaleString(undefined, { maximumFractionDigits: 1 })}<span className="text-xs text-slate-400 ml-0.5">억원</span></p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="p-3 rounded-xl bg-fuchsia-500 shrink-0">
-                <TrendingUp className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <p className="text-xs text-slate-900 font-bold">현재매출액 ({stats.revenueProgressRate}%)</p>
-                <p className="text-lg font-bold text-fuchsia-600">{(stats.totalCurrentRevenue / 100).toLocaleString(undefined, { maximumFractionDigits: 1 })}<span className="text-xs text-slate-400 ml-0.5">억원</span></p>
+                <p className="text-xs text-rose-500 font-bold">({(stats.carryOverRevenue).toLocaleString(undefined, { maximumFractionDigits: 1 })}억원)</p>
               </div>
             </div>
           </div>
@@ -799,13 +779,11 @@ export default function App() {
               }
             });
             const hasNewData = weekArr > 0 || weekAch > 0;
-            const totalPossibleRevenue = products.reduce((s, p) => s + (p.possibleRevenue || 0), 0);
             return {
               name: label,
               목표: targetRate,
               자재입고: hasNewData && totalDailyTargetAll > 0 ? Math.round((cumArr / totalDailyTargetAll) * 1000) / 10 : undefined,
               생산실적: hasNewData && totalDailyTargetAll > 0 ? Math.round((cumAch / totalDailyTargetAll) * 1000) / 10 : undefined,
-              매출진도: hasNewData && totalPossibleRevenue > 0 ? Math.round((cumRevenue / totalPossibleRevenue) * 1000) / 10 : undefined,
             };
           });
 
@@ -831,11 +809,6 @@ export default function App() {
                       <span className="text-xs font-bold text-slate-900">생산실적</span>
                       <span className="text-base font-bold text-emerald-600">{stats.avgProductionProgress}%</span>
                     </div>
-                    <div className="flex items-center gap-1.5">
-                      <div className="w-3 h-3 rounded-full bg-violet-500 shrink-0" />
-                      <span className="text-xs font-bold text-slate-900">매출진도</span>
-                      <span className="text-base font-bold text-violet-600">{stats.revenueProgressRate}%</span>
-                    </div>
                   </div>
                 </div>
                 <div className="w-full flex-1 min-h-0">
@@ -852,7 +825,6 @@ export default function App() {
                       <Line type="monotone" dataKey="목표" stroke="#ef4444" strokeWidth={1.5} dot={{ r: 3, fill: '#ef4444' }} activeDot={{ r: 5 }} />
                       <Line type="monotone" dataKey="자재입고" stroke="#f59e0b" strokeWidth={1.5} dot={{ r: 3, fill: '#f59e0b' }} activeDot={{ r: 5 }} />
                       <Line type="monotone" dataKey="생산실적" stroke="#10b981" strokeWidth={1.5} dot={{ r: 3, fill: '#10b981' }} activeDot={{ r: 5 }} />
-                      <Line type="monotone" dataKey="매출진도" stroke="#8b5cf6" strokeWidth={1.5} dot={{ r: 3, fill: '#8b5cf6' }} activeDot={{ r: 5 }} />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
@@ -1439,7 +1411,7 @@ export default function App() {
                           <p className="text-lg font-bold text-slate-900">{snapBacklog.toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
                         </div>
                         <div className="bg-slate-50 rounded-xl p-3 text-center">
-                          <p className="text-[10px] text-slate-400">당월 예상 수량</p>
+                          <p className="text-[10px] text-slate-400">당월 총 생산 예상 수량</p>
                           <p className="text-lg font-bold text-slate-900">{snapTarget.toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
                         </div>
                         <div className="bg-slate-50 rounded-xl p-3 text-center">
