@@ -781,7 +781,7 @@ export default function App() {
               {/* 고객사 품목별 팝업 */}
               {customerStats.filter(cs => expandedCustomers.has(cs.customer)).map(cs => (
                 <div key={`popup_${cs.customer}`} className="fixed inset-0 z-50 flex items-center justify-center bg-black/30" onClick={() => setExpandedCustomers(prev => { const next = new Set(prev); next.delete(cs.customer); return next; })}>
-                  <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-6 w-[90vw] max-w-[1000px] max-h-[95vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+                  <div className={cn("bg-white rounded-2xl shadow-xl border border-slate-200 p-6 max-h-[95vh] overflow-y-auto", cs.productDetails.length <= 1 ? "w-[90vw] max-w-[520px]" : "w-[90vw] max-w-[1000px]")} onClick={e => e.stopPropagation()}>
                     <div className="flex items-center justify-between mb-6">
                       <div>
                         <h3 className="text-lg font-bold text-slate-900">{cs.customer} 품목별 진도율</h3>
@@ -791,7 +791,7 @@ export default function App() {
                         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                       </button>
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className={cn("grid gap-3", cs.productDetails.length <= 1 ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-2")}>
                       {cs.productDetails.map(pd => (
                         <div key={pd.code} className="bg-slate-50 rounded-xl p-4 space-y-2">
                           <p className="text-[13px] font-bold text-slate-800 whitespace-nowrap">{pd.code} &nbsp; {pd.name}</p>
