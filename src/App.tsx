@@ -966,7 +966,7 @@ export default function App() {
                           <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-200">
                             <span className="text-sm text-violet-600 font-medium">매출</span>
                             <div className="flex items-center gap-3">
-                              <span className="text-xs text-slate-400">단위단가 {pd.unitPrice.toLocaleString()}원</span>
+                              <span className="text-xs text-slate-400">단가 {pd.unitPrice.toLocaleString()}원</span>
                               <span className="text-sm font-bold text-violet-600">
                                 {(pd.currentRevenue / 100).toLocaleString(undefined, { maximumFractionDigits: 2 })}억
                                 {pd.possibleRevenue > 0 && <span className="text-xs text-slate-400 font-normal"> / {(pd.possibleRevenue / 100).toLocaleString(undefined, { maximumFractionDigits: 2 })}억</span>}
