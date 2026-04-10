@@ -48,28 +48,28 @@ db.exec(`
   );
 `);
 
-// Seed if empty
-const count = db.prepare('SELECT COUNT(*) as cnt FROM products').get() as any;
-if (count.cnt === 0) {
-  const insertProduct = db.prepare(`
-    INSERT INTO products (code, customer, name, buyer, cis_manager, backlog, material_capa, production_capa, production_target, unit_price, possible_revenue, weekly_total, material_progress, production_progress, status)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `);
-  const insertDaily = db.prepare(`
-    INSERT INTO daily_data (product_code, day_index, date_label, target, arrival, achievement)
-    VALUES (?, ?, ?, ?, ?, ?)
-  `);
+// 서버 시작 시 항상 seed-data.json 기준으로 DB 동기화
+// (git pull만 하면 다른 AI도 최신 데이터 사용 가능)
+const insertProduct = db.prepare(`
+  INSERT OR REPLACE INTO products (code, customer, name, buyer, cis_manager, backlog, material_capa, production_capa, production_target, unit_price, possible_revenue, weekly_total, material_progress, production_progress, status)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+`);
+const insertDaily = db.prepare(`
+  INSERT OR REPLACE INTO daily_data (product_code, day_index, date_label, target, arrival, achievement)
+  VALUES (?, ?, ?, ?, ?, ?)
+`);
 
-  const seed = db.transaction(() => {
-    for (const p of DASHBOARD_DATA.products) {
-      insertProduct.run(p.code, p.customer, p.name, p.buyer || '', p.cisManager || '', p.backlog, p.materialCapa, p.productionCapa, p.productionTarget, p.unitPrice || 0, p.possibleRevenue || 0, p.weeklyTotal, p.materialProgress, p.productionProgress, p.status);
-      p.daily.forEach((d, i) => {
-        insertDaily.run(p.code, i, d.date, d.target, d.arrival, d.achievement);
-      });
-    }
-  });
-  seed();
-  console.log(`Seeded ${DASHBOARD_DATA.products.length} products`);
-}
+const seed = db.transaction(() => {
+  db.prepare('DELETE FROM daily_data').run();
+  db.prepare('DELETE FROM products').run();
+  for (const p of DASHBOARD_DATA.products) {
+    insertProduct.run(p.code, p.customer, p.name, p.buyer || '', p.cisManager || '', p.backlog, p.materialCapa, p.productionCapa, p.productionTarget, p.unitPrice || 0, p.possibleRevenue || 0, p.weeklyTotal, p.materialProgress, p.productionProgress, p.status);
+    p.daily.forEach((d, i) => {
+      insertDaily.run(p.code, i, d.date, d.target, d.arrival, d.achievement);
+    });
+  }
+});
+seed();
+console.log(`Seeded ${DASHBOARD_DATA.products.length} products from seed-data.json`);
 
 export default db;
