@@ -648,9 +648,9 @@ export default function App() {
                   <h3 className="text-lg font-bold text-slate-900">주차별 진도율 추이</h3>
                   <div className="flex items-center gap-5">
                     <div className="flex items-center gap-1.5">
-                      <div className="w-3 h-3 rounded-full bg-indigo-500 shrink-0" />
+                      <div className="w-3 h-3 rounded-full bg-red-500 shrink-0" />
                       <span className="text-xs font-bold text-slate-900">목표</span>
-                      <span className="text-base font-bold text-indigo-600">{stats.targetProgressRate}%</span>
+                      <span className="text-base font-bold text-red-500">{stats.targetProgressRate}%</span>
                     </div>
                     <div className="flex items-center gap-1.5">
                       <div className="w-3 h-3 rounded-full bg-amber-500 shrink-0" />
@@ -680,7 +680,7 @@ export default function App() {
                         formatter={(value: number) => [`${value}%`]}
                       />
                       <Legend wrapperStyle={{ fontSize: '12px' }} />
-                      <Line type="monotone" dataKey="목표" stroke="#6366f1" strokeWidth={1.5} dot={{ r: 3, fill: '#6366f1' }} activeDot={{ r: 5 }} />
+                      <Line type="monotone" dataKey="목표" stroke="#ef4444" strokeWidth={1.5} dot={{ r: 3, fill: '#ef4444' }} activeDot={{ r: 5 }} />
                       <Line type="monotone" dataKey="자재입고" stroke="#f59e0b" strokeWidth={1.5} dot={{ r: 3, fill: '#f59e0b' }} activeDot={{ r: 5 }} />
                       <Line type="monotone" dataKey="생산실적" stroke="#10b981" strokeWidth={1.5} dot={{ r: 3, fill: '#10b981' }} activeDot={{ r: 5 }} />
                       <Line type="monotone" dataKey="매출진도" stroke="#8b5cf6" strokeWidth={1.5} dot={{ r: 3, fill: '#8b5cf6' }} activeDot={{ r: 5 }} />
@@ -1276,7 +1276,7 @@ export default function App() {
                               <YAxis tick={{ fontSize: 11, fill: '#64748b' }} unit="%" />
                               <Tooltip contentStyle={{ borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '11px' }} formatter={(value: number) => [`${value}%`]} />
                               <Legend wrapperStyle={{ fontSize: '11px' }} />
-                              <Line type="monotone" dataKey="목표" stroke="#6366f1" strokeWidth={1.5} dot={{ r: 3, fill: '#6366f1' }} />
+                              <Line type="monotone" dataKey="목표" stroke="#ef4444" strokeWidth={1.5} dot={{ r: 3, fill: '#ef4444' }} />
                               <Line type="monotone" dataKey="자재입고" stroke="#f59e0b" strokeWidth={1.5} dot={{ r: 3, fill: '#f59e0b' }} />
                               <Line type="monotone" dataKey="생산실적" stroke="#10b981" strokeWidth={1.5} dot={{ r: 3, fill: '#10b981' }} />
                             </LineChart>
