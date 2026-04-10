@@ -326,49 +326,119 @@ export default function App() {
           return;
         }
 
-        // 헤더 파싱: 고객사, 품목코드, 품목명, 수주잔량, 자재CAPA, 생산CAPA, 생산목표, 자재진도율, 생산진도율, 상태, 4/1_목표, 4/1_입고, 4/1_실적, 4/2_목표, ...
+        // 헤더 파싱: 새 양식 (품목별 3행: 예상수량/자재입고/생산실적) + 기존 양식 호환
         const header = rows[0].map((h: any) => String(h).trim());
         const dataRows = rows.slice(1).filter((row: any[]) => row.some((cell: any) => cell !== undefined && cell !== ''));
 
-        const newProducts: ProductData[] = dataRows.map((row: any[]) => {
-          const get = (colName: string) => {
-            const idx = header.indexOf(colName);
-            return idx >= 0 ? row[idx] : undefined;
-          };
-          const getNum = (colName: string) => {
-            const v = get(colName);
+        // 양식 자동 감지: '구분' 열이 있으면 새 양식
+        const isNewFormat = header.includes('구분');
+
+        let newProducts: ProductData[];
+
+        if (isNewFormat) {
+          // 새 양식: 3행씩 묶어서 파싱
+          const colIdx = (name: string) => header.indexOf(name);
+          const getVal = (row: any[], col: string) => row[colIdx(col)];
+          const getNumVal = (row: any[], col: string) => {
+            const v = getVal(row, col);
             return typeof v === 'number' ? v : (parseInt(String(v)) || 0);
           };
 
-          const daily: DailyData[] = [];
-          for (let d = 1; d <= 30; d++) {
-            const dayOfWeek = DAY_NAMES[new Date(2026, 3, d).getDay()];
-            const dateLabel = `4/${d}(${dayOfWeek})`;
-            const target = getNum(`4/${d}_목표`);
-            const arrival = getNum(`4/${d}_입고`);
-            const achievement = getNum(`4/${d}_실적`);
-            daily.push({ date: dateLabel, target, arrival, achievement });
+          // 일별 데이터 열 시작 인덱스 찾기 (구분 다음 4개 열 이후)
+          const dayColStart = colIdx('생산목표') + 1;
+
+          newProducts = [];
+          let i = 0;
+          while (i < dataRows.length) {
+            const row1 = dataRows[i]; // 예상수량 행 (기본 정보 포함)
+            const gubun = String(getVal(row1, '구분') || '').trim();
+
+            // 예상수량 행 찾기 (병합 셀 때문에 고객사가 있는 행)
+            if (gubun === '예상수량' || (row1[colIdx('고객사')] && gubun !== '자재입고' && gubun !== '생산실적')) {
+              const row2 = i + 1 < dataRows.length ? dataRows[i + 1] : [];
+              const row3 = i + 2 < dataRows.length ? dataRows[i + 2] : [];
+
+              const daily: DailyData[] = [];
+              for (let d = 0; d < 30; d++) {
+                const dayOfWeek = DAY_NAMES[new Date(2026, 3, d + 1).getDay()];
+                const dateLabel = `4/${d + 1}(${dayOfWeek})`;
+                const colOffset = dayColStart + d;
+                const target = typeof row1[colOffset] === 'number' ? row1[colOffset] : (parseInt(String(row1[colOffset])) || 0);
+                const arrival = typeof row2[colOffset] === 'number' ? row2[colOffset] : (parseInt(String(row2[colOffset])) || 0);
+                const achievement = typeof row3[colOffset] === 'number' ? row3[colOffset] : (parseInt(String(row3[colOffset])) || 0);
+                daily.push({ date: dateLabel, target, arrival, achievement });
+              }
+
+              const totalTarget = daily.reduce((s, d) => s + d.target, 0);
+              const totalArrival = daily.reduce((s, d) => s + d.arrival, 0);
+              const totalAchievement = daily.reduce((s, d) => s + d.achievement, 0);
+              const matProg = totalTarget > 0 ? Math.round(totalArrival / totalTarget * 100) : 0;
+              const prodProg = totalTarget > 0 ? Math.round(totalAchievement / totalTarget * 100) : 0;
+
+              newProducts.push({
+                customer: String(getVal(row1, '고객사') || ''),
+                code: String(getVal(row1, '품목코드') || ''),
+                name: String(getVal(row1, '품목명') || ''),
+                buyer: String(getVal(row1, '구매담당자') || ''),
+                cisManager: String(getVal(row1, 'CIS담당자') || ''),
+                backlog: getNumVal(row1, '수주잔량'),
+                materialCapa: getNumVal(row1, '자재CAPA'),
+                productionCapa: getNumVal(row1, '생산CAPA'),
+                productionTarget: getNumVal(row1, '생산목표'),
+                weeklyTotal: getNumVal(row1, '생산목표'),
+                materialProgress: matProg,
+                productionProgress: prodProg,
+                status: (prodProg < 80 ? '미달' : '이상') as '이상' | '미달',
+                daily,
+              });
+
+              i += 3;
+            } else {
+              i++;
+            }
           }
+        } else {
+          // 기존 양식 호환: 1행 = 1품목
+          newProducts = dataRows.map((row: any[]) => {
+            const get = (colName: string) => {
+              const idx = header.indexOf(colName);
+              return idx >= 0 ? row[idx] : undefined;
+            };
+            const getNum = (colName: string) => {
+              const v = get(colName);
+              return typeof v === 'number' ? v : (parseInt(String(v)) || 0);
+            };
 
-          const statusVal = String(get('상태') || '이상').trim();
+            const daily: DailyData[] = [];
+            for (let d = 1; d <= 30; d++) {
+              const dayOfWeek = DAY_NAMES[new Date(2026, 3, d).getDay()];
+              const dateLabel = `4/${d}(${dayOfWeek})`;
+              const target = getNum(`4/${d}_목표`);
+              const arrival = getNum(`4/${d}_입고`);
+              const achievement = getNum(`4/${d}_실적`);
+              daily.push({ date: dateLabel, target, arrival, achievement });
+            }
 
-          return {
-            customer: String(get('고객사') || ''),
-            code: String(get('품목코드') || ''),
-            name: String(get('품목명') || ''),
-            buyer: String(get('구매담당자') || ''),
-            cisManager: String(get('CIS담당자') || ''),
-            backlog: getNum('수주잔량'),
-            materialCapa: getNum('자재CAPA'),
-            productionCapa: getNum('생산CAPA'),
-            productionTarget: getNum('생산목표'),
-            weeklyTotal: getNum('생산목표'),
-            materialProgress: getNum('자재진도율'),
-            productionProgress: getNum('생산진도율'),
-            status: (statusVal === '미달' ? '미달' : '이상') as '이상' | '미달',
-            daily,
-          };
-        });
+            const statusVal = String(get('상태') || '이상').trim();
+
+            return {
+              customer: String(get('고객사') || ''),
+              code: String(get('품목코드') || ''),
+              name: String(get('품목명') || ''),
+              buyer: String(get('구매담당자') || ''),
+              cisManager: String(get('CIS담당자') || ''),
+              backlog: getNum('수주잔량'),
+              materialCapa: getNum('자재CAPA'),
+              productionCapa: getNum('생산CAPA'),
+              productionTarget: getNum('생산목표'),
+              weeklyTotal: getNum('생산목표'),
+              materialProgress: getNum('자재진도율'),
+              productionProgress: getNum('생산진도율'),
+              status: (statusVal === '미달' ? '미달' : '이상') as '이상' | '미달',
+              daily,
+            };
+          });
+        }
 
         if (newProducts.length === 0) {
           alert('유효한 데이터가 없습니다.');
@@ -399,21 +469,70 @@ export default function App() {
   }, []);
 
   const handleDownloadTemplate = useCallback(() => {
-    const header = ['고객사', '구매담당자', 'CIS담당자', '품목코드', '품목명', '수주잔량', '자재CAPA', '생산CAPA', '생산목표', '자재진도율', '생산진도율', '상태'];
+    // 새 양식: 품목별 3행 (예상수량/자재입고/생산실적)
+    const header: any[] = ['고객사', '구매담당자', 'CIS담당자', '품목코드', '품목명', '구분', '수주잔량', '자재CAPA', '생산CAPA', '생산목표'];
     for (let d = 1; d <= 30; d++) {
-      header.push(`4/${d}_목표`, `4/${d}_입고`, `4/${d}_실적`);
+      const dayOfWeek = DAY_NAMES[new Date(2026, 3, d).getDay()];
+      header.push(`4/${d}(${dayOfWeek})`);
     }
 
-    const sampleRow = ['APS', '홍길동', '김철수', '9APS0014610', '메디큐브 PDRN핑크콜라겐겔마스크', 2700, 1100, 1100, 1100, 18, 18, '이상'];
-    for (let d = 1; d <= 30; d++) {
-      sampleRow.push(d <= 3 ? 50 : 0, d === 1 ? 200 : 0, d === 3 ? 200 : 0);
+    const rows: any[][] = [header];
+
+    // 기존 데이터가 있으면 그대로 내보내기, 없으면 샘플
+    const sourceData = products.length > 0 ? products : [{
+      customer: 'APS', buyer: '홍길동', cisManager: '김철수',
+      code: '9APS0014610', name: '메디큐브 PDRN핑크콜라겐겔마스크',
+      backlog: 2700, materialCapa: 1100, productionCapa: 1100, productionTarget: 1100,
+      daily: Array.from({ length: 30 }, (_, i) => ({
+        date: '', target: i < 3 ? 50 : 0, arrival: i === 0 ? 200 : 0, achievement: i === 2 ? 200 : 0,
+      })),
+    }] as ProductData[];
+
+    for (const p of sourceData) {
+      // 예상수량 행 (기본 정보 포함)
+      const targetRow: any[] = [p.customer, p.buyer, p.cisManager, p.code, p.name, '예상수량', p.backlog, p.materialCapa, p.productionCapa, p.productionTarget];
+      // 자재입고 행
+      const arrivalRow: any[] = ['', '', '', '', '', '자재입고', '', '', '', ''];
+      // 생산실적 행
+      const achievementRow: any[] = ['', '', '', '', '', '생산실적', '', '', '', ''];
+
+      for (let d = 0; d < 30; d++) {
+        const day = p.daily[d];
+        targetRow.push(day?.target || 0);
+        arrivalRow.push(day?.arrival || 0);
+        achievementRow.push(day?.achievement || 0);
+      }
+
+      rows.push(targetRow, arrivalRow, achievementRow);
     }
 
-    const ws = XLSX.utils.aoa_to_sheet([header, sampleRow]);
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+
+    // 셀 병합: 품목별 고객사~품목명 3행 병합
+    const merges: XLSX.Range[] = [];
+    for (let i = 0; i < sourceData.length; i++) {
+      const startRow = 1 + i * 3; // 0-based, 헤더 다음부터
+      for (let col = 0; col <= 4; col++) { // 고객사~품목명 (5개 열)
+        merges.push({ s: { r: startRow, c: col }, e: { r: startRow + 2, c: col } });
+      }
+      // 수주잔량~생산목표도 병합 (4개 열)
+      for (let col = 6; col <= 9; col++) {
+        merges.push({ s: { r: startRow, c: col }, e: { r: startRow + 2, c: col } });
+      }
+    }
+    ws['!merges'] = merges;
+
+    // 열 너비 설정
+    ws['!cols'] = [
+      { wch: 12 }, { wch: 10 }, { wch: 10 }, { wch: 16 }, { wch: 30 },
+      { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 },
+      ...Array(30).fill({ wch: 8 }),
+    ];
+
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, '진도율데이터');
     XLSX.writeFile(wb, '진도율_업로드_양식.xlsx');
-  }, []);
+  }, [products]);
 
   const loadSnapshots = useCallback(() => {
     fetchSnapshots().then(setSnapshots).catch(console.error);
