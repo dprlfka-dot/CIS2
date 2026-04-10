@@ -170,11 +170,16 @@ export default function App() {
 
     const totalArrival = products.reduce((acc, p) => acc + p.daily.reduce((s, d) => s + d.arrival, 0), 0);
     const carryOver = totalBacklog - totalTarget;
+    // 이월 예상 매출: 제품별 (backlog - productionTarget) * 단위단가, 만개 * 원 = 만원, /100 = 억원
+    const carryOverRevenue = products.reduce((acc, p) => {
+      const carryQty = p.backlog - p.productionTarget;
+      return acc + (carryQty > 0 ? carryQty * (p.unitPrice || 0) / 100 : 0);
+    }, 0);
     const totalPossibleRevenue = products.reduce((acc, p) => acc + (p.possibleRevenue || 0), 0);
     const totalCurrentRevenue = products.reduce((acc, p) => acc + p.daily.reduce((s, d) => s + d.achievement * (p.unitPrice || 0) / 1000, 0), 0);
     const revenueProgressRate = totalPossibleRevenue > 0 ? Math.round((totalCurrentRevenue / totalPossibleRevenue) * 1000) / 10 : 0;
 
-    return { totalBacklog, totalTarget, totalAchievement, totalArrival, carryOver, avgMaterialProgress, avgProductionProgress, targetProgressRate, totalPossibleRevenue, totalCurrentRevenue, revenueProgressRate };
+    return { totalBacklog, totalTarget, totalAchievement, totalArrival, carryOver, carryOverRevenue, avgMaterialProgress, avgProductionProgress, targetProgressRate, totalPossibleRevenue, totalCurrentRevenue, revenueProgressRate };
   }, [products]);
 
   const handleTargetChange = useCallback((productCode: string, dayIndex: number, value: string) => {
@@ -489,7 +494,7 @@ export default function App() {
         {/* 종합 현황 보드 */}
         <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
           <h3 className="text-lg font-bold text-slate-900 mb-4">종합 현황</h3>
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4">
             <div className="flex items-center gap-3">
               <div className="p-3 rounded-xl bg-indigo-500 shrink-0">
                 <Package className="w-6 h-6 text-white" />
@@ -515,6 +520,15 @@ export default function App() {
               <div>
                 <p className="text-xs text-slate-900 font-bold">이월 예상 수량</p>
                 <p className="text-lg font-bold text-rose-600">{stats.carryOver.toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="p-3 rounded-xl bg-rose-400 shrink-0">
+                <ArrowDownRight className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <p className="text-xs text-slate-900 font-bold">이월 예상 매출</p>
+                <p className="text-lg font-bold text-rose-500">{(stats.carryOverRevenue).toLocaleString(undefined, { maximumFractionDigits: 1 })}<span className="text-xs text-slate-400 ml-0.5">억원</span></p>
               </div>
             </div>
             <div className="flex items-center gap-3">
