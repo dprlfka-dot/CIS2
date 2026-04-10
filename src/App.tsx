@@ -491,65 +491,65 @@ export default function App() {
           <h3 className="text-lg font-bold text-slate-900 mb-4">종합 현황</h3>
           <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-4">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-xl bg-indigo-500 shrink-0">
-                <Package className="w-5 h-5 text-white" />
+              <div className="p-3 rounded-xl bg-indigo-500 shrink-0">
+                <Package className="w-6 h-6 text-white" />
               </div>
               <div>
-                <p className="text-[10px] text-slate-900 font-bold">4/1 기준 수주잔량</p>
+                <p className="text-xs text-slate-900 font-bold">4/1 기준 수주잔량</p>
                 <p className="text-lg font-bold text-slate-900">{stats.totalBacklog.toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-xl bg-blue-500 shrink-0">
-                <Factory className="w-5 h-5 text-white" />
+              <div className="p-3 rounded-xl bg-blue-500 shrink-0">
+                <Factory className="w-6 h-6 text-white" />
               </div>
               <div>
-                <p className="text-[10px] text-slate-900 font-bold">당월 예상 수량</p>
+                <p className="text-xs text-slate-900 font-bold">당월 예상 수량</p>
                 <p className="text-lg font-bold text-slate-900">{stats.totalTarget.toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-xl bg-rose-500 shrink-0">
-                <ArrowDownRight className="w-5 h-5 text-white" />
+              <div className="p-3 rounded-xl bg-rose-500 shrink-0">
+                <ArrowDownRight className="w-6 h-6 text-white" />
               </div>
               <div>
-                <p className="text-[10px] text-slate-900 font-bold">이월 예상 수량</p>
+                <p className="text-xs text-slate-900 font-bold">이월 예상 수량</p>
                 <p className="text-lg font-bold text-rose-600">{stats.carryOver.toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-xl bg-amber-500 shrink-0">
-                <Truck className="w-5 h-5 text-white" />
+              <div className="p-3 rounded-xl bg-amber-500 shrink-0">
+                <Truck className="w-6 h-6 text-white" />
               </div>
               <div>
-                <p className="text-[10px] text-slate-900 font-bold">당월 자재 완료</p>
+                <p className="text-xs text-slate-900 font-bold">당월 자재 완료</p>
                 <p className="text-lg font-bold text-amber-600">{Math.round(stats.totalArrival / 10).toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-xl bg-emerald-500 shrink-0">
-                <CheckCircle2 className="w-5 h-5 text-white" />
+              <div className="p-3 rounded-xl bg-emerald-500 shrink-0">
+                <CheckCircle2 className="w-6 h-6 text-white" />
               </div>
               <div>
-                <p className="text-[10px] text-slate-900 font-bold">당월 생산 완료</p>
+                <p className="text-xs text-slate-900 font-bold">당월 생산 완료</p>
                 <p className="text-lg font-bold text-emerald-600">{Math.round(stats.totalAchievement / 10).toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-xl bg-violet-500 shrink-0">
-                <TrendingUp className="w-5 h-5 text-white" />
+              <div className="p-3 rounded-xl bg-violet-500 shrink-0">
+                <TrendingUp className="w-6 h-6 text-white" />
               </div>
               <div>
-                <p className="text-[10px] text-slate-900 font-bold">총 가능매출액</p>
+                <p className="text-xs text-slate-900 font-bold">총 가능매출액</p>
                 <p className="text-lg font-bold text-violet-600">{(stats.totalPossibleRevenue / 100).toLocaleString(undefined, { maximumFractionDigits: 1 })}<span className="text-xs text-slate-400 ml-0.5">억원</span></p>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-xl bg-fuchsia-500 shrink-0">
-                <TrendingUp className="w-5 h-5 text-white" />
+              <div className="p-3 rounded-xl bg-fuchsia-500 shrink-0">
+                <TrendingUp className="w-6 h-6 text-white" />
               </div>
               <div>
-                <p className="text-[10px] text-slate-900 font-bold">현재매출액 ({stats.revenueProgressRate}%)</p>
+                <p className="text-xs text-slate-900 font-bold">현재매출액 ({stats.revenueProgressRate}%)</p>
                 <p className="text-lg font-bold text-fuchsia-600">{(stats.totalCurrentRevenue / 100).toLocaleString(undefined, { maximumFractionDigits: 1 })}<span className="text-xs text-slate-400 ml-0.5">억원</span></p>
               </div>
             </div>
