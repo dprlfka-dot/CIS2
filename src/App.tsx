@@ -649,22 +649,22 @@ export default function App() {
                   <div className="flex items-center gap-5">
                     <div className="flex items-center gap-1.5">
                       <div className="w-3 h-3 rounded-full bg-indigo-500 shrink-0" />
-                      <span className="text-xs text-slate-400">목표</span>
+                      <span className="text-xs font-bold text-slate-900">목표</span>
                       <span className="text-base font-bold text-indigo-600">{stats.targetProgressRate}%</span>
                     </div>
                     <div className="flex items-center gap-1.5">
                       <div className="w-3 h-3 rounded-full bg-amber-500 shrink-0" />
-                      <span className="text-xs text-slate-400">자재입고</span>
+                      <span className="text-xs font-bold text-slate-900">자재입고</span>
                       <span className="text-base font-bold text-amber-600">{stats.avgMaterialProgress}%</span>
                     </div>
                     <div className="flex items-center gap-1.5">
                       <div className="w-3 h-3 rounded-full bg-emerald-500 shrink-0" />
-                      <span className="text-xs text-slate-400">생산실적</span>
+                      <span className="text-xs font-bold text-slate-900">생산실적</span>
                       <span className="text-base font-bold text-emerald-600">{stats.avgProductionProgress}%</span>
                     </div>
                     <div className="flex items-center gap-1.5">
                       <div className="w-3 h-3 rounded-full bg-violet-500 shrink-0" />
-                      <span className="text-xs text-slate-400">매출진도</span>
+                      <span className="text-xs font-bold text-slate-900">매출진도</span>
                       <span className="text-base font-bold text-violet-600">{stats.revenueProgressRate}%</span>
                     </div>
                   </div>
