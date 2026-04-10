@@ -525,15 +525,6 @@ export default function App() {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <div className="p-3 rounded-xl bg-rose-400 shrink-0">
-                <ArrowDownRight className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <p className="text-xs text-slate-900 font-bold">이월 예상 매출</p>
-                <p className="text-lg font-bold text-rose-500">{(stats.carryOverRevenue).toLocaleString(undefined, { maximumFractionDigits: 1 })}<span className="text-xs text-slate-400 ml-0.5">억원</span></p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
               <div className="p-3 rounded-xl bg-amber-500 shrink-0">
                 <Truck className="w-6 h-6 text-white" />
               </div>
@@ -567,6 +558,15 @@ export default function App() {
               <div>
                 <p className="text-xs text-slate-900 font-bold">현재매출액 ({stats.revenueProgressRate}%)</p>
                 <p className="text-lg font-bold text-fuchsia-600">{(stats.totalCurrentRevenue / 100).toLocaleString(undefined, { maximumFractionDigits: 1 })}<span className="text-xs text-slate-400 ml-0.5">억원</span></p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="p-3 rounded-xl bg-rose-400 shrink-0">
+                <ArrowDownRight className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <p className="text-xs text-slate-900 font-bold">이월 예상 매출</p>
+                <p className="text-lg font-bold text-rose-500">{(stats.carryOverRevenue).toLocaleString(undefined, { maximumFractionDigits: 1 })}<span className="text-xs text-slate-400 ml-0.5">억원</span></p>
               </div>
             </div>
           </div>
