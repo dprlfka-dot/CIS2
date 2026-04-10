@@ -170,10 +170,12 @@ export default function App() {
 
     const totalArrival = products.reduce((acc, p) => acc + p.daily.reduce((s, d) => s + d.arrival, 0), 0);
     const carryOver = totalBacklog - totalTarget;
-    // 이월 예상 매출: 제품별 (backlog - productionTarget) * 단위단가, 만개 * 원 = 만원, /100 = 억원
+    // 이월 예상 매출: 제품별 (backlog - productionTarget) * 10000 * 단위단가(원) / 1억 = 억원
+    // 단위단가 없는 품목 제외
     const carryOverRevenue = products.reduce((acc, p) => {
+      if (!p.unitPrice) return acc;
       const carryQty = p.backlog - p.productionTarget;
-      return acc + (carryQty > 0 ? carryQty * (p.unitPrice || 0) / 100 : 0);
+      return acc + (carryQty > 0 ? carryQty * 10000 * p.unitPrice / 100000000 : 0);
     }, 0);
     const totalPossibleRevenue = products.reduce((acc, p) => acc + (p.possibleRevenue || 0), 0);
     const totalCurrentRevenue = products.reduce((acc, p) => acc + p.daily.reduce((s, d) => s + d.achievement * (p.unitPrice || 0) / 1000, 0), 0);
