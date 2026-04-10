@@ -781,7 +781,7 @@ export default function App() {
               {/* 고객사 품목별 팝업 */}
               {customerStats.filter(cs => expandedCustomers.has(cs.customer)).map(cs => (
                 <div key={`popup_${cs.customer}`} className="fixed inset-0 z-50 flex items-center justify-center bg-black/30" onClick={() => setExpandedCustomers(prev => { const next = new Set(prev); next.delete(cs.customer); return next; })}>
-                  <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-6 w-[90vw] max-w-[900px] max-h-[95vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+                  <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-6 w-[95vw] max-w-[1100px] max-h-[95vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
                     <div className="flex items-center justify-between mb-6">
                       <div>
                         <h3 className="text-lg font-bold text-slate-900">{cs.customer} 품목별 진도율</h3>
@@ -794,7 +794,7 @@ export default function App() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {cs.productDetails.map(pd => (
                         <div key={pd.code} className="bg-slate-50 rounded-xl p-4 space-y-2">
-                          <p className="text-sm font-bold text-slate-800">{pd.code} &nbsp; {pd.name}</p>
+                          <p className="text-sm font-bold text-slate-800 whitespace-nowrap">{pd.code} &nbsp; {pd.name}</p>
                           <div className="flex items-center gap-3">
                             <span className="text-sm text-amber-600 w-14 shrink-0">자재</span>
                             <div className="flex-1 h-2 bg-amber-100 rounded-full overflow-hidden">
