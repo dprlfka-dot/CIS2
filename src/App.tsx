@@ -887,10 +887,10 @@ export default function App() {
             })()}
           </div>
 
-          <div className="overflow-x-auto">
+          <div className="overflow-auto max-h-[calc(100vh-280px)]">
             <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-slate-50/50 text-slate-700 text-xs font-bold tracking-wider whitespace-nowrap">
+              <thead className="sticky top-0 z-10">
+                <tr className="bg-slate-100 text-slate-700 text-xs font-bold tracking-wider whitespace-nowrap">
                   <th className="px-2 py-2 text-center">고객사</th>
                   <th className="px-2 py-2 text-center min-w-[56px]">구매</th>
                   <th className="px-2 py-2 text-center min-w-[56px]">CIS</th>
