@@ -1062,7 +1062,7 @@ export default function App() {
                   <th className="px-2 py-2 text-center whitespace-nowrap">수주잔량</th>
                   <th className="px-2 py-2 text-center whitespace-nowrap">자재CAPA</th>
                   <th className="px-2 py-2 text-center whitespace-nowrap">생산CAPA</th>
-                  <th className="px-2 py-2 text-center whitespace-nowrap">매출예상</th>
+                  <th className="px-2 py-2 text-center whitespace-nowrap">예상수량</th>
                   <th className="px-2 py-2 text-center whitespace-nowrap">가능매출액</th>
                   <th className="px-2 py-2 text-center">자재진도율</th>
                   <th className="px-2 py-2 text-center">생산진도율</th>
