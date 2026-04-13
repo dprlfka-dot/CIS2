@@ -34,7 +34,7 @@
         {
           "date": "4/3(금)",
           "target": 30,
-          "arrival": 0,
+          "arrival": 170,
           "achievement": 20
         },
         {
@@ -52,32 +52,32 @@
         {
           "date": "4/6(월)",
           "target": 30,
-          "arrival": 40,
-          "achievement": 0
+          "arrival": 20,
+          "achievement": 20
         },
         {
           "date": "4/7(화)",
           "target": 30,
-          "arrival": 0,
-          "achievement": 0
+          "arrival": 20,
+          "achievement": 20
         },
         {
           "date": "4/8(수)",
           "target": 30,
-          "arrival": 40,
-          "achievement": 0
+          "arrival": 20,
+          "achievement": 20
         },
         {
           "date": "4/9(목)",
           "target": 30,
-          "arrival": 0,
-          "achievement": 0
+          "arrival": 20,
+          "achievement": 20
         },
         {
           "date": "4/10(금)",
           "target": 30,
-          "arrival": 40,
-          "achievement": 0
+          "arrival": 20,
+          "achievement": 20
         },
         {
           "date": "4/11(토)",
@@ -475,7 +475,7 @@
           "date": "4/10(금)",
           "target": 500,
           "arrival": 0,
-          "achievement": 0
+          "achievement": 1000
         },
         {
           "date": "4/11(토)",
@@ -649,37 +649,37 @@
         {
           "date": "4/6(월)",
           "target": 30,
-          "arrival": 20,
-          "achievement": 0
+          "arrival": 40,
+          "achievement": 50
         },
         {
           "date": "4/7(화)",
           "target": 30,
-          "arrival": 20,
-          "achievement": 0
+          "arrival": 0,
+          "achievement": 50
         },
         {
           "date": "4/8(수)",
           "target": 30,
-          "arrival": 20,
-          "achievement": 0
+          "arrival": 40,
+          "achievement": 50
         },
         {
           "date": "4/9(목)",
           "target": 30,
-          "arrival": 20,
-          "achievement": 0
+          "arrival": 0,
+          "achievement": 50
         },
         {
           "date": "4/10(금)",
           "target": 30,
-          "arrival": 20,
-          "achievement": 0
+          "arrival": 40,
+          "achievement": 50
         },
         {
           "date": "4/11(토)",
           "target": 0,
-          "arrival": 20,
+          "arrival": 0,
           "achievement": 0
         },
         {
@@ -849,31 +849,31 @@
           "date": "4/6(월)",
           "target": 40,
           "arrival": 150,
-          "achievement": 0
+          "achievement": 30
         },
         {
           "date": "4/7(화)",
           "target": 40,
           "arrival": 0,
-          "achievement": 0
+          "achievement": 30
         },
         {
           "date": "4/8(수)",
           "target": 40,
           "arrival": 0,
-          "achievement": 0
+          "achievement": 30
         },
         {
           "date": "4/9(목)",
           "target": 40,
           "arrival": 0,
-          "achievement": 0
+          "achievement": 30
         },
         {
           "date": "4/10(금)",
           "target": 40,
           "arrival": 60,
-          "achievement": 0
+          "achievement": 30
         },
         {
           "date": "4/11(토)",
