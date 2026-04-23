@@ -175,22 +175,45 @@ app.post('/api/products/bulk', (req, res) => {
   res.json({ ok: true, count: products.length });
 });
 
-// POST /api/snapshots - 스냅샷 저장
+// POST /api/snapshots - 기간형 스냅샷 저장
+// body: { label?, startDate: 'YYYY-MM-DD', endDate: 'YYYY-MM-DD' }
+// 선택 기간의 일별 데이터만 실제 값으로 저장하고, 범위 밖은 target/arrival/achievement = 0
+// 비일별 필드(backlog, productionTarget 등)는 저장 시점 상태 그대로 스냅샷
 app.post('/api/snapshots', (req, res) => {
-  const { label } = req.body as { label?: string };
+  const { label, startDate, endDate } = req.body as { label?: string; startDate?: string; endDate?: string };
 
-  // 현재 데이터 조회
+  if (!startDate || !endDate) {
+    res.status(400).json({ error: 'startDate and endDate are required' });
+    return;
+  }
+  if (startDate > endDate) {
+    res.status(400).json({ error: 'startDate must be <= endDate' });
+    return;
+  }
+
+  // date_label "4/1(수)" → 'YYYY-MM-DD' (2026년 기준 데이터셋)
+  const DAILY_YEAR = 2026;
+  const toIsoDate = (label: string): string | null => {
+    const m = label.match(/^(\d+)\/(\d+)/);
+    if (!m) return null;
+    const mm = String(m[1]).padStart(2, '0');
+    const dd = String(m[2]).padStart(2, '0');
+    return `${DAILY_YEAR}-${mm}-${dd}`;
+  };
+
   const products = db.prepare('SELECT * FROM products ORDER BY customer, code').all() as any[];
   const dailyAll = db.prepare('SELECT * FROM daily_data ORDER BY product_code, day_index').all() as any[];
 
   const dailyMap: Record<string, any[]> = {};
   for (const d of dailyAll) {
     if (!dailyMap[d.product_code]) dailyMap[d.product_code] = [];
+    const iso = toIsoDate(d.date_label);
+    const inRange = iso !== null && iso >= startDate && iso <= endDate;
     dailyMap[d.product_code].push({
       date: d.date_label,
-      target: d.target,
-      arrival: d.arrival,
-      achievement: d.achievement,
+      target: inRange ? d.target : 0,
+      arrival: inRange ? d.arrival : 0,
+      achievement: inRange ? d.achievement : 0,
     });
   }
 
@@ -211,11 +234,12 @@ app.post('/api/snapshots', (req, res) => {
     daily: dailyMap[p.code] || [],
   }));
 
-  const now = new Date();
-  const defaultLabel = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}월 스냅샷`;
+  const defaultLabel = `${startDate} ~ ${endDate}`;
 
-  db.prepare('INSERT INTO snapshots (label, data) VALUES (?, ?)').run(
+  db.prepare('INSERT INTO snapshots (label, start_date, end_date, data) VALUES (?, ?, ?, ?)').run(
     label || defaultLabel,
+    startDate,
+    endDate,
     JSON.stringify(snapshot)
   );
 
@@ -224,7 +248,7 @@ app.post('/api/snapshots', (req, res) => {
 
 // GET /api/snapshots - 스냅샷 목록 조회
 app.get('/api/snapshots', (_req, res) => {
-  const snapshots = db.prepare('SELECT id, label, created_at FROM snapshots ORDER BY created_at DESC').all();
+  const snapshots = db.prepare('SELECT id, label, start_date, end_date, created_at FROM snapshots ORDER BY created_at DESC').all();
   res.json(snapshots);
 });
 

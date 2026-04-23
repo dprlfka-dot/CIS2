@@ -94,6 +94,8 @@ export default function App() {
   const [snapshots, setSnapshots] = useState<SnapshotMeta[]>([]);
   const [viewingSnapshot, setViewingSnapshot] = useState<SnapshotDetail | null>(null);
   const [snapshotSubTab, setSnapshotSubTab] = useState<'summary' | 'detail'>('summary');
+  const [snapshotModalOpen, setSnapshotModalOpen] = useState(false);
+  const [snapshotForm, setSnapshotForm] = useState({ label: '', startDate: '2026-04-01', endDate: '2026-04-30' });
 
   useEffect(() => {
     fetchProducts()
@@ -541,19 +543,29 @@ export default function App() {
     fetchSnapshots().then(setSnapshots).catch(console.error);
   }, []);
 
+  const handleOpenSnapshotModal = useCallback(() => {
+    setSnapshotForm(f => ({ ...f, label: '' }));
+    setSnapshotModalOpen(true);
+  }, []);
+
   const handleCreateSnapshot = useCallback(async () => {
-    const now = new Date();
-    const defaultLabel = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}월 스냅샷`;
-    const label = prompt('스냅샷 제목을 입력하세요:', defaultLabel);
-    if (!label) return;
+    const { label, startDate, endDate } = snapshotForm;
+    if (!startDate || !endDate) {
+      alert('시작일과 종료일을 모두 입력하세요.');
+      return;
+    }
+    if (startDate > endDate) {
+      alert('시작일이 종료일보다 늦을 수 없습니다.');
+      return;
+    }
     try {
-      await createSnapshot(label);
-      alert('스냅샷이 저장되었습니다.');
+      await createSnapshot({ label: label.trim() || undefined, startDate, endDate });
+      setSnapshotModalOpen(false);
       loadSnapshots();
     } catch {
       alert('스냅샷 저장에 실패했습니다.');
     }
-  }, [loadSnapshots]);
+  }, [loadSnapshots, snapshotForm]);
 
   const handleViewSnapshot = useCallback(async (id: number) => {
     try {
@@ -602,7 +614,7 @@ export default function App() {
           </div>
           <div className="flex items-center gap-3">
             <button
-              onClick={handleCreateSnapshot}
+              onClick={handleOpenSnapshotModal}
               className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 border border-indigo-200 rounded-full text-sm font-medium text-indigo-600 hover:bg-indigo-100 transition-colors"
             >
               <Camera className="w-4 h-4" />
@@ -644,7 +656,7 @@ export default function App() {
               activeTab === 'history' ? "bg-indigo-600 text-white shadow-sm" : "text-slate-500 hover:bg-slate-50"
             )}
           >
-            월별 이력
+            기간별 이력
           </button>
         </div>
 
@@ -1312,7 +1324,7 @@ export default function App() {
         </>)}
 
         {activeTab === 'history' && (<>
-        {/* 월별 이력 */}
+        {/* 기간별 이력 */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* 스냅샷 목록 */}
           <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
@@ -1348,7 +1360,8 @@ export default function App() {
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
-                    <p className="text-[10px] text-slate-400 mt-1">{new Date(s.created_at).toLocaleString('ko-KR')}</p>
+                    <p className="text-[11px] text-indigo-600 font-medium mt-0.5">기간 {s.start_date} ~ {s.end_date}</p>
+                    <p className="text-[10px] text-slate-400 mt-0.5">기준일 {new Date(s.created_at).toLocaleString('ko-KR')}</p>
                   </div>
                 ))}
               </div>
@@ -1367,7 +1380,8 @@ export default function App() {
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <h3 className="text-sm font-bold text-slate-900">{viewingSnapshot.label}</h3>
-                    <p className="text-[10px] text-slate-400">{new Date(viewingSnapshot.created_at).toLocaleString('ko-KR')} 저장 · {viewingSnapshot.data.length}개 품목</p>
+                    <p className="text-[11px] text-indigo-600 font-medium">집계 기간 {viewingSnapshot.start_date} ~ {viewingSnapshot.end_date}</p>
+                    <p className="text-[10px] text-slate-400">기준일 {new Date(viewingSnapshot.created_at).toLocaleString('ko-KR')} · {viewingSnapshot.data.length}개 품목</p>
                   </div>
                   <div className="flex gap-1 bg-slate-100 rounded-lg p-0.5">
                     <button
@@ -1611,6 +1625,61 @@ export default function App() {
         </>)}
       </main>
 
+      {snapshotModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setSnapshotModalOpen(false)}>
+          <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-6 w-[90vw] max-w-[420px]" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-base font-bold text-slate-900">기간별 스냅샷 저장</h3>
+              <button onClick={() => setSnapshotModalOpen(false)} className="p-1 text-slate-400 hover:text-slate-600 transition-colors">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">제목 <span className="text-slate-400 font-normal">(선택)</span></label>
+                <input
+                  type="text"
+                  value={snapshotForm.label}
+                  onChange={e => setSnapshotForm(f => ({ ...f, label: e.target.value }))}
+                  placeholder="예: 4월 1주차 누적"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">시작일</label>
+                  <input
+                    type="date"
+                    value={snapshotForm.startDate}
+                    onChange={e => setSnapshotForm(f => ({ ...f, startDate: e.target.value }))}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">종료일</label>
+                  <input
+                    type="date"
+                    value={snapshotForm.endDate}
+                    onChange={e => setSnapshotForm(f => ({ ...f, endDate: e.target.value }))}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
+                  />
+                </div>
+              </div>
+              <p className="text-[11px] text-slate-400">선택한 기간의 일별 데이터만 누적 저장됩니다. 수주잔량·예상수량 등은 저장 시점(기준일) 값이 사용됩니다.</p>
+            </div>
+            <div className="flex justify-end gap-2 mt-5">
+              <button
+                onClick={() => setSnapshotModalOpen(false)}
+                className="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+              >취소</button>
+              <button
+                onClick={handleCreateSnapshot}
+                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-lg transition-colors"
+              >저장</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

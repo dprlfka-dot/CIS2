@@ -39,6 +39,8 @@ export async function bulkUploadProducts(products: ProductData[]): Promise<void>
 export interface SnapshotMeta {
   id: number;
   label: string;
+  start_date: string;
+  end_date: string;
   created_at: string;
 }
 
@@ -46,11 +48,11 @@ export interface SnapshotDetail extends SnapshotMeta {
   data: ProductData[];
 }
 
-export async function createSnapshot(label?: string): Promise<void> {
+export async function createSnapshot(params: { label?: string; startDate: string; endDate: string }): Promise<void> {
   const res = await fetch(`${BASE}/snapshots`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ label }),
+    body: JSON.stringify(params),
   });
   if (!res.ok) throw new Error('Failed to create snapshot');
 }

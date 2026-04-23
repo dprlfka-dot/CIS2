@@ -48,6 +48,26 @@ db.exec(`
   );
 `);
 
+// 스냅샷 스키마를 기간형으로 마이그레이션 (start_date, end_date 추가)
+// 기존 스키마면 통째로 비우고 재생성 — 사용자 요청으로 이력 초기화
+{
+  const cols = db.prepare("PRAGMA table_info(snapshots)").all() as any[];
+  const hasStartDate = cols.some((c: any) => c.name === 'start_date');
+  if (!hasStartDate) {
+    db.exec(`DROP TABLE IF EXISTS snapshots;`);
+    db.exec(`
+      CREATE TABLE snapshots (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        label TEXT NOT NULL,
+        start_date TEXT NOT NULL,
+        end_date TEXT NOT NULL,
+        created_at TEXT NOT NULL DEFAULT (datetime('now', 'localtime')),
+        data TEXT NOT NULL
+      );
+    `);
+  }
+}
+
 // 서버 시작 시 항상 seed-data.json 기준으로 DB 동기화
 // (git pull만 하면 다른 AI도 최신 데이터 사용 가능)
 const insertProduct = db.prepare(`
