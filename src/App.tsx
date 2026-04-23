@@ -674,6 +674,16 @@ export default function App() {
               </div>
             </div>
             <div className="flex items-center gap-3">
+              <div className="p-3 rounded-xl bg-rose-500 shrink-0">
+                <ArrowDownRight className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <p className="text-xs text-slate-900 font-bold">이월 예상 수량</p>
+                <p className="text-lg font-bold text-rose-600">{stats.carryOver.toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
+                <p className="text-xs text-rose-500 font-bold">({(stats.carryOverRevenue).toLocaleString(undefined, { maximumFractionDigits: 1 })}억원)</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
               <div className="p-3 rounded-xl bg-emerald-500 shrink-0">
                 <CheckCircle2 className="w-6 h-6 text-white" />
               </div>
@@ -690,16 +700,6 @@ export default function App() {
               <div>
                 <p className="text-xs text-slate-900 font-bold">당월 누적 자재 완료</p>
                 <p className="text-lg font-bold text-amber-600">{Math.round(stats.totalArrival / 10).toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="p-3 rounded-xl bg-rose-500 shrink-0">
-                <ArrowDownRight className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <p className="text-xs text-slate-900 font-bold">이월 예상 수량</p>
-                <p className="text-lg font-bold text-rose-600">{stats.carryOver.toLocaleString()}<span className="text-xs text-slate-400 ml-0.5">만개</span></p>
-                <p className="text-xs text-rose-500 font-bold">({(stats.carryOverRevenue).toLocaleString(undefined, { maximumFractionDigits: 1 })}억원)</p>
               </div>
             </div>
           </div>
