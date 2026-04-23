@@ -1478,6 +1478,8 @@ export default function App() {
                           const totalAch = custProds.reduce((s, p) => s + p.daily.reduce((a, d) => a + d.achievement, 0), 0);
                           const matRate = totalT > 0 ? Math.round((totalArr / totalT) * 100) : 0;
                           const prodRate = totalT > 0 ? Math.round((totalAch / totalT) * 100) : 0;
+                          const custPossibleRevenue = custProds.reduce((s, p) => s + (p.possibleRevenue || 0), 0);
+                          const custCurrentRevenue = custProds.reduce((s, p) => s + p.daily.reduce((a, d) => a + d.achievement * (p.unitPrice || 0) / 1000, 0), 0);
                           const isExp = expandedCustomers.has(`snap_${cust}`);
                           return (
                             <div key={cust} className="bg-slate-50 rounded-xl p-3">
@@ -1515,6 +1517,15 @@ export default function App() {
                                     <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${Math.min(prodRate, 100)}%` }} />
                                   </div>
                                 </div>
+                                {(custPossibleRevenue > 0 || custCurrentRevenue > 0) && (
+                                  <div className="flex items-center justify-between pt-1 mt-1 border-t border-slate-200">
+                                    <span className="text-[11px] font-medium text-violet-600">매출</span>
+                                    <span className="text-[11px] font-bold text-violet-600">
+                                      {(custCurrentRevenue / 100).toLocaleString(undefined, { maximumFractionDigits: 2 })}억
+                                      {custPossibleRevenue > 0 && <span className="text-[10px] text-slate-400 font-normal"> / {(custPossibleRevenue / 100).toLocaleString(undefined, { maximumFractionDigits: 2 })}억</span>}
+                                    </span>
+                                  </div>
+                                )}
                               </div>
                               {isExp && (
                                 <div className="pt-2 mt-2 border-t border-slate-200 space-y-2">
@@ -1524,14 +1535,17 @@ export default function App() {
                                     const pAch = pd.daily.reduce((a, d) => a + d.achievement, 0);
                                     const pMatR = pT > 0 ? Math.round((pArr / pT) * 100) : 0;
                                     const pProdR = pT > 0 ? Math.round((pAch / pT) * 100) : 0;
+                                    const pCurrentRevenue = pd.daily.reduce((a, d) => a + d.achievement * (pd.unitPrice || 0) / 1000, 0);
+                                    const pPossibleRevenue = pd.possibleRevenue || 0;
                                     return (
                                       <div key={pd.code} className="bg-white rounded-lg p-2 space-y-1">
-                                        <p className="text-[10px] font-bold text-slate-700 truncate" title={pd.name}>{pd.name}</p>
+                                        <p className="text-[10px] font-bold text-slate-700 truncate" title={pd.name}>{pd.code} {pd.name}</p>
                                         <div className="flex items-center gap-2">
                                           <span className="text-[10px] text-amber-600 w-8 shrink-0">자재</span>
                                           <div className="flex-1 h-1 bg-amber-100 rounded-full overflow-hidden">
                                             <div className="h-full bg-amber-400 rounded-full" style={{ width: `${Math.min(pMatR, 100)}%` }} />
                                           </div>
+                                          <span className="text-[10px] text-slate-500 w-14 text-right">{pArr.toLocaleString()}천개</span>
                                           <span className="text-[10px] font-bold text-amber-600 w-8 text-right">{pMatR}%</span>
                                         </div>
                                         <div className="flex items-center gap-2">
@@ -1539,8 +1553,18 @@ export default function App() {
                                           <div className="flex-1 h-1 bg-emerald-100 rounded-full overflow-hidden">
                                             <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${Math.min(pProdR, 100)}%` }} />
                                           </div>
+                                          <span className="text-[10px] text-slate-500 w-14 text-right">{pAch.toLocaleString()}천개</span>
                                           <span className="text-[10px] font-bold text-emerald-600 w-8 text-right">{pProdR}%</span>
                                         </div>
+                                        {(pPossibleRevenue > 0 || pCurrentRevenue > 0) && (
+                                          <div className="flex items-center justify-between pt-1 mt-1 border-t border-slate-100">
+                                            <span className="text-[10px] font-medium text-violet-600">매출</span>
+                                            <span className="text-[10px] font-bold text-violet-600">
+                                              {(pCurrentRevenue / 100).toLocaleString(undefined, { maximumFractionDigits: 2 })}억
+                                              {pPossibleRevenue > 0 && <span className="text-[10px] text-slate-400 font-normal"> / {(pPossibleRevenue / 100).toLocaleString(undefined, { maximumFractionDigits: 2 })}억</span>}
+                                            </span>
+                                          </div>
+                                        )}
                                       </div>
                                     );
                                   })}
