@@ -1072,12 +1072,14 @@ export default function App() {
                   <th className="px-2 py-2 text-center">품목코드</th>
                   <th className="px-2 py-2 text-center min-w-[160px]">품목명</th>
                   <th className="px-2 py-2 text-center whitespace-nowrap">수주잔량</th>
-                  <th className="px-2 py-2 text-center whitespace-nowrap">자재CAPA</th>
-                  <th className="px-2 py-2 text-center whitespace-nowrap">생산CAPA</th>
                   <th className="px-2 py-2 text-center whitespace-nowrap">예상수량</th>
+                  <th className="px-2 py-2 text-center whitespace-nowrap">수주금액</th>
                   <th className="px-2 py-2 text-center whitespace-nowrap">가능매출액</th>
+                  <th className="px-2 py-2 text-center whitespace-nowrap">이월예상매출액</th>
+                  <th className="px-2 py-2 text-center whitespace-nowrap">자재CAPA</th>
                   <th className="px-2 py-2 text-center whitespace-nowrap">누적자재수량</th>
                   <th className="px-2 py-2 text-center">자재진도율</th>
+                  <th className="px-2 py-2 text-center whitespace-nowrap">생산CAPA</th>
                   <th className="px-2 py-2 text-center whitespace-nowrap">누적생산수량</th>
                   <th className="px-2 py-2 text-center">생산진도율</th>
                   <th className="px-1 py-2 w-[24px]"></th>
@@ -1112,35 +1114,43 @@ export default function App() {
                           {product.name}
                         </span>
                       </td>
-                      <td className="px-2 py-1.5 text-center text-xs font-bold text-slate-900">
-                        {product.backlog.toLocaleString()}
-                      </td>
-                      <td className="px-2 py-1.5 text-center text-xs font-bold text-amber-700">
-                        {product.materialCapa.toLocaleString()}
-                      </td>
-                      <td className="px-2 py-1.5 text-center text-xs font-bold text-emerald-700">
-                        {product.productionCapa === 0 ? '-' : product.productionCapa.toLocaleString()}
-                      </td>
-                      <td className="px-2 py-1.5 text-center text-xs font-bold text-slate-900">
-                        {product.productionTarget.toLocaleString()}
-                      </td>
-                      <td className="px-2 py-1.5 text-center text-xs font-bold text-violet-700">
-                        {product.possibleRevenue > 0 ? product.possibleRevenue.toLocaleString() : '-'}
-                      </td>
                       {(() => {
                         const totalTarget = product.daily.reduce((sum, d, i) => sum + (editingTargets[product.code]?.[i] !== undefined ? editingTargets[product.code][i] : d.target), 0);
                         const totalArrival = product.daily.reduce((sum, d, i) => sum + (editingArrivals[product.code]?.[i] !== undefined ? editingArrivals[product.code][i] : d.arrival), 0);
                         const totalAchievement = product.daily.reduce((sum, d, i) => sum + (editingAchievements[product.code]?.[i] !== undefined ? editingAchievements[product.code][i] : d.achievement), 0);
                         const matRate = totalTarget > 0 ? Math.round((totalArrival / totalTarget) * 100) : 0;
                         const prodRate = totalTarget > 0 ? Math.round((totalAchievement / totalTarget) * 100) : 0;
+                        const orderAmount = Math.round(product.backlog * 10000 * (product.unitPrice || 0) / 1000000);
+                        const carryOverRevenue = orderAmount - (product.possibleRevenue || 0);
                         return (
                           <>
+                            <td className="px-2 py-1.5 text-center text-xs font-bold text-slate-900">
+                              {product.backlog.toLocaleString()}
+                            </td>
+                            <td className="px-2 py-1.5 text-center text-xs font-bold text-slate-900">
+                              {product.productionTarget.toLocaleString()}
+                            </td>
+                            <td className="px-2 py-1.5 text-center text-xs font-bold text-indigo-700">
+                              {orderAmount > 0 ? orderAmount.toLocaleString() : '-'}
+                            </td>
+                            <td className="px-2 py-1.5 text-center text-xs font-bold text-violet-700">
+                              {product.possibleRevenue > 0 ? product.possibleRevenue.toLocaleString() : '-'}
+                            </td>
+                            <td className="px-2 py-1.5 text-center text-xs font-bold text-rose-600">
+                              {carryOverRevenue > 0 ? carryOverRevenue.toLocaleString() : '-'}
+                            </td>
+                            <td className="px-2 py-1.5 text-center text-xs font-bold text-amber-700">
+                              {product.materialCapa.toLocaleString()}
+                            </td>
                             <td className="px-2 py-1.5 text-center text-xs font-bold text-amber-700">
                               {Math.round(totalArrival / 10).toLocaleString()}
                             </td>
                             <td className="px-2 py-1.5 text-center">
                               <StatusBadge status={matRate >= stats.targetProgressRate ? '이상' : '미달'} />
                               <p className="text-[11px] text-slate-500 mt-0.5">{matRate}%</p>
+                            </td>
+                            <td className="px-2 py-1.5 text-center text-xs font-bold text-emerald-700">
+                              {product.productionCapa === 0 ? '-' : product.productionCapa.toLocaleString()}
                             </td>
                             <td className="px-2 py-1.5 text-center text-xs font-bold text-emerald-700">
                               {Math.round(totalAchievement / 10).toLocaleString()}
@@ -1162,7 +1172,7 @@ export default function App() {
                     <AnimatePresence>
                       {selectedProduct?.code === product.code && (
                         <tr>
-                          <td colSpan={15} className="px-2 py-0">
+                          <td colSpan={17} className="px-2 py-0">
                             <motion.div 
                               initial={{ height: 0, opacity: 0 }}
                               animate={{ height: 'auto', opacity: 1 }}
