@@ -44,7 +44,7 @@ function syncSeedData() {
   }));
 
   const data = {
-    title: '26.04월 대량발주품목 진도율 관리',
+    title: '대량발주품목 진도율 관리',
     baseDate: '2026.04.06',
     products: result,
   };
