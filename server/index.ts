@@ -56,6 +56,9 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
+const distPath = path.join(__dirname, '..', 'dist');
+app.use(express.static(distPath));
+
 // 데이터 변경 시 증가하는 버전 카운터
 let dataVersion = 1;
 
@@ -268,7 +271,13 @@ app.delete('/api/snapshots/:id', (req, res) => {
   res.json({ ok: true });
 });
 
-const PORT = 3001;
+// SPA fallback — /api 가 아닌 경로는 index.html 반환
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api')) return next();
+  res.sendFile(path.join(distPath, 'index.html'));
+});
+
+const PORT = parseInt(process.env.PORT || '3001', 10);
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`API server running on http://localhost:${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });
