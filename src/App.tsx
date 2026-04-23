@@ -737,8 +737,8 @@ export default function App() {
                 code: p.code,
                 materialRate: t > 0 ? Math.round((arr / t) * 100) : 0,
                 productionRate: t > 0 ? Math.round((ach / t) * 100) : 0,
-                materialQty: Math.round(arr / 10),
-                productionQty: Math.round(ach / 10),
+                materialQty: arr,
+                productionQty: ach,
                 possibleRevenue: p.possibleRevenue || 0,
                 currentRevenue: prodRevenue,
               };
@@ -926,7 +926,7 @@ export default function App() {
                             <div className="flex-1 h-2 bg-amber-100 rounded-full overflow-hidden">
                               <div className="h-full bg-amber-400 rounded-full" style={{ width: `${Math.min(pd.materialRate, 100)}%` }} />
                             </div>
-                            <span className="text-xs text-slate-500 w-16 text-right">{pd.materialQty.toLocaleString()}만개</span>
+                            <span className="text-xs text-slate-500 w-16 text-right">{pd.materialQty.toLocaleString()}천개</span>
                             <span className="text-sm font-bold text-amber-600 w-12 text-right">{pd.materialRate}%</span>
                           </div>
                           <div className="flex items-center gap-3">
@@ -934,7 +934,7 @@ export default function App() {
                             <div className="flex-1 h-2 bg-emerald-100 rounded-full overflow-hidden">
                               <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${Math.min(pd.productionRate, 100)}%` }} />
                             </div>
-                            <span className="text-xs text-slate-500 w-16 text-right">{pd.productionQty.toLocaleString()}만개</span>
+                            <span className="text-xs text-slate-500 w-16 text-right">{pd.productionQty.toLocaleString()}천개</span>
                             <span className="text-sm font-bold text-emerald-600 w-12 text-right">{pd.productionRate}%</span>
                           </div>
                           {(pd.possibleRevenue > 0 || pd.currentRevenue > 0) && (
@@ -1064,7 +1064,9 @@ export default function App() {
                   <th className="px-2 py-2 text-center whitespace-nowrap">생산CAPA</th>
                   <th className="px-2 py-2 text-center whitespace-nowrap">예상수량</th>
                   <th className="px-2 py-2 text-center whitespace-nowrap">가능매출액</th>
+                  <th className="px-2 py-2 text-center whitespace-nowrap">누적자재수량</th>
                   <th className="px-2 py-2 text-center">자재진도율</th>
+                  <th className="px-2 py-2 text-center whitespace-nowrap">누적생산수량</th>
                   <th className="px-2 py-2 text-center">생산진도율</th>
                   <th className="px-1 py-2 w-[24px]"></th>
                 </tr>
@@ -1121,9 +1123,15 @@ export default function App() {
                         const prodRate = totalTarget > 0 ? Math.round((totalAchievement / totalTarget) * 100) : 0;
                         return (
                           <>
+                            <td className="px-2 py-1.5 text-center text-xs font-bold text-amber-700">
+                              {Math.round(totalArrival / 10).toLocaleString()}
+                            </td>
                             <td className="px-2 py-1.5 text-center">
                               <StatusBadge status={matRate >= stats.targetProgressRate ? '이상' : '미달'} />
                               <p className="text-[11px] text-slate-500 mt-0.5">{matRate}%</p>
+                            </td>
+                            <td className="px-2 py-1.5 text-center text-xs font-bold text-emerald-700">
+                              {Math.round(totalAchievement / 10).toLocaleString()}
                             </td>
                             <td className="px-2 py-1.5 text-center">
                               <StatusBadge status={prodRate >= stats.targetProgressRate ? '이상' : '미달'} />
@@ -1142,7 +1150,7 @@ export default function App() {
                     <AnimatePresence>
                       {selectedProduct?.code === product.code && (
                         <tr>
-                          <td colSpan={13} className="px-2 py-0">
+                          <td colSpan={15} className="px-2 py-0">
                             <motion.div 
                               initial={{ height: 0, opacity: 0 }}
                               animate={{ height: 'auto', opacity: 1 }}
