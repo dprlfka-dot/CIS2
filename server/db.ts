@@ -1,95 +1,102 @@
-import Database from 'better-sqlite3';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import pg from 'pg';
 import { DASHBOARD_DATA } from '../src/data';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const dbPath = path.join(__dirname, 'data.db');
-const db = new Database(dbPath);
+const { Pool } = pg;
 
-db.pragma('journal_mode = WAL');
-db.pragma('foreign_keys = ON');
+const schema = process.env.DB_SCHEMA || 'app_bulk_order_items_prd';
 
-db.exec(`
-  CREATE TABLE IF NOT EXISTS products (
-    code TEXT PRIMARY KEY,
-    customer TEXT NOT NULL,
-    name TEXT NOT NULL,
-    buyer TEXT NOT NULL DEFAULT '',
-    cis_manager TEXT NOT NULL DEFAULT '',
-    backlog INTEGER NOT NULL DEFAULT 0,
-    material_capa INTEGER NOT NULL DEFAULT 0,
-    production_capa INTEGER NOT NULL DEFAULT 0,
-    production_target INTEGER NOT NULL DEFAULT 0,
-    unit_price INTEGER NOT NULL DEFAULT 0,
-    possible_revenue INTEGER NOT NULL DEFAULT 0,
-    weekly_total INTEGER NOT NULL DEFAULT 0,
-    material_progress INTEGER NOT NULL DEFAULT 0,
-    production_progress INTEGER NOT NULL DEFAULT 0,
-    status TEXT NOT NULL DEFAULT '이상'
-  );
+export const pool = new Pool({
+  host: process.env.DB_HOST,
+  port: parseInt(process.env.DB_PORT || '5432', 10),
+  database: process.env.DB_NAME,
+  user: process.env.DB_USERNAME,
+  password: process.env.DB_PASSWORD,
+  ssl: { rejectUnauthorized: false },
+  max: 10,
+});
 
-  CREATE TABLE IF NOT EXISTS daily_data (
-    product_code TEXT NOT NULL,
-    day_index INTEGER NOT NULL,
-    date_label TEXT NOT NULL,
-    target INTEGER NOT NULL DEFAULT 0,
-    arrival INTEGER NOT NULL DEFAULT 0,
-    achievement INTEGER NOT NULL DEFAULT 0,
-    PRIMARY KEY (product_code, day_index),
-    FOREIGN KEY (product_code) REFERENCES products(code) ON DELETE CASCADE
-  );
+pool.on('connect', (client) => {
+  client.query(`SET search_path TO "${schema}"`).catch(() => {});
+});
 
-  CREATE TABLE IF NOT EXISTS snapshots (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    label TEXT NOT NULL,
-    created_at TEXT NOT NULL DEFAULT (datetime('now', 'localtime')),
-    data TEXT NOT NULL
-  );
-`);
+export const SCHEMA = schema;
 
-// 스냅샷 스키마를 기간형으로 마이그레이션 (start_date, end_date 추가)
-// 기존 스키마면 통째로 비우고 재생성 — 사용자 요청으로 이력 초기화
-{
-  const cols = db.prepare("PRAGMA table_info(snapshots)").all() as any[];
-  const hasStartDate = cols.some((c: any) => c.name === 'start_date');
-  if (!hasStartDate) {
-    db.exec(`DROP TABLE IF EXISTS snapshots;`);
-    db.exec(`
-      CREATE TABLE snapshots (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        label TEXT NOT NULL,
-        start_date TEXT NOT NULL,
-        end_date TEXT NOT NULL,
-        created_at TEXT NOT NULL DEFAULT (datetime('now', 'localtime')),
-        data TEXT NOT NULL
+export async function initDb() {
+  await pool.query(`CREATE SCHEMA IF NOT EXISTS "${schema}"`);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS "${schema}".products (
+      code TEXT PRIMARY KEY,
+      customer TEXT NOT NULL,
+      name TEXT NOT NULL,
+      buyer TEXT NOT NULL DEFAULT '',
+      cis_manager TEXT NOT NULL DEFAULT '',
+      backlog INTEGER NOT NULL DEFAULT 0,
+      material_capa INTEGER NOT NULL DEFAULT 0,
+      production_capa INTEGER NOT NULL DEFAULT 0,
+      production_target INTEGER NOT NULL DEFAULT 0,
+      unit_price INTEGER NOT NULL DEFAULT 0,
+      possible_revenue INTEGER NOT NULL DEFAULT 0,
+      weekly_total INTEGER NOT NULL DEFAULT 0,
+      material_progress INTEGER NOT NULL DEFAULT 0,
+      production_progress INTEGER NOT NULL DEFAULT 0,
+      status TEXT NOT NULL DEFAULT '이상'
+    );
+  `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS "${schema}".daily_data (
+      product_code TEXT NOT NULL REFERENCES "${schema}".products(code) ON DELETE CASCADE,
+      day_index INTEGER NOT NULL,
+      date_label TEXT NOT NULL,
+      target INTEGER NOT NULL DEFAULT 0,
+      arrival INTEGER NOT NULL DEFAULT 0,
+      achievement INTEGER NOT NULL DEFAULT 0,
+      PRIMARY KEY (product_code, day_index)
+    );
+  `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS "${schema}".snapshots (
+      id SERIAL PRIMARY KEY,
+      label TEXT NOT NULL,
+      start_date TEXT NOT NULL,
+      end_date TEXT NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      data JSONB NOT NULL
+    );
+  `);
+
+  const client = await pool.connect();
+  try {
+    await client.query(`SET search_path TO "${schema}"`);
+    await client.query('BEGIN');
+    await client.query(`DELETE FROM "${schema}".daily_data`);
+    await client.query(`DELETE FROM "${schema}".products`);
+    for (const p of DASHBOARD_DATA.products) {
+      await client.query(
+        `INSERT INTO "${schema}".products
+          (code, customer, name, buyer, cis_manager, backlog, material_capa, production_capa, production_target, unit_price, possible_revenue, weekly_total, material_progress, production_progress, status)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)`,
+        [p.code, p.customer, p.name, p.buyer || '', p.cisManager || '', p.backlog, p.materialCapa, p.productionCapa, p.productionTarget, p.unitPrice || 0, p.possibleRevenue || 0, p.weeklyTotal, p.materialProgress, p.productionProgress, p.status]
       );
-    `);
+      for (let i = 0; i < p.daily.length; i++) {
+        const d = p.daily[i];
+        await client.query(
+          `INSERT INTO "${schema}".daily_data (product_code, day_index, date_label, target, arrival, achievement)
+           VALUES ($1,$2,$3,$4,$5,$6)`,
+          [p.code, i, d.date, d.target, d.arrival, d.achievement]
+        );
+      }
+    }
+    await client.query('COMMIT');
+    console.log(`Seeded ${DASHBOARD_DATA.products.length} products into schema "${schema}"`);
+  } catch (e) {
+    await client.query('ROLLBACK');
+    throw e;
+  } finally {
+    client.release();
   }
 }
 
-// 서버 시작 시 항상 seed-data.json 기준으로 DB 동기화
-// (git pull만 하면 다른 AI도 최신 데이터 사용 가능)
-const insertProduct = db.prepare(`
-  INSERT OR REPLACE INTO products (code, customer, name, buyer, cis_manager, backlog, material_capa, production_capa, production_target, unit_price, possible_revenue, weekly_total, material_progress, production_progress, status)
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-`);
-const insertDaily = db.prepare(`
-  INSERT OR REPLACE INTO daily_data (product_code, day_index, date_label, target, arrival, achievement)
-  VALUES (?, ?, ?, ?, ?, ?)
-`);
-
-const seed = db.transaction(() => {
-  db.prepare('DELETE FROM daily_data').run();
-  db.prepare('DELETE FROM products').run();
-  for (const p of DASHBOARD_DATA.products) {
-    insertProduct.run(p.code, p.customer, p.name, p.buyer || '', p.cisManager || '', p.backlog, p.materialCapa, p.productionCapa, p.productionTarget, p.unitPrice || 0, p.possibleRevenue || 0, p.weeklyTotal, p.materialProgress, p.productionProgress, p.status);
-    p.daily.forEach((d, i) => {
-      insertDaily.run(p.code, i, d.date, d.target, d.arrival, d.achievement);
-    });
-  }
-});
-seed();
-console.log(`Seeded ${DASHBOARD_DATA.products.length} products from seed-data.json`);
-
-export default db;
+export default pool;

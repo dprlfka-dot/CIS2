@@ -4,6 +4,7 @@ build:
   commands:
     build:
       - npm install
+      - npm run build
 run:
   runtime-version: 22
   command: npm start
