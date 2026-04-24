@@ -3,11 +3,24 @@ runtime: nodejs22
 build:
   commands:
     build:
-      - npm ci
-      - npm run build
+      - npm install
 run:
   runtime-version: 22
   command: npm start
   network:
-    port: 3000
+    port: 8080
     env: PORT
+  env:
+    - name: DB_HOST
+      value: cm-ai-incubation-db.cluster-cjos2m24aqmu.ap-northeast-1.rds.amazonaws.com
+    - name: DB_PORT
+      value: "5432"
+    - name: DB_NAME
+      value: postgres
+    - name: DB_SCHEMA
+      value: app_bulk_order_items_prd
+  secrets:
+    - name: DB_USERNAME
+      value-from: "arn:aws:secretsmanager:ap-northeast-1:559784498787:secret:app_bulk_order_items_prd-MqEIGr:username::"
+    - name: DB_PASSWORD
+      value-from: "arn:aws:secretsmanager:ap-northeast-1:559784498787:secret:app_bulk_order_items_prd-MqEIGr:password::"
