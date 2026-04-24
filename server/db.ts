@@ -5,13 +5,16 @@ const { Pool } = pg;
 
 const schema = process.env.DB_SCHEMA || 'app_bulk_order_items_prd';
 
+const host = process.env.DB_HOST || 'localhost';
+const isLocal = /^(localhost|127\.)/.test(host);
+
 export const pool = new Pool({
-  host: process.env.DB_HOST,
+  host,
   port: parseInt(process.env.DB_PORT || '5432', 10),
   database: process.env.DB_NAME,
   user: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
-  ssl: { rejectUnauthorized: false },
+  ssl: isLocal ? false : { rejectUnauthorized: false },
   max: 10,
 });
 
