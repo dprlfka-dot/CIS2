@@ -25,50 +25,52 @@ pool.on('connect', (client) => {
 export const SCHEMA = schema;
 
 export async function initDb() {
-  await pool.query(`CREATE SCHEMA IF NOT EXISTS "${schema}"`);
-
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS "${schema}".products (
-      code TEXT PRIMARY KEY,
-      customer TEXT NOT NULL,
-      name TEXT NOT NULL,
-      buyer TEXT NOT NULL DEFAULT '',
-      cis_manager TEXT NOT NULL DEFAULT '',
-      backlog INTEGER NOT NULL DEFAULT 0,
-      material_capa INTEGER NOT NULL DEFAULT 0,
-      production_capa INTEGER NOT NULL DEFAULT 0,
-      production_target INTEGER NOT NULL DEFAULT 0,
-      unit_price INTEGER NOT NULL DEFAULT 0,
-      possible_revenue INTEGER NOT NULL DEFAULT 0,
-      weekly_total INTEGER NOT NULL DEFAULT 0,
-      material_progress INTEGER NOT NULL DEFAULT 0,
-      production_progress INTEGER NOT NULL DEFAULT 0,
-      status TEXT NOT NULL DEFAULT '이상'
-    );
-  `);
-
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS "${schema}".daily_data (
-      product_code TEXT NOT NULL REFERENCES "${schema}".products(code) ON DELETE CASCADE,
-      day_index INTEGER NOT NULL,
-      date_label TEXT NOT NULL,
-      target INTEGER NOT NULL DEFAULT 0,
-      arrival INTEGER NOT NULL DEFAULT 0,
-      achievement INTEGER NOT NULL DEFAULT 0,
-      PRIMARY KEY (product_code, day_index)
-    );
-  `);
-
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS "${schema}".snapshots (
-      id SERIAL PRIMARY KEY,
-      label TEXT NOT NULL,
-      start_date TEXT NOT NULL,
-      end_date TEXT NOT NULL,
-      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-      data JSONB NOT NULL
-    );
-  `);
+  // DDL(CREATE SCHEMA/TABLE)은 DBA 권한 필요. 앱 사용자는 DML만 수행.
+  // 스키마/테이블 생성은 server/schema.sql 참고하여 DBA가 1회 적용.
+  // 환경변수 RUN_DDL=true 일 때만 DDL 시도 (개발/테스트용).
+  if (process.env.RUN_DDL === 'true') {
+    await pool.query(`CREATE SCHEMA IF NOT EXISTS "${schema}"`);
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS "${schema}".products (
+        code TEXT PRIMARY KEY,
+        customer TEXT NOT NULL,
+        name TEXT NOT NULL,
+        buyer TEXT NOT NULL DEFAULT '',
+        cis_manager TEXT NOT NULL DEFAULT '',
+        backlog INTEGER NOT NULL DEFAULT 0,
+        material_capa INTEGER NOT NULL DEFAULT 0,
+        production_capa INTEGER NOT NULL DEFAULT 0,
+        production_target INTEGER NOT NULL DEFAULT 0,
+        unit_price INTEGER NOT NULL DEFAULT 0,
+        possible_revenue INTEGER NOT NULL DEFAULT 0,
+        weekly_total INTEGER NOT NULL DEFAULT 0,
+        material_progress INTEGER NOT NULL DEFAULT 0,
+        production_progress INTEGER NOT NULL DEFAULT 0,
+        status TEXT NOT NULL DEFAULT '이상'
+      );
+    `);
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS "${schema}".daily_data (
+        product_code TEXT NOT NULL REFERENCES "${schema}".products(code) ON DELETE CASCADE,
+        day_index INTEGER NOT NULL,
+        date_label TEXT NOT NULL,
+        target INTEGER NOT NULL DEFAULT 0,
+        arrival INTEGER NOT NULL DEFAULT 0,
+        achievement INTEGER NOT NULL DEFAULT 0,
+        PRIMARY KEY (product_code, day_index)
+      );
+    `);
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS "${schema}".snapshots (
+        id SERIAL PRIMARY KEY,
+        label TEXT NOT NULL,
+        start_date TEXT NOT NULL,
+        end_date TEXT NOT NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        data JSONB NOT NULL
+      );
+    `);
+  }
 
   const client = await pool.connect();
   try {
