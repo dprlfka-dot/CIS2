@@ -12,8 +12,6 @@ run:
   env:
     - name: NODE_ENV
       value: "production"
-    - name: RUN_DDL
-      value: "true"
     - name: DB_HOST
       value: "cm-ai-incubation-db.cluster-cjos2m24aqmu.ap-northeast-1.rds.amazonaws.com"
     - name: DB_PORT
