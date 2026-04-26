@@ -4,7 +4,7 @@ import cors from 'cors';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import pool, { initDb, SCHEMA } from './db';
+import pool, { initDb, getDbStatus, SCHEMA } from './db';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const seedJsonPath = path.join(__dirname, '..', 'src', 'seed-data.json');
@@ -333,6 +333,14 @@ app.delete('/api/snapshots/:id', async (req, res) => {
     console.error(e);
     res.status(500).json({ error: 'Internal error' });
   }
+});
+
+app.get('/api/health', async (_req, res) => {
+  const database = await getDbStatus();
+  res.json({
+    status: database.connected ? 'ok' : 'degraded',
+    database,
+  });
 });
 
 app.get('*', (req, res, next) => {
