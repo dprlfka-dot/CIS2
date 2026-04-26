@@ -342,13 +342,10 @@ app.get('*', (req, res, next) => {
 
 const PORT = parseInt(process.env.PORT || '3001', 10);
 
-initDb()
-  .then(() => {
-    app.listen(PORT, '0.0.0.0', () => {
-      console.log(`Server running on http://localhost:${PORT}`);
-    });
-  })
-  .catch((err) => {
-    console.error('DB init failed:', err);
-    process.exit(1);
-  });
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});
+
+initDb().catch((err) => {
+  console.error('DB init failed:', err);
+});
